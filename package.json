@@ -19,8 +19,8 @@
     "test": "npm run build && cross-env NODE_ENV=test TS_NODE_FILES=true nyc mocha -r ts-node/register -r source-map-support/register --timeout 30000 --recursive dist/test/index.spec.js dist/test/**/*.spec.js",
     "test:file": "NODE_ENV=test TS_NODE_FILES=true mocha -r ts-node/register -r source-map-support/register --timeout 30000 dist/test/index.spec.js $FILE"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["warehouse", "donex", "supplier"],
+  "author": "Don Express",
   "license": "ISC",
   "dependencies": {
     "@types/express": "^4.17.17",
