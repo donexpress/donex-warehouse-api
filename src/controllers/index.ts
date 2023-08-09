@@ -4,6 +4,7 @@ import * as RoleController from './role.controller';
 import * as AffiliationController from './affiliation.controller';
 import * as AffiliationStateController from './affiliationState.controller';
 import * as UserController from './user.controller';
+import * as LoginController from './login.controller';
 
 export {
     DepartmentController,
@@ -11,5 +12,6 @@ export {
     RoleController,
     AffiliationController,
     AffiliationStateController,
-    UserController
+    UserController,
+    LoginController
 }

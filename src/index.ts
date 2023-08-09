@@ -2,7 +2,7 @@ import 'dotenv/config'
 import express, { Express } from 'express';
 import morgan from 'morgan';
 import { AppDataSource } from "./config/ormconfig"
-import { AffiliationRoutes, AffiliationStateRoutes, DeparmentRoutes, RoleRoutes, UserRoutes, UserStateRoutes } from './routes';
+import { AffiliationRoutes, AffiliationStateRoutes, DeparmentRoutes, LoginRoutes, RoleRoutes, UserRoutes, UserStateRoutes } from './routes';
 
 
 const app: Express = express();
@@ -26,6 +26,7 @@ app.use('/', AffiliationRoutes.default);
 app.use('/', AffiliationStateRoutes.default);
 app.use('/', UserStateRoutes.default);
 app.use('/', UserRoutes.default);
+app.use('/', LoginRoutes.default);
 
 app.get('/api/v1', (req, res) => res.sendStatus(200));
 

@@ -4,6 +4,7 @@ import * as RoleRoutes from './role.route'
 import * as AffiliationRoutes from './affiliation.route'
 import * as AffiliationStateRoutes from './affiliation_states.route'
 import * as UserRoutes from './user.route'
+import * as LoginRoutes from './login.route'
 
 export {
     DeparmentRoutes,
@@ -11,5 +12,6 @@ export {
     RoleRoutes,
     AffiliationRoutes,
     AffiliationStateRoutes,
-    UserRoutes
+    UserRoutes,
+    LoginRoutes
 }

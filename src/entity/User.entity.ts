@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTable } from "typeorm"
 import { UserState } from "./UserState.entity"
 import { Department } from "./Department.entity"
 import { Affiliation } from "./Affiliation.entity"
@@ -55,6 +55,7 @@ export class User {
     department: Department
 
     @ManyToMany(()=> Affiliation, (affiliation) => affiliation.users)
+    @JoinTable()
     affiliations: Affiliation[]
 
     @ManyToOne(() => Role, (role) => role.users)
