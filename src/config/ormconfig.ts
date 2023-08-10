@@ -11,6 +11,9 @@ export const AppDataSource = new DataSource({
   //password: process.env.DB_PASSWORD ?? "postgres",
   //database: process.env.DB_NAME ?? "warehouse_dev",
   url: process.env.DATABASE_URL,
+  extra: {
+    ssl: true,
+  },
   synchronize: false,
   logging: false,
   name: "default",
