@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { AppDataSource } from "../config/ormconfig";
-import { User } from "../entity/User.entity";
+import { User } from "../models/user.model";
 import bcrypt from 'bcryptjs';
 import JWT from 'jsonwebtoken'
 

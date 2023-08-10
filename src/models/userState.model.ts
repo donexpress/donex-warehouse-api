@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm"
-import { User } from "./User.entity"
+import { User } from "./user.model"
 
 @Entity()
 export class UserState {
@@ -9,6 +9,6 @@ export class UserState {
     @Column()
     name: string
 
-    @OneToMany(() => User, (user) => user.state) // note: we will create author property in the Photo class below
+    @OneToMany(() => User, (user) => user.state) 
     users: User[]
 }

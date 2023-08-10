@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { AppDataSource } from "../config/ormconfig";
-import { Role } from "../entity/Role.entity";
+import { Role } from "../models/role.model";
 
 export const index = async (req: Request, res: Response) => {
     try {

@@ -1,8 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTable } from "typeorm"
-import { UserState } from "./UserState.entity"
-import { Department } from "./Department.entity"
-import { Affiliation } from "./Affiliation.entity"
-import { Role } from "./Role.entity"
+import { UserState } from "./userState.model"
+import { Departament } from "./departament.model"
+import { Affiliation } from "./affiliation.model"
+import { Role } from "./role.model"
 
 @Entity()
 export class User {
@@ -48,11 +48,20 @@ export class User {
     })
     observations: string
 
+    @Column()
+    stateId: number
+
+    @Column()
+    departamentId: number
+
+    @Column()
+    roleId: number
+
     @ManyToOne(() => UserState, (userState) => userState.users)
     state: UserState
 
-    @ManyToOne(() => Department, (department) => department.users)
-    department: Department
+    @ManyToOne(() => Departament, (department) => department.users)
+    departament: Departament
 
     @ManyToMany(()=> Affiliation, (affiliation) => affiliation.users)
     @JoinTable()

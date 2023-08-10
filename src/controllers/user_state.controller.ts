@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { AppDataSource } from "../config/ormconfig";
-import { UserState } from "../entity/UserState.entity";
+import { UserState } from "../models/userState.model";
 
 export const index = async (req: Request, res: Response) => {
     try {

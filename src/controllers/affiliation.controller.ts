@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { AppDataSource } from "../config/ormconfig";
-import { Affiliation } from "../entity/Affiliation.entity";
+import { Affiliation } from "../models/affiliation.model";
 
 export const index = async (req: Request, res: Response) => {
     try {

@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm"
-import { Affiliation } from "./Affiliation.entity"
+import { Affiliation } from "./affiliation.model"
 
 @Entity()
 export class AffiliationState {
@@ -9,6 +9,6 @@ export class AffiliationState {
     @Column()
     name: string
 
-    @OneToMany(() => Affiliation, (affiliation) => affiliation.state) // note: we will create author property in the Photo class below
+    @OneToMany(() => Affiliation, (affiliation) => affiliation.state) 
     afilliations: Affiliation[]
 }

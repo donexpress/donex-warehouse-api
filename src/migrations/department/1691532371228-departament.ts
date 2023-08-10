@@ -5,7 +5,7 @@ export class Departament1691532371228 implements MigrationInterface {
     await queryRunner
       .createTable(
         new Table({
-          name: "departaments",
+          name: "departament",
           columns: [
             {
               name: "id",
@@ -16,6 +16,18 @@ export class Departament1691532371228 implements MigrationInterface {
             },
             {
               name: "name",
+              type: "varchar",
+              isNullable: true,
+              default: null,
+            },
+            {
+              name: "parent_organization",
+              type: "varchar",
+              isNullable: true,
+              default: null,
+            },
+            {
+              name: "organization_type",
               type: "varchar",
               isNullable: true,
               default: null,
@@ -36,7 +48,7 @@ export class Departament1691532371228 implements MigrationInterface {
       )
       .then(() =>
         queryRunner.createIndex(
-          "departaments",
+          "departament",
           new TableIndex({
             columnNames: ["name"],
           })
@@ -45,6 +57,6 @@ export class Departament1691532371228 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('departaments');
+    await queryRunner.dropTable('departament');
   }
 }

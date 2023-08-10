@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { AppDataSource } from "../config/ormconfig";
-import { User } from "../entity/User.entity";
-import { Affiliation } from "../entity/Affiliation.entity";
+import { User } from "../models/user.model";
+import { Affiliation } from "../models/affiliation.model";
 import bcrypt from 'bcryptjs';
 import { In } from 'typeorm';
 
@@ -61,9 +61,10 @@ export const create = async (req: Request, res: Response) => {
         user_obj.password = bcrypt.hashSync(user_obj.password, isNaN(Number(process.env.PASSWORD_SALT)) ? 10 : Number(process.env.PASSWORD_SALT))
         const user = await repository.create(user_obj);
         await AppDataSource.manager.save(user);
-        user.map(user => delete user.password)
+        // user.map(user => delete user.password)
         res.status(201).json(user);
     } catch(e) {
+        console.log(e)
         res.status(500).send(e);
     }
 }

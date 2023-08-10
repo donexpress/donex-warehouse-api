@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany } from "typeorm"
-import { AffiliationState } from "./AffiliationState.entity"
-import { User } from "./User.entity"
+import { AffiliationState } from "./affiliationState.model"
+import { User } from "./user.model"
 
 @Entity()
 export class Affiliation {
@@ -53,6 +53,9 @@ export class Affiliation {
 
     @Column()
     customer_order_number_rules: string
+    
+    @Column()
+    stateId: number
 
     @ManyToOne(() => AffiliationState, (affiliationState) => affiliationState.afilliations)
     state: AffiliationState
