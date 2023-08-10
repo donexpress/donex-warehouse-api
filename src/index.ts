@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express, { Express } from "express";
+import cors from "cors";
 import morgan from "morgan";
 import { AppDataSource } from "./config/ormconfig";
 import {
@@ -16,6 +17,7 @@ const app: Express = express();
 const PORT = process.env.PORT ?? 3000;
 
 /** Midlewares */
+app.use(cors())
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
