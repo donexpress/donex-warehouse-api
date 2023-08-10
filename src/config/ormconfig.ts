@@ -12,7 +12,7 @@ export const AppDataSource = new DataSource({
   //database: process.env.DB_NAME ?? "warehouse_dev",
   url: process.env.DATABASE_URL,
   extra: {
-    ssl: true,
+    ssl: { rejectUnauthorized: false },
   },
   synchronize: false,
   logging: false,
