@@ -81,8 +81,22 @@ export class Staff {
   @JoinColumn({ name: "organizationId", referencedColumnName: "id" })
   organizations: Organization;
 
+  //@ManyToMany(() => Warehouse, (warehouse) => warehouse.staff)
+  //@JoinTable()
+  //warehouses: Warehouse[];
+
   @ManyToMany(() => Warehouse, (warehouse) => warehouse.staff)
-  @JoinTable()
+  @JoinTable({
+    name: "staff_warehouses_warehouse",
+    joinColumn: {
+      name: "staffId",
+      referencedColumnName: "id",
+    },
+    inverseJoinColumn: {
+      name: "warehouseId",
+      referencedColumnName: "id",
+    },
+  })
   warehouses: Warehouse[];
 
   //@ManyToOne(() => Role, (role) => role.staff)
