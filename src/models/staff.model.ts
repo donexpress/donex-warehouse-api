@@ -74,13 +74,21 @@ export class Staff {
   @JoinColumn({ name: "stateId", referencedColumnName: "id" })
   states: StaffState;
 
-  @ManyToOne(() => Organization, (organization) => organization.staff)
+  //@ManyToOne(() => Organization, (organization) => organization.staff)
+  //organizations: Organization;
+
+  @ManyToOne((type) => Organization, (organization) => organization.staffs)
+  @JoinColumn({ name: "organizationId", referencedColumnName: "id" })
   organizations: Organization;
 
   @ManyToMany(() => Warehouse, (warehouse) => warehouse.staff)
   @JoinTable()
   warehouses: Warehouse[];
 
-  @ManyToOne(() => Role, (role) => role.staff)
+  //@ManyToOne(() => Role, (role) => role.staff)
+  //roles: Role;
+
+  @ManyToOne((type) => Role, (role) => role.staffs)
+  @JoinColumn({ name: "roleId", referencedColumnName: "id" })
   roles: Role;
 }
