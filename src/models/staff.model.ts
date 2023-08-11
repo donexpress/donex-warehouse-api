@@ -1,11 +1,11 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTable } from "typeorm"
-import { UserState } from "./userState.model"
+import { StaffState } from "./staffState.model"
 import { Departament } from "./departament.model"
-import { Affiliation } from "./affiliation.model"
+import { Warehouse } from "./warehouse.model"
 import { Role } from "./role.model"
 
 @Entity()
-export class User {
+export class Staff {
     @PrimaryGeneratedColumn()
     id: number
 
@@ -57,16 +57,16 @@ export class User {
     @Column()
     roleId: number
 
-    @ManyToOne(() => UserState, (userState) => userState.users)
-    state: UserState
+    @ManyToOne(() => StaffState, (staffState) => staffState.staff)
+    states: StaffState
 
-    @ManyToOne(() => Departament, (department) => department.users)
-    departament: Departament
+    @ManyToOne(() => Departament, (department) => department.staff)
+    departaments: Departament
 
-    @ManyToMany(()=> Affiliation, (affiliation) => affiliation.users)
+    @ManyToMany(()=> Warehouse, (warehouse) => warehouse.staff)
     @JoinTable()
-    affiliations: Affiliation[]
+    warehouses: Warehouse[]
 
-    @ManyToOne(() => Role, (role) => role.users)
-    role: Role
+    @ManyToOne(() => Role, (role) => role.staff)
+    roles: Role
 }

@@ -1,14 +1,14 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm"
-import { User } from "./user.model"
+import { Staff } from "./staff.model"
 
 @Entity()
-export class UserState {
+export class StaffState {
     @PrimaryGeneratedColumn()
     id: number
 
     @Column()
     name: string
 
-    @OneToMany(() => User, (user) => user.state) 
-    users: User[]
+    @OneToMany(() => Staff, (staff) => staff.states) 
+    staff: Staff[]
 }

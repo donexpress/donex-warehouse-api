@@ -1,43 +1,43 @@
 import { AppDataSource } from "../config/ormconfig";
-import { User } from "../models/user.model";
-import { Affiliation } from "../models/affiliation.model";
+import { Staff } from "../models/staff.model";
+import { Warehouse } from "../models/warehouse.model";
 import bcrypt from "bcryptjs";
 import { In } from "typeorm";
 import { validate } from "class-validator";
 
-export const listUsers = async (
+export const listStaff = async (
   current_page: number,
   number_of_rows: number
 ) => {
-  const users = await AppDataSource.manager.find(User, {
+  const users = await AppDataSource.manager.find(Staff, {
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
     order: {
       id: "ASC",
     },
-    relations: ["state", "role", "affiliations", "affiliations.state"],
+    relations: ["states", "roles", "warehouses", "warehouses.states"],
   });
   users.map((user) => delete user.password);
   return users;
 };
 
-export const countUsers = async () => {
-  return AppDataSource.manager.count(User);
+export const countStaff = async () => {
+  return AppDataSource.manager.count(Staff);
 };
 
-export const showUser = async (id: number) => {
-  const user = await AppDataSource.manager.findOne(User, {
+export const showStaff = async (id: number) => {
+  const user = await AppDataSource.manager.findOne(Staff, {
     where: { id },
-    relations: ["state", "role", "affiliations", "affiliations.state"],
+    relations: ["states", "roles", "warehouses", "warehouses.states"],
   });
   delete user.password;
   return user;
 };
 
-export const createUser = async (user_data) => {
-  const repository = await AppDataSource.getRepository(User);
+export const createStaff = async (user_data) => {
+  const repository = await AppDataSource.getRepository(Staff);
   const user_obj = user_data;
-  const affiliation_repository = await AppDataSource.getRepository(Affiliation);
+  const affiliation_repository = await AppDataSource.getRepository(Warehouse);
   const affiliation_ref = await affiliation_repository.find({
     where: { id: In(user_obj.affiliations) },
   });
@@ -60,14 +60,14 @@ export const createUser = async (user_data) => {
   }
 };
 
-export const updateUser = async (id: number, user_data) => {
-  const repository = await AppDataSource.getRepository(User);
+export const updateStaff = async (id: number, user_data) => {
+  const repository = await AppDataSource.getRepository(Staff);
   const result = await repository.update({ id }, user_data);
   return result;
 };
 
-export const removeUser = async (id: number) => {
-  const repository = await AppDataSource.getRepository(User);
+export const removeStaff = async (id: number) => {
+  const repository = await AppDataSource.getRepository(Staff);
   const result = await repository.delete({ id });
   return result;
 };

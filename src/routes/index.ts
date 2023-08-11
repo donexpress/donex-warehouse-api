@@ -1,17 +1,17 @@
-import * as DeparmentRoutes from './department.route'
-import * as UserStateRoutes from './user_states.route'
+import * as OrganizationRoutes from './department.route'
+import * as StaffStateRoutes from './staff_states.route'
 import * as RoleRoutes from './role.route'
-import * as AffiliationRoutes from './affiliation.route'
-import * as AffiliationStateRoutes from './affiliation_states.route'
-import * as UserRoutes from './user.route'
+import * as WarehouseRoutes from './warehouse.route'
+import * as WarehouseStateRoutes from './warehouse_states.route'
+import * as StaffRoutes from './staff.route'
 import * as LoginRoutes from './login.route'
 
 export {
-    DeparmentRoutes,
-    UserStateRoutes,
+    OrganizationRoutes,
+    StaffStateRoutes,
     RoleRoutes,
-    AffiliationRoutes,
-    AffiliationStateRoutes,
-    UserRoutes,
+    WarehouseRoutes,
+    WarehouseStateRoutes,
+    StaffRoutes,
     LoginRoutes
 }

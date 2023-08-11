@@ -1,17 +1,17 @@
 import * as DepartmentController from './department.controller';
-import * as UserStateController from './user_state.controller';
+import * as StaffStateController from './staff_state.controller';
 import * as RoleController from './role.controller';
-import * as AffiliationController from './affiliation.controller';
-import * as AffiliationStateController from './affiliationState.controller';
-import * as UserController from './user.controller';
+import * as WarehouseController from './warehouse.controller';
+import * as WarehouseStateController from './warehouseState.controller';
+import * as StaffController from './staff.controller';
 import * as LoginController from './login.controller';
 
 export {
     DepartmentController,
-    UserStateController,
+    StaffStateController,
     RoleController,
-    AffiliationController,
-    AffiliationStateController,
-    UserController,
+    WarehouseController,
+    WarehouseStateController,
+    StaffController,
     LoginController
 }

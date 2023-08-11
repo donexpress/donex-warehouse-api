@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import {
-  countRole,
-  createRole,
-  listRole,
-  removeRole,
-  showRole,
-  updateRole,
-} from "../context/role";
+  countStaffState,
+  createStaffState,
+  listStaffState,
+  removeStaffState,
+  showStaffState,
+  updateStaffState,
+} from "../context/staff_state";
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -15,9 +15,9 @@ export const index = async (req: Request, res: Response) => {
       : 1;
     const number_of_rows = req.query.number_of_rows
       ? Number(req.query.number_of_rows)
-      : await countRole();
-    const roles = await listRole(current_page, number_of_rows);
-    res.json(roles);
+      : await countStaffState();
+    const states = await listStaffState(current_page, number_of_rows);
+    res.json(states);
   } catch (e) {
     res.status(500).send(e);
   }
@@ -25,8 +25,8 @@ export const index = async (req: Request, res: Response) => {
 
 export const show = async (req: Request, res: Response) => {
   try {
-    const role = await showRole(Number(req.params.id));
-    res.json(role);
+    const state = await showStaffState(Number(req.params.id));
+    res.json(state);
   } catch (e) {
     res.status(500).send(e);
   }
@@ -34,7 +34,7 @@ export const show = async (req: Request, res: Response) => {
 
 export const count = async (req: Request, res: Response) => {
   try {
-    const count = await countRole();
+    const count = await countStaffState();
     res.json({ count });
   } catch (e) {
     res.status(500).send(e);
@@ -43,8 +43,8 @@ export const count = async (req: Request, res: Response) => {
 
 export const create = async (req: Request, res: Response) => {
   try {
-    const role = await createRole(req.body);
-    res.status(201).json(role);
+    const state = await createStaffState(req.body);
+    res.status(201).json(state);
   } catch (e) {
     res.status(500).send(e);
   }
@@ -52,7 +52,7 @@ export const create = async (req: Request, res: Response) => {
 
 export const update = async (req: Request, res: Response) => {
   try {
-    const result = await updateRole(Number(req.params.id), req.body);
+    const result = await updateStaffState(Number(req.params.id), req.body);
     res.status(200).json(result);
   } catch (e) {
     res.status(500).send(e);
@@ -61,7 +61,7 @@ export const update = async (req: Request, res: Response) => {
 
 export const remove = async (req: Request, res: Response) => {
   try {
-    const result = await removeRole(Number(req.params.id));
+    const result = await removeStaffState(Number(req.params.id));
     res.status(200).json(result);
   } catch (e) {
     res.status(500).send(e);

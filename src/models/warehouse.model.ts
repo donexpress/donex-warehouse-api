@@ -1,9 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany } from "typeorm"
-import { AffiliationState } from "./affiliationState.model"
-import { User } from "./user.model"
+import { WarehouseState } from "./warehouseState.model"
+import { Staff } from "./staff.model"
 
 @Entity()
-export class Affiliation {
+export class Warehouse {
     @PrimaryGeneratedColumn()
     id: number
 
@@ -57,9 +57,9 @@ export class Affiliation {
     @Column()
     stateId: number
 
-    @ManyToOne(() => AffiliationState, (affiliationState) => affiliationState.afilliations)
-    state: AffiliationState
+    @ManyToOne(() => WarehouseState, (warehouseState) => warehouseState.warehouses)
+    state: WarehouseState
 
-    @ManyToMany(()=> User, (user) => user.affiliations)
-    users: User[]
+    @ManyToMany(()=> Staff, (staff) => staff.warehouses)
+    staff: Staff[]
 }

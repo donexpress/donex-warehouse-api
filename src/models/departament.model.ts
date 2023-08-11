@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm"
-import { User } from "./user.model"
+import { Staff } from "./staff.model"
 
 @Entity()
 export class Departament {
@@ -15,6 +15,6 @@ export class Departament {
     @Column()
     organization_type: string
 
-    @OneToMany(() => User, (user) => user.departament)
-    users: User[]
+    @OneToMany(() => Staff, (staff) => staff.departaments)
+    staff: Staff[]
 }

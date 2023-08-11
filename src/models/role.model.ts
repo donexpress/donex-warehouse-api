@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm"
-import { User } from "./user.model"
+import { Staff } from "./staff.model"
 
 @Entity()
 export class Role {
@@ -9,6 +9,6 @@ export class Role {
     @Column()
     name: string
 
-    @OneToMany(() => User, (user) => user.role) 
-    users: User[]
+    @OneToMany(() => Staff, (staff) => staff.roles) 
+    staff: Staff[]
 }

@@ -4,13 +4,13 @@ import cors from "cors";
 import morgan from "morgan";
 import { AppDataSource } from "./config/ormconfig";
 import {
-  AffiliationRoutes,
-  AffiliationStateRoutes,
-  DeparmentRoutes,
+  WarehouseRoutes,
+  WarehouseStateRoutes,
+  OrganizationRoutes,
   LoginRoutes,
   RoleRoutes,
-  UserRoutes,
-  UserStateRoutes,
+  StaffRoutes,
+  StaffStateRoutes,
 } from "./routes";
 
 const app: Express = express();
@@ -29,13 +29,13 @@ AppDataSource.initialize()
   .catch((error) => console.log(error));
 
 /** Routes */
-app.use("/", DeparmentRoutes.default);
-app.use("/", UserStateRoutes.default);
+app.use("/", OrganizationRoutes.default);
+app.use("/", StaffStateRoutes.default);
 app.use("/", RoleRoutes.default);
-app.use("/", AffiliationRoutes.default);
-app.use("/", AffiliationStateRoutes.default);
-app.use("/", UserStateRoutes.default);
-app.use("/", UserRoutes.default);
+app.use("/", WarehouseRoutes.default);
+app.use("/", WarehouseStateRoutes.default);
+app.use("/", StaffStateRoutes.default);
+app.use("/", StaffRoutes.default);
 app.use("/", LoginRoutes.default);
 
 app.get("/api/v1", (req, res) => res.sendStatus(200));
