@@ -1,13 +1,13 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex, TableForeignKey } from "typeorm";
 
 
-export class CreateAffiliationTable1691674075217 implements MigrationInterface {
+export class CreateWarehouseTable1691674575218 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner
             .createTable(
                 new Table({
-                    name: "affiliation",
+                    name: "warehouses",
                     columns: [
                         {
                             name: "id",
@@ -111,16 +111,22 @@ export class CreateAffiliationTable1691674075217 implements MigrationInterface {
             )
             .then(() => {
                 queryRunner.createIndex(
-                    "affiliation",
+                    "warehouses",
                     new TableIndex({
                         columnNames: ["name"],
                     })
                 )
+                queryRunner.createIndex(
+                    "warehouses",
+                    new TableIndex({
+                        columnNames: ["receiving_area"],
+                    })
+                )
                 queryRunner.createForeignKey(
-                    "affiliation",
+                    "warehouses",
                     new TableForeignKey({
                         columnNames: ['stateId'],
-                        referencedTableName: 'affiliation_state',
+                        referencedTableName: 'warehouses_states',
                         referencedColumnNames: ['id']
                     })
                 )
@@ -128,7 +134,7 @@ export class CreateAffiliationTable1691674075217 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable('affiliation');
+        await queryRunner.dropTable('warehouses');
     }
 
 }

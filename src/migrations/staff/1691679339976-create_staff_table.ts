@@ -1,12 +1,12 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex, TableForeignKey } from "typeorm"
 
-export class CreateUserTable1691679339976 implements MigrationInterface {
+export class CreateStaffTable1691679339976 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner
             .createTable(
                 new Table({
-                    name: "user",
+                    name: "staff",
                     columns: [
                         {
                             name: "id",
@@ -85,33 +85,33 @@ export class CreateUserTable1691679339976 implements MigrationInterface {
             )
             .then(() =>{
                 queryRunner.createIndex(
-                    "user",
+                    "staff",
                     new TableIndex({
                         columnNames: ["username"],
                     })
                 )
                 queryRunner.createForeignKey(
-                    "user",
+                    "staff",
                     new TableForeignKey({
                         columnNames: ['stateId'],
-                        referencedTableName: 'user_state',
+                        referencedTableName: 'staff_states',
                         referencedColumnNames: ['id']
                     })
                 )
 
                 queryRunner.createForeignKey(
-                    "user",
+                    "staff",
                     new TableForeignKey({
                         columnNames: ['departamentId'],
-                        referencedTableName: 'departament',
+                        referencedTableName: 'departaments',
                         referencedColumnNames: ['id']
                     })
                 )
                 queryRunner.createForeignKey(
-                    "user",
+                    "staff",
                     new TableForeignKey({
                         columnNames: ['roleId'],
-                        referencedTableName: 'role',
+                        referencedTableName: 'roles',
                         referencedColumnNames: ['id']
                     })
                 )
@@ -119,7 +119,7 @@ export class CreateUserTable1691679339976 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable('user');
+        await queryRunner.dropTable('staff');
     }
 
 }

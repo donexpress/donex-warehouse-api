@@ -1,15 +1,15 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex, TableForeignKey } from "typeorm"
 
-export class CreateDepartmentUserTable1691679775756 implements MigrationInterface {
+export class CreateDepartmentStaffTable1691679775756 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner
             .createTable(
                 new Table({
-                    name: "departament_user",
+                    name: "departaments_staff",
                     columns: [
                         {
-                            name: "userId",
+                            name: "staffId",
                             type: "integer",
                             isPrimary: true,
                         },
@@ -35,24 +35,24 @@ export class CreateDepartmentUserTable1691679775756 implements MigrationInterfac
             )
             .then(() => {
                 queryRunner.createIndex(
-                    "departament_user",
+                    "departaments_staff",
                     new TableIndex({
-                        columnNames: ["userId"],
+                        columnNames: ["staffId"],
                     })
                 )
                 queryRunner.createForeignKey(
-                    "departament_user",
+                    "departaments_staff",
                     new TableForeignKey({
-                        columnNames: ['userId'],
-                        referencedTableName: 'user',
+                        columnNames: ['staffId'],
+                        referencedTableName: 'staff',
                         referencedColumnNames: ['id']
                     })
                 )
                 queryRunner.createForeignKey(
-                    "departament_user",
+                    "departaments_staff",
                     new TableForeignKey({
                         columnNames: ['departamentId'],
-                        referencedTableName: 'departament',
+                        referencedTableName: 'departaments',
                         referencedColumnNames: ['id']
                     })
                 )
@@ -60,7 +60,7 @@ export class CreateDepartmentUserTable1691679775756 implements MigrationInterfac
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable('departament_user');
+        await queryRunner.dropTable('departaments_staff');
     }
 
 }

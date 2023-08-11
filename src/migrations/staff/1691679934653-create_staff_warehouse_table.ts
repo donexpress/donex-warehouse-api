@@ -1,12 +1,12 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex, TableForeignKey } from "typeorm"
 
-export class CreateUserAffiliationTable1691679934653 implements MigrationInterface {
+export class CreateStaffWarehouseTable1691679934653 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner
             .createTable(
                 new Table({
-                    name: "user_affiliations_affiliation",
+                    name: "staff_warehouses_warehouse",
                     columns: [
                         {
                             name: "userId",
@@ -14,7 +14,7 @@ export class CreateUserAffiliationTable1691679934653 implements MigrationInterfa
                             isPrimary: true,
                         },
                         {
-                            name: "affiliationId",
+                            name: "warehouseId",
                             type: "integer",
                             isPrimary: true,
                         },
@@ -35,26 +35,26 @@ export class CreateUserAffiliationTable1691679934653 implements MigrationInterfa
             )
             .then(() => {
                 queryRunner.createIndex(
-                    "user_affiliations_affiliation",
+                    "staff_warehouses_warehouse",
                     new TableIndex({
-                        columnNames: ["userId"],
+                        columnNames: ["staffId"],
                     })
                 )
                 queryRunner.createForeignKey(
-                    "user_affiliations_affiliation",
+                    "staff_warehouses_warehouse",
                     new TableForeignKey({
-                        name: 'user',
-                        columnNames: ['userId'],
-                        referencedTableName: 'user',
+                        name: 'staff',
+                        columnNames: ['staffId'],
+                        referencedTableName: 'staff',
                         referencedColumnNames: ['id']
                     })
                 )
                 queryRunner.createForeignKey(
-                    "user_affiliations_affiliation",
+                    "staff_warehouses_warehouse",
                     new TableForeignKey({
-                        name: 'affiliation',
-                        columnNames: ['affiliationId'],
-                        referencedTableName: 'affiliation',
+                        name: 'warehouses',
+                        columnNames: ['warehouseId'],
+                        referencedTableName: 'warehouses',
                         referencedColumnNames: ['id']
                     })
                 )
@@ -62,7 +62,7 @@ export class CreateUserAffiliationTable1691679934653 implements MigrationInterfa
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable('user_affiliations_affiliation');
+        await queryRunner.dropTable('staff_warehouses_warehouse');
     }
 
 }

@@ -5,7 +5,7 @@ export class Departament1691532371228 implements MigrationInterface {
     await queryRunner
       .createTable(
         new Table({
-          name: "departament",
+          name: "departaments",
           columns: [
             {
               name: "id",
@@ -48,7 +48,7 @@ export class Departament1691532371228 implements MigrationInterface {
       )
       .then(() =>
         queryRunner.createIndex(
-          "departament",
+          "departaments",
           new TableIndex({
             columnNames: ["name"],
           })
@@ -57,6 +57,6 @@ export class Departament1691532371228 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('departament');
+    await queryRunner.dropTable('departaments');
   }
 }

@@ -6,7 +6,7 @@ export class CreateRoleTable1691675860408 implements MigrationInterface {
         await queryRunner
         .createTable(
             new Table({
-                name: "role",
+                name: "roles",
                 columns: [
                     {
                         name: "id",
@@ -36,7 +36,7 @@ export class CreateRoleTable1691675860408 implements MigrationInterface {
         )
         .then(() => 
             queryRunner.createIndex(
-                "role",
+                "roles",
                 new TableIndex({
                     columnNames: ["name"],
                 })
@@ -45,7 +45,7 @@ export class CreateRoleTable1691675860408 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable('role');
+        await queryRunner.dropTable('roles');
     }
 
 }

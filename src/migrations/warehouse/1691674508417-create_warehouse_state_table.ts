@@ -1,12 +1,12 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from "typeorm";
 
-export class CreateAffiliationStateTable1691674508418 implements MigrationInterface {
+export class CreateWarehouseStateTable1691674508417 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner
         .createTable(
           new Table({
-            name: "affiliation_state",
+            name: "warehouses_states",
             columns: [
               {
                 name: "id",
@@ -37,7 +37,7 @@ export class CreateAffiliationStateTable1691674508418 implements MigrationInterf
         )
         .then(() =>
           queryRunner.createIndex(
-            "affiliation_state",
+            "warehouses_states",
             new TableIndex({
               columnNames: ["name"],
             })
@@ -46,7 +46,7 @@ export class CreateAffiliationStateTable1691674508418 implements MigrationInterf
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-      await queryRunner.dropTable('affiliation_state');
+      await queryRunner.dropTable('warehouses_states');
     }
 
 }
