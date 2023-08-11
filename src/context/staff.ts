@@ -15,7 +15,7 @@ export const listStaff = async (
     order: {
       id: "ASC",
     },
-    relations: ["states", "roles"],
+    relations: ["states", "roles", "organizations"],
   });
   users.map((user) => delete user.password);
   return users;
@@ -28,7 +28,7 @@ export const countStaff = async () => {
 export const showStaff = async (id: number) => {
   const user = await AppDataSource.manager.findOne(Staff, {
     where: { id },
-    relations: ["states", "roles"],
+    relations: ["states", "roles", "organizations"],
   });
   delete user.password;
   return user;
