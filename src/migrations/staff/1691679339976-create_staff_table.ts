@@ -60,7 +60,7 @@ export class CreateStaffTable1691679339976 implements MigrationInterface {
                             isNullable: false,
                         },
                         {
-                            name: "departamentId",
+                            name: "organizationId",
                             type: "integer",
                             isNullable: false,
                         },
@@ -102,8 +102,8 @@ export class CreateStaffTable1691679339976 implements MigrationInterface {
                 queryRunner.createForeignKey(
                     "staff",
                     new TableForeignKey({
-                        columnNames: ['departamentId'],
-                        referencedTableName: 'departaments',
+                        columnNames: ['organizationId'],
+                        referencedTableName: 'organizations',
                         referencedColumnNames: ['id']
                     })
                 )

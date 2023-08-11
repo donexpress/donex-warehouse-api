@@ -6,7 +6,7 @@ import {
   removeDepataments,
   showDepataments,
   updateDepataments,
-} from "../context/departament";
+} from "../context/organization";
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -16,8 +16,8 @@ export const index = async (req: Request, res: Response) => {
     const number_of_rows = req.query.number_of_rows
       ? Number(req.query.number_of_rows)
       : await countDepataments();
-    const departments = await listDepataments(current_page, number_of_rows);
-    res.json(departments);
+    const organization = await listDepataments(current_page, number_of_rows);
+    res.json(organization);
   } catch (e) {
     res.status(500).send(e);
   }
@@ -25,8 +25,8 @@ export const index = async (req: Request, res: Response) => {
 
 export const show = async (req: Request, res: Response) => {
   try {
-    const department = await showDepataments(Number(req.params.id));
-    res.json(department);
+    const organization = await showDepataments(Number(req.params.id));
+    res.json(organization);
   } catch (e) {
     res.status(500).send(e);
   }
@@ -43,8 +43,8 @@ export const count = async (req: Request, res: Response) => {
 
 export const create = async (req: Request, res: Response) => {
   try {
-    const department = createDepataments(req.body);
-    res.status(201).json(department);
+    const organization = createDepataments(req.body);
+    res.status(201).json(organization);
   } catch (e) {
     res.status(500).send(e);
   }

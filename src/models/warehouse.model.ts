@@ -1,8 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, Index } from "typeorm"
 import { WarehouseState } from "./warehouseState.model"
 import { Staff } from "./staff.model"
 
-@Entity()
+@Index(['name', 'receiving_area'])
+@Entity({ name: 'warehouses' })
 export class Warehouse {
     @PrimaryGeneratedColumn()
     id: number

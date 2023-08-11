@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, Index } from "typeorm"
 import { Staff } from "./staff.model"
 
-@Entity()
+@Index(['name'])
+@Entity({ name: 'staff_states' })
 export class StaffState {
     @PrimaryGeneratedColumn()
     id: number

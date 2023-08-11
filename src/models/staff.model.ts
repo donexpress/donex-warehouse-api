@@ -1,10 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTable } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTable, Index } from "typeorm"
 import { StaffState } from "./staffState.model"
-import { Departament } from "./departament.model"
+import { Organization } from "./organization.model"
 import { Warehouse } from "./warehouse.model"
 import { Role } from "./role.model"
 
-@Entity()
+@Index(['name', 'stateId', 'organizationId', 'stateId'])
+@Entity({ name: 'staff' })
 export class Staff {
     @PrimaryGeneratedColumn()
     id: number
@@ -52,7 +53,7 @@ export class Staff {
     stateId: number
 
     @Column()
-    departamentId: number
+    organizationId: number
 
     @Column()
     roleId: number
@@ -60,8 +61,8 @@ export class Staff {
     @ManyToOne(() => StaffState, (staffState) => staffState.staff)
     states: StaffState
 
-    @ManyToOne(() => Departament, (department) => department.staff)
-    departaments: Departament
+    @ManyToOne(() => Organization, (organization) => organization.staff)
+    organizations: Organization
 
     @ManyToMany(()=> Warehouse, (warehouse) => warehouse.staff)
     @JoinTable()

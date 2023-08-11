@@ -9,7 +9,7 @@ export class CreateStaffWarehouseTable1691679934653 implements MigrationInterfac
                     name: "staff_warehouses_warehouse",
                     columns: [
                         {
-                            name: "userId",
+                            name: "staffId",
                             type: "integer",
                             isPrimary: true,
                         },

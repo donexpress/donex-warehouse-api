@@ -1,4 +1,4 @@
-import * as DepartmentController from './department.controller';
+import * as DepartmentController from './organization.controller';
 import * as StaffStateController from './staff_state.controller';
 import * as RoleController from './role.controller';
 import * as WarehouseController from './warehouse.controller';

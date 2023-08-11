@@ -1,8 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, Index } from "typeorm"
 import { Staff } from "./staff.model"
 
-@Entity()
-export class Departament {
+@Index(['name'])
+@Entity({ name: 'organizations' })
+export class Organization {
     @PrimaryGeneratedColumn()
     id: number
 
@@ -15,6 +16,6 @@ export class Departament {
     @Column()
     organization_type: string
 
-    @OneToMany(() => Staff, (staff) => staff.departaments)
+    @OneToMany(() => Staff, (staff) => staff.organizations)
     staff: Staff[]
 }

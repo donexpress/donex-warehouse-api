@@ -6,7 +6,7 @@ export class CreateDepartmentStaffTable1691679775756 implements MigrationInterfa
         await queryRunner
             .createTable(
                 new Table({
-                    name: "departaments_staff",
+                    name: "organizations_staff",
                     columns: [
                         {
                             name: "staffId",
@@ -14,7 +14,7 @@ export class CreateDepartmentStaffTable1691679775756 implements MigrationInterfa
                             isPrimary: true,
                         },
                         {
-                            name: "departamentId",
+                            name: "organizationId",
                             type: "integer",
                             isPrimary: true,
                         },
@@ -35,13 +35,13 @@ export class CreateDepartmentStaffTable1691679775756 implements MigrationInterfa
             )
             .then(() => {
                 queryRunner.createIndex(
-                    "departaments_staff",
+                    "organizations_staff",
                     new TableIndex({
                         columnNames: ["staffId"],
                     })
                 )
                 queryRunner.createForeignKey(
-                    "departaments_staff",
+                    "organizations_staff",
                     new TableForeignKey({
                         columnNames: ['staffId'],
                         referencedTableName: 'staff',
@@ -49,10 +49,10 @@ export class CreateDepartmentStaffTable1691679775756 implements MigrationInterfa
                     })
                 )
                 queryRunner.createForeignKey(
-                    "departaments_staff",
+                    "organizations_staff",
                     new TableForeignKey({
-                        columnNames: ['departamentId'],
-                        referencedTableName: 'departaments',
+                        columnNames: ['organizationId'],
+                        referencedTableName: 'organizations',
                         referencedColumnNames: ['id']
                     })
                 )
@@ -60,7 +60,7 @@ export class CreateDepartmentStaffTable1691679775756 implements MigrationInterfa
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable('departaments_staff');
+        await queryRunner.dropTable('organizations_staff');
     }
 
 }
