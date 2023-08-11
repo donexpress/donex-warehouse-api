@@ -10,6 +10,6 @@ export class WarehouseState {
     @Column()
     name: string
 
-    @OneToMany(() => Warehouse, (warehouse) => warehouse.state) 
+    @OneToMany(() => Warehouse, (warehouse) => warehouse.states) 
     warehouses: Warehouse[]
 }

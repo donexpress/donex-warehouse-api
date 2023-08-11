@@ -1,15 +1,26 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, Index } from "typeorm"
-import { Staff } from "./staff.model"
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  Index,
+  JoinColumn,
+} from "typeorm";
+import { Staff } from "./staff.model";
 
-@Index(['name'])
-@Entity({ name: 'staff_states' })
+@Index(["name"])
+@Entity({ name: "staff_states" })
 export class StaffState {
-    @PrimaryGeneratedColumn()
-    id: number
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    name: string
+  @Column()
+  name: string;
 
-    @OneToMany(() => Staff, (staff) => staff.states) 
-    staff: Staff[]
+  //@OneToMany(() => Staff, (staff) => staff.states)
+  //staff: Staff[]
+
+  @OneToMany((type) => Staff, (staff) => staff.states)
+  @JoinColumn({ referencedColumnName: "stateId " })
+  staffs: Staff[];
 }

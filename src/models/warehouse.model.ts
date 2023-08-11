@@ -59,7 +59,7 @@ export class Warehouse {
     stateId: number
 
     @ManyToOne(() => WarehouseState, (warehouseState) => warehouseState.warehouses)
-    state: WarehouseState
+    states: WarehouseState
 
     @ManyToMany(()=> Staff, (staff) => staff.warehouses)
     staff: Staff[]
