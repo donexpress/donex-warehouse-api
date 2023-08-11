@@ -62,7 +62,7 @@ export class CreateUserAffiliationTable1691679934653 implements MigrationInterfa
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable('user_affiliation');
+        await queryRunner.dropTable('user_affiliations_affiliation');
     }
 
 }
