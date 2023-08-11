@@ -4,7 +4,7 @@ import { Organization } from "./organization.model"
 import { Warehouse } from "./warehouse.model"
 import { Role } from "./role.model"
 
-@Index(['name', 'stateId', 'organizationId', 'stateId'])
+@Index(['username', 'stateId', 'organizationId', 'stateId'])
 @Entity({ name: 'staff' })
 export class Staff {
     @PrimaryGeneratedColumn()
