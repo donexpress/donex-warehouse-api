@@ -76,9 +76,6 @@ export class Warehouse {
   @JoinColumn({ name: "stateId", referencedColumnName: "id" })
   states: WarehouseState;
 
-  //@ManyToMany(() => Staff, (staff) => staff.warehouses)
-  //staff: Staff[];
-
-  @ManyToMany("Staff", (staff: Staff) => staff.id)
-  Staff: Staff
+  @ManyToMany(() => Staff, (staff) => staff.warehouses)
+  staff: Staff[];
 }
