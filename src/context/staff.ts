@@ -37,11 +37,11 @@ export const showStaff = async (id: number) => {
 export const createStaff = async (user_data) => {
   const repository = await AppDataSource.getRepository(Staff);
   const user_obj = user_data;
-  const affiliation_repository = await AppDataSource.getRepository(Warehouse);
-  const affiliation_ref = await affiliation_repository.find({
+  const warehouse_repository = await AppDataSource.getRepository(Warehouse);
+  const warehouse_ref = await warehouse_repository.find({
     where: { id: In(user_obj.affiliations) },
   });
-  user_obj.affiliations = affiliation_ref;
+  user_obj.affiliations = warehouse_ref;
   user_obj.password = bcrypt.hashSync(
     user_obj.password,
     isNaN(Number(process.env.PASSWORD_SALT))

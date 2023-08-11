@@ -1,66 +1,81 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, Index } from "typeorm"
-import { WarehouseState } from "./warehouseState.model"
-import { Staff } from "./staff.model"
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  ManyToMany,
+  Index,
+  JoinColumn,
+} from "typeorm";
+import { WarehouseState } from "./warehouseState.model";
+import { Staff } from "./staff.model";
 
-@Index(['name', 'receiving_area'])
-@Entity({ name: 'warehouses' })
+@Index(["name", "receiving_area"])
+@Entity({ name: "warehouses" })
 export class Warehouse {
-    @PrimaryGeneratedColumn()
-    id: number
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({
-        nullable: false
-    })
-    name: string
+  @Column({
+    nullable: false,
+  })
+  name: string;
 
-    @Column({
-        nullable: false
-    })
-    english_name: string
+  @Column({
+    nullable: false,
+  })
+  english_name: string;
 
-    @Column({
-        nullable: false
-    })
-    receiving_area: string
+  @Column({
+    nullable: false,
+  })
+  receiving_area: string;
 
-    @Column({
-        nullable: false
-    })
-    principal: string
+  @Column({
+    nullable: false,
+  })
+  principal: string;
 
-    @Column()
-    contact_phone: string
+  @Column()
+  contact_phone: string;
 
-    @Column()
-    address: string
+  @Column()
+  address: string;
 
-    @Column()
-    city: string
-    
-    @Column()
-    province: string
+  @Column()
+  city: string;
 
-    @Column()
-    country: string
+  @Column()
+  province: string;
 
-    @Column()
-    cp: string
+  @Column()
+  country: string;
 
-    @Column()
-    shared_warehouse_system_code: string
+  @Column()
+  cp: string;
 
-    @Column()
-    shared_warehouse_docking_code: string
+  @Column()
+  shared_warehouse_system_code: string;
 
-    @Column()
-    customer_order_number_rules: string
-    
-    @Column()
-    stateId: number
+  @Column()
+  shared_warehouse_docking_code: string;
 
-    @ManyToOne(() => WarehouseState, (warehouseState) => warehouseState.warehouses)
-    states: WarehouseState
+  @Column()
+  customer_order_number_rules: string;
 
-    @ManyToMany(()=> Staff, (staff) => staff.warehouses)
-    staff: Staff[]
+  @Column()
+  stateId: number;
+
+  //@ManyToOne(() => WarehouseState, (warehouseState) => warehouseState.warehouses)
+  //states: WarehouseState
+
+  @ManyToOne(
+    (type) => WarehouseState,
+    (warehouseState) => warehouseState.staffs
+  )
+  @JoinColumn({ name: "stateId", referencedColumnName: "id" })
+  states: WarehouseState;
+
+  @ManyToMany(() => Staff, (staff) => staff.warehouses)
+  staff: Staff[];
 }
