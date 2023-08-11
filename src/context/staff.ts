@@ -29,7 +29,7 @@ export const countStaff = async () => {
 export const showStaff = async (id: number) => {
   const user = await AppDataSource.manager.findOne(Staff, {
     where: { id },
-    relations: ["states", "roles", "organizations"],
+    relations: ["states", "roles", "organizations", "warehouses"],
   });
   delete user.password;
   return user;
