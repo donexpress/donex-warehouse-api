@@ -15,7 +15,7 @@ export const listStaff = async (
     order: {
       id: "ASC",
     },
-    relations: ["states", "roles", "organizations", "staff_warehouses_warehouse"],
+    relations: ["states", "roles", "organizations"],
   });
   users.map((user) => delete user.password);
   return users;
