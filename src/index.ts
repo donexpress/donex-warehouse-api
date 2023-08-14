@@ -11,6 +11,9 @@ import {
   RoleRoutes,
   StaffRoutes,
   StaffStateRoutes,
+  PaymentMethodRoutes,
+  ServiceRoutes,
+  UserLevelRoutes,
 } from "./routes";
 
 const app: Express = express();
@@ -37,6 +40,9 @@ app.use("/", WarehouseStateRoutes.default);
 app.use("/", StaffStateRoutes.default);
 app.use("/", StaffRoutes.default);
 app.use("/", LoginRoutes.default);
+app.use("/", PaymentMethodRoutes.default);
+app.use("/", ServiceRoutes.default);
+app.use("/", UserLevelRoutes.default);
 
 app.get("/api/v1", (req, res) => res.sendStatus(200));
 

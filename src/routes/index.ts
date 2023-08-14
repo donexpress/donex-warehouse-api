@@ -5,6 +5,9 @@ import * as WarehouseRoutes from './warehouse.route'
 import * as WarehouseStateRoutes from './warehouse_state.route'
 import * as StaffRoutes from './staff.route'
 import * as LoginRoutes from './login.route'
+import * as PaymentMethodRoutes from './payment_method.route'
+import * as ServiceRoutes from './service.route'
+import * as UserLevelRoutes from './user_level.route'
 
 export {
     OrganizationRoutes,
@@ -13,5 +16,8 @@ export {
     WarehouseRoutes,
     WarehouseStateRoutes,
     StaffRoutes,
-    LoginRoutes
+    LoginRoutes,
+    PaymentMethodRoutes,
+    ServiceRoutes,
+    UserLevelRoutes
 }

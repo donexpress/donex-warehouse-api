@@ -5,6 +5,9 @@ import * as WarehouseController from './warehouse.controller';
 import * as WarehouseStateController from './warehouseState.controller';
 import * as StaffController from './staff.controller';
 import * as LoginController from './login.controller';
+import * as PaymentMethodController from './payment_method.controller';
+import * as ServiceController from './service.controller';
+import * as UserLevelController from './user_level.controller';
 
 export {
     DepartmentController,
@@ -13,5 +16,8 @@ export {
     WarehouseController,
     WarehouseStateController,
     StaffController,
-    LoginController
+    LoginController,
+    PaymentMethodController,
+    ServiceController,
+    UserLevelController
 }
