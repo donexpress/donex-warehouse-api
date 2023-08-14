@@ -7,11 +7,13 @@ import {
   JoinTable,
   Index,
   JoinColumn,
+  OneToMany,
 } from "typeorm";
 import { StaffState } from "./staffState.model";
 import { Organization } from "./organization.model";
 import { Warehouse } from "./warehouse.model";
 import { Role } from "./role.model";
+import { User } from "./user.model";
 
 @Index(["username"])
 @Entity({ name: "staff" })
@@ -105,4 +107,20 @@ export class Staff {
   @ManyToOne((type) => Role, (role) => role.staffs)
   @JoinColumn({ name: "roleId", referencedColumnName: "id" })
   roles: Role;
+
+  @OneToMany((type) => User, (user) => user.finantial_representatives)
+  @JoinColumn({ referencedColumnName: "finantial_representative " })
+  finantial_representatives: User[];
+
+  @OneToMany((type) => User, (user) => user.client_service_representatives)
+  @JoinColumn({ referencedColumnName: "client_service_representative " })
+  client_service_representative: User[];
+
+  @OneToMany((type) => User, (user) => user.sales_representatives)
+  @JoinColumn({ referencedColumnName: "sales_representative " })
+  sales_representatives: User[];
+
+  @OneToMany((type) => User, (user) => user.sales_representatives)
+  @JoinColumn({ referencedColumnName: "sales_source " })
+  sales_sources: User[];
 }

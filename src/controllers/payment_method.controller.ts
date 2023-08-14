@@ -10,7 +10,7 @@ export const index = async (req: Request, res: Response) => {
             ? Number(req.query.number_of_rows)
             : await countPaymentMethods();
         const query = req.query.query;
-        const organization = await listPaymentMethods(current_page, number_of_rows, String(query));
+        const organization = await listPaymentMethods(current_page, number_of_rows, query == undefined ? '' : String(query));
         res.json(organization);
     } catch (e) {
         res.status(500).send(e);

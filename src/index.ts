@@ -14,6 +14,10 @@ import {
   PaymentMethodRoutes,
   ServiceRoutes,
   UserLevelRoutes,
+  RegionalDivisionRoutes,
+  SubsidiaryRoutes,
+  UserStateRoutes,
+  UserRoutes,
 } from "./routes";
 
 const app: Express = express();
@@ -43,6 +47,10 @@ app.use("/", LoginRoutes.default);
 app.use("/", PaymentMethodRoutes.default);
 app.use("/", ServiceRoutes.default);
 app.use("/", UserLevelRoutes.default);
+app.use("/", RegionalDivisionRoutes.default);
+app.use("/", SubsidiaryRoutes.default);
+app.use("/", UserStateRoutes.default);
+app.use("/", UserRoutes.default);
 
 app.get("/api/v1", (req, res) => res.sendStatus(200));
 

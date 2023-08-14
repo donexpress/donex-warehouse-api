@@ -6,9 +6,11 @@ import {
   ManyToMany,
   Index,
   JoinColumn,
+  OneToMany,
 } from "typeorm";
 import { WarehouseState } from "./warehouseState.model";
 import { Staff } from "./staff.model";
+import { User } from "./user.model";
 
 @Index(["name", "receiving_area"])
 @Entity({ name: "warehouses" })
@@ -78,4 +80,8 @@ export class Warehouse {
 
   @ManyToMany(() => Staff, (staff) => staff.warehouses)
   staff: Staff[];
+
+  @OneToMany((type) => User, (user) => user.warehouses)
+  @JoinColumn({ referencedColumnName: "warehouse_id " })
+  users: User[];
 }

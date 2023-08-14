@@ -8,6 +8,10 @@ import * as LoginRoutes from './login.route'
 import * as PaymentMethodRoutes from './payment_method.route'
 import * as ServiceRoutes from './service.route'
 import * as UserLevelRoutes from './user_level.route'
+import * as RegionalDivisionRoutes from './regional_division.route'
+import * as SubsidiaryRoutes from './subsidiary.route'
+import * as UserStateRoutes from './user_state.route'
+import * as UserRoutes from './user.route'
 
 export {
     OrganizationRoutes,
@@ -19,5 +23,9 @@ export {
     LoginRoutes,
     PaymentMethodRoutes,
     ServiceRoutes,
-    UserLevelRoutes
+    UserLevelRoutes,
+    RegionalDivisionRoutes,
+    SubsidiaryRoutes,
+    UserStateRoutes,
+    UserRoutes
 }

@@ -24,3 +24,4 @@ export class WarehouseState {
   @JoinColumn({ referencedColumnName: "stateId " })
   staffs: Warehouse[];
 }
+ 
