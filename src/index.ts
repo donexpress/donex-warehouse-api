@@ -18,6 +18,7 @@ import {
   SubsidiaryRoutes,
   UserStateRoutes,
   UserRoutes,
+  HomeRoutes,
 } from "./routes";
 
 const app: Express = express();
@@ -51,6 +52,7 @@ app.use("/", RegionalDivisionRoutes.default);
 app.use("/", SubsidiaryRoutes.default);
 app.use("/", UserStateRoutes.default);
 app.use("/", UserRoutes.default);
+app.use("/", HomeRoutes.default);
 
 app.get("/api/v1", (req, res) => res.sendStatus(200));
 

@@ -12,6 +12,7 @@ import * as RegionalDivisionController from './regional_division.controller';
 import * as SubsidiaryController from './subsidiary.controller';
 import * as UserStateController from './user_state.controller';
 import * as UserController from './user.controller';
+import * as HomeController from './home.controller';
 
 export {
     DepartmentController,
@@ -27,5 +28,6 @@ export {
     RegionalDivisionController,
     SubsidiaryController,
     UserStateController,
-    UserController
+    UserController,
+    HomeController
 }

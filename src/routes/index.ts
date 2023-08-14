@@ -12,6 +12,7 @@ import * as RegionalDivisionRoutes from './regional_division.route'
 import * as SubsidiaryRoutes from './subsidiary.route'
 import * as UserStateRoutes from './user_state.route'
 import * as UserRoutes from './user.route'
+import * as HomeRoutes from './home.route'
 
 export {
     OrganizationRoutes,
@@ -27,5 +28,6 @@ export {
     RegionalDivisionRoutes,
     SubsidiaryRoutes,
     UserStateRoutes,
-    UserRoutes
+    UserRoutes,
+    HomeRoutes
 }
