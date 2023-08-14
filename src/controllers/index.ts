@@ -8,6 +8,7 @@ import * as LoginController from './login.controller';
 import * as PaymentMethodController from './payment_method.controller';
 import * as ServiceController from './service.controller';
 import * as UserLevelController from './user_level.controller';
+import * as HomeController from './home.controller';
 
 export {
     DepartmentController,
@@ -19,5 +20,6 @@ export {
     LoginController,
     PaymentMethodController,
     ServiceController,
-    UserLevelController
+    UserLevelController,
+    HomeController
 }
