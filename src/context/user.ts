@@ -25,7 +25,9 @@ const user_relations = [
   "sales_sources",
   "sales_sources.states",
   "sales_sources.organizations",
-  "sales_sources.warehouses"
+  "sales_sources.warehouses",
+  "payment_methods",
+  "user_level"
 ]
 
 export const listUser = async (
@@ -41,7 +43,13 @@ export const listUser = async (
     relations: user_relations,
   });
   console.log(users);
-  users.map((user) => delete user.password);
+  users.map((user) => {
+    delete user.password
+    delete user.client_service_representatives.password
+    delete user.sales_representatives.password
+    delete user.finantial_representatives.password
+    delete user.sales_sources.password
+  });
   return users;
 };
 
@@ -55,6 +63,10 @@ export const showUser = async (id: number) => {
     relations: user_relations,
   });
   delete user.password;
+  delete user.client_service_representatives.password
+  delete user.sales_representatives.password
+  delete user.finantial_representatives.password
+  delete user.sales_sources.password
   return user;
 };
 

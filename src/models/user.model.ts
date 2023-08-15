@@ -11,6 +11,8 @@ import { Staff } from "./staff.model";
 import { Subsidiary } from "./subsidiary.model";
 import { RegionalDivision } from "./regionalDivision.model";
 import { Warehouse } from "./warehouse.model";
+import { UserLevel } from "./user_level.model";
+import { PaymentMethod } from "./paymentMethod.model";
 
 @Index(["username"])
 @Entity({ name: "users" })
@@ -83,6 +85,12 @@ export class User {
     
     @Column()
     reset_password: boolean
+
+    @Column()
+    user_level_id: number
+
+    @Column()
+    payment_method_id: number
     
 
     @ManyToOne((type) => UserState, (state) => state.users)
@@ -116,5 +124,13 @@ export class User {
     @ManyToOne((type) => Warehouse, (warehouse) => warehouse.users)
     @JoinColumn({ name: "warehouse_id", referencedColumnName: "id" })
     warehouses: RegionalDivision;
+
+    @ManyToOne((type) => UserLevel, (user_level) => user_level.users)
+    @JoinColumn({ name: "user_level_id", referencedColumnName: "id" })
+    user_level: UserLevel;
+
+    @ManyToOne((type) => PaymentMethod, (payment_method) => payment_method.users)
+    @JoinColumn({ name: "payment_method_id", referencedColumnName: "id" })
+    payment_methods: PaymentMethod;
 
 }

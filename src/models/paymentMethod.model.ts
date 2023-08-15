@@ -3,7 +3,10 @@ import {
     PrimaryGeneratedColumn,
     Column,
     Index,
+    OneToMany,
+    JoinColumn,
   } from "typeorm";
+import { User } from "./user.model";
   
   @Index(["name"])
   @Entity({ name: "payment_methods" })
@@ -17,5 +20,8 @@ import {
     @Column()
     name: string;
   
+    @OneToMany((type) => User, (user) => user.states)
+    @JoinColumn({ referencedColumnName: "payment_method_id " })
+    users: User[];
   }
   

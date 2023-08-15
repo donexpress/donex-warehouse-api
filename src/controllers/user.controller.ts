@@ -18,6 +18,7 @@ export const show = async (req: Request, res: Response) => {
         const user = await showUser(Number(req.params.id))
         res.json(user)
     } catch (e) {
+        console.log(e)
         res.status(500).send(e)
     }
 }
