@@ -14,7 +14,7 @@ export const listWarehouse = async (
     },
     relations: {
       // @ts-ignore
-      state: true,
+      states: true,
     },
   });
 };
