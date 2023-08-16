@@ -18,7 +18,7 @@ export class UserState {
     name: string;
 
     @OneToMany((type) => User, (user) => user.states)
-    @JoinColumn({ referencedColumnName: "state_id " })
+    @JoinColumn({ referencedColumnName: "state_id" })
     users: User[];
 
 }
