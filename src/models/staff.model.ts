@@ -32,8 +32,7 @@ export class Staff {
   chinesse_name: string;
 
   @Column({
-    nullable: true,
-    default: null,
+    nullable: true
   })
   english_name: string;
 
@@ -44,19 +43,16 @@ export class Staff {
 
   @Column({
     nullable: true,
-    default: null,
   })
   email: string;
 
   @Column({
     nullable: true,
-    default: null,
   })
   phone: string;
 
   @Column({
-    nullable: true,
-    default: null,
+    nullable: true
   })
   observations: string;
 
