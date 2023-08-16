@@ -73,11 +73,6 @@ export class CreateUserTable1692032621926 implements MigrationInterface {
               type: "varchar",
             },
             {
-              name: "state_id",
-              type: "integer",
-              isNullable: true,
-            },
-            {
               name: "finantial_representative",
               type: "integer",
               isNullable: true,
