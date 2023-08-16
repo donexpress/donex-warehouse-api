@@ -53,14 +53,6 @@ export const create = async (req: Request, res: Response) => {
   } else {
     return res.status(422).json(user);
   }
-
-  //try {
-  //const user = await createUser(req.body)
-  //res.status(201).json(user);
-  //} catch (e) {
-  //console.log(e)
-  //res.status(500).send(e);
-  //}
 };
 
 export const update = async (req: Request, res: Response) => {

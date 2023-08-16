@@ -13,7 +13,13 @@ import { RegionalDivision } from "./regionalDivision.model";
 import { Warehouse } from "./warehouse.model";
 import { UserLevel } from "./user_level.model";
 import { PaymentMethod } from "./paymentMethod.model";
-import { IsOptional, IsInt, Min, IsEmail, IsPhoneNumber } from "class-validator";
+import {
+  IsOptional,
+  IsInt,
+  Min,
+  IsEmail,
+  IsPhoneNumber,
+} from "class-validator";
 
 @Index(["username"])
 @Entity({ name: "users" })
@@ -40,14 +46,16 @@ export class User {
   company: string;
 
   @Column({
-    type: 'varchar',
-    nullable: false
+    type: "varchar",
+    nullable: false,
   })
   @IsEmail()
   email: string;
 
-  @Column()
-  @IsPhoneNumber()
+  @Column({
+    type: "varchar",
+    nullable: false,
+  })
   phone: string;
 
   @Column()
