@@ -1,6 +1,6 @@
 import JWT from "jsonwebtoken";
 
-export const guardianMw = (token: string) => (req, res, next) => {};
+const guardianMw = (token: string) => (req, res, next) => {};
 
 const decode_token = (token) => {
   try {
@@ -10,11 +10,17 @@ const decode_token = (token) => {
   }
 };
 
-export const verifyTokenPresent = () => (req, res, next) => {
+const verifyTokenPresent = (req, res, next) => {
   if (req.headers.authorization) {
-    console.log(req);
     next();
   } else {
-    res.status(400).send("A user is required to access this resource");
+    res.status(401).send("This user not access this request");
   }
 };
+
+const LoggerMiddleware = (req, res, next) => {
+  console.log(`Logged  ${req.url}  ${req.method} -- ${new Date()}`);
+  next();
+};
+
+export { guardianMw, verifyTokenPresent, LoggerMiddleware };
