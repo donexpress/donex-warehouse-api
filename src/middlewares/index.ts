@@ -11,7 +11,7 @@ const decode_token = (token) => {
 };
 
 export const verifyTokenPresent = () => (req, res, next) => {
-  if (req) {
+  if (req.headers.authorization) {
     console.log(req);
     next();
   } else {
