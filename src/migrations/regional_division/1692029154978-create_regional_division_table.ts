@@ -17,9 +17,7 @@ export class CreateRegionalDivisionTable1692029154978 implements MigrationInterf
                         },
                         {
                             name: "name",
-                            type: "varchar",
-                            isNullable: true,
-                            default: null,
+                            type: "varchar"
                         },
                         {
                             name: "created_at",

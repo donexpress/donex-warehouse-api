@@ -16,21 +16,15 @@ export class Organization1691532371228 implements MigrationInterface {
             },
             {
               name: "name",
-              type: "varchar",
-              isNullable: true,
-              default: null,
+              type: "varchar"
             },
             {
               name: "parent_organization",
-              type: "varchar",
-              isNullable: true,
-              default: null,
+              type: "varchar"
             },
             {
               name: "organization_type",
-              type: "varchar",
-              isNullable: true,
-              default: null,
+              type: "varchar"
             },
             {
               name: "created_at",

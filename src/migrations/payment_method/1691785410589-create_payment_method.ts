@@ -17,15 +17,11 @@ export class CreatePaymentMethod1691785410589 implements MigrationInterface {
                         },
                         {
                             name: "code",
-                            type: "varchar",
-                            isNullable: true,
-                            default: null,
+                            type: "varchar"
                         },
                         {
                             name: "name",
-                            type: "varchar",
-                            isNullable: true,
-                            default: null,
+                            type: "varchar"
                         },
                         {
                             name: "created_at",

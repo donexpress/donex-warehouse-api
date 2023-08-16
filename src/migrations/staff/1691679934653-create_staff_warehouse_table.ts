@@ -9,12 +9,12 @@ export class CreateStaffWarehouseTable1691679934653 implements MigrationInterfac
                     name: "staff_warehouses_warehouse",
                     columns: [
                         {
-                            name: "staffId",
+                            name: "staff_id",
                             type: "integer",
                             isPrimary: true,
                         },
                         {
-                            name: "warehouseId",
+                            name: "warehouse_id",
                             type: "integer",
                             isPrimary: true,
                         },
@@ -37,14 +37,14 @@ export class CreateStaffWarehouseTable1691679934653 implements MigrationInterfac
                 queryRunner.createIndex(
                     "staff_warehouses_warehouse",
                     new TableIndex({
-                        columnNames: ["staffId"],
+                        columnNames: ["staff_id"],
                     })
                 )
                 queryRunner.createForeignKey(
                     "staff_warehouses_warehouse",
                     new TableForeignKey({
                         name: 'staff',
-                        columnNames: ['staffId'],
+                        columnNames: ['staff_id'],
                         referencedTableName: 'staff',
                         referencedColumnNames: ['id']
                     })
@@ -53,7 +53,7 @@ export class CreateStaffWarehouseTable1691679934653 implements MigrationInterfac
                     "staff_warehouses_warehouse",
                     new TableForeignKey({
                         name: 'warehouses',
-                        columnNames: ['warehouseId'],
+                        columnNames: ['warehouse_id'],
                         referencedTableName: 'warehouses',
                         referencedColumnNames: ['id']
                     })

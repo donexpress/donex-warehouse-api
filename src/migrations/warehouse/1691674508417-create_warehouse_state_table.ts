@@ -17,9 +17,7 @@ export class CreateWarehouseStateTable1691674508417 implements MigrationInterfac
               },
               {
                 name: "name",
-                type: "varchar",
-                isNullable: true,
-                default: null,
+                type: "varchar"
               },
               {
                 name: "created_at",

@@ -21,6 +21,6 @@ export class Role {
   //staff: Staff[]
 
   @OneToMany((type) => Staff, (staff) => staff.roles)
-  @JoinColumn({ referencedColumnName: "roleId " })
+  @JoinColumn({ referencedColumnName: "role_id " })
   staffs: Staff[];
 }

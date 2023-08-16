@@ -27,6 +27,6 @@ export class Organization {
   //staff: Staff[]
 
   @OneToMany((type) => Staff, (staff) => staff.organizations)
-  @JoinColumn({ referencedColumnName: "organizationId " })
+  @JoinColumn({ referencedColumnName: "organization_id " })
   staffs: Staff[];
 }

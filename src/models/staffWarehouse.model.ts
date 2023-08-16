@@ -2,14 +2,14 @@ import { Entity,PrimaryColumn, OneToOne, JoinTable, Index } from "typeorm"
 import { Staff } from "./staff.model"
 import { Warehouse } from './warehouse.model'
 
-@Index(['staffId'])
+@Index(['staff_id'])
 @Entity({ name: 'staff_warehouses_warehouse' })
 export class StaffWarehouse {
     @PrimaryColumn()
-    staffId: number
+    staff_id: number
 
     @PrimaryColumn()
-    warehouseId: string
+    warehouse_id: string
 
     @OneToOne(() => Staff)
     @JoinTable() 

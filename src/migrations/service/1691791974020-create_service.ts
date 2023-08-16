@@ -17,9 +17,7 @@ export class CreateService1691791974020 implements MigrationInterface {
                         },
                         {
                             name: "name",
-                            type: "varchar",
-                            isNullable: true,
-                            default: null,
+                            type: "varchar"
                         },
                         {
                             name: "created_at",

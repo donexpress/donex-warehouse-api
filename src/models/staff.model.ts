@@ -61,26 +61,26 @@ export class Staff {
   observations: string;
 
   @Column()
-  stateId: number;
+  state_id: number;
 
   @Column()
-  organizationId: number;
+  organization_id: number;
 
   @Column()
-  roleId: number;
+  role_id: number;
 
   //@ManyToOne(() => StaffState, (staffState) => staffState.staff)
   //states: StaffState;
 
   @ManyToOne((type) => StaffState, (staffState) => staffState.staffs)
-  @JoinColumn({ name: "stateId", referencedColumnName: "id" })
+  @JoinColumn({ name: "state_id", referencedColumnName: "id" })
   states: StaffState;
 
   //@ManyToOne(() => Organization, (organization) => organization.staff)
   //organizations: Organization;
 
   @ManyToOne((type) => Organization, (organization) => organization.staffs)
-  @JoinColumn({ name: "organizationId", referencedColumnName: "id" })
+  @JoinColumn({ name: "organization_id", referencedColumnName: "id" })
   organizations: Organization;
 
   //@ManyToMany(() => Warehouse, (warehouse) => warehouse.staff)
@@ -91,11 +91,11 @@ export class Staff {
   @JoinTable({
     name: "staff_warehouses_warehouse",
     joinColumn: {
-      name: "staffId",
+      name: "staff_id",
       referencedColumnName: "id",
     },
     inverseJoinColumn: {
-      name: "warehouseId",
+      name: "warehouse_id",
       referencedColumnName: "id",
     },
   })
@@ -105,7 +105,7 @@ export class Staff {
   //roles: Role;
 
   @ManyToOne((type) => Role, (role) => role.staffs)
-  @JoinColumn({ name: "roleId", referencedColumnName: "id" })
+  @JoinColumn({ name: "role_id", referencedColumnName: "id" })
   roles: Role;
 
   @OneToMany((type) => User, (user) => user.finantial_representatives)

@@ -17,55 +17,44 @@ export class CreateStaffTable1691679339976 implements MigrationInterface {
                         },
                         {
                             name: "username",
-                            type: "varchar",
-                            isNullable: false,
+                            type: "varchar"
                         },
                         {
                             name: "chinesse_name",
-                            type: "varchar",
-                            isNullable: false,
+                            type: "varchar"
                         },
                         {
                             name: "english_name",
-                            type: "varchar",
-                            isNullable: true,
-                            default: null
+                            type: "varchar"
                         },
                         {
                             name: "password",
-                            type: "varchar",
-                            isNullable: false,
+                            type: "varchar"
                         },
                         {
                             name: "email",
-                            type: "varchar",
-                            isNullable: true,
-                            default: null
+                            type: "varchar"
                         },
                         {
                             name: "phone",
-                            type: "varchar",
-                            isNullable: true,
-                            default: null
+                            type: "varchar"
                         },
                         {
                             name: "observations",
-                            type: "varchar",
-                            isNullable: true,
-                            default: null
+                            type: "varchar"
                         },
                         {
-                            name: "stateId",
+                            name: "state_id",
                             type: "integer",
                             isNullable: false,
                         },
                         {
-                            name: "organizationId",
+                            name: "organization_id",
                             type: "integer",
                             isNullable: false,
                         },
                         {
-                            name: "roleId",
+                            name: "role_id",
                             type: "integer",
                             isNullable: false,
                         },
@@ -93,7 +82,7 @@ export class CreateStaffTable1691679339976 implements MigrationInterface {
                 queryRunner.createForeignKey(
                     "staff",
                     new TableForeignKey({
-                        columnNames: ['stateId'],
+                        columnNames: ['state_id'],
                         referencedTableName: 'staff_states',
                         referencedColumnNames: ['id']
                     })
@@ -102,7 +91,7 @@ export class CreateStaffTable1691679339976 implements MigrationInterface {
                 queryRunner.createForeignKey(
                     "staff",
                     new TableForeignKey({
-                        columnNames: ['organizationId'],
+                        columnNames: ['organization_id'],
                         referencedTableName: 'organizations',
                         referencedColumnNames: ['id']
                     })
@@ -110,7 +99,7 @@ export class CreateStaffTable1691679339976 implements MigrationInterface {
                 queryRunner.createForeignKey(
                     "staff",
                     new TableForeignKey({
-                        columnNames: ['roleId'],
+                        columnNames: ['role_id'],
                         referencedTableName: 'roles',
                         referencedColumnNames: ['id']
                     })

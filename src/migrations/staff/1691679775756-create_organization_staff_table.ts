@@ -9,12 +9,12 @@ export class CreateDepartmentStaffTable1691679775756 implements MigrationInterfa
                     name: "organizations_staff",
                     columns: [
                         {
-                            name: "staffId",
+                            name: "staff_id",
                             type: "integer",
                             isPrimary: true,
                         },
                         {
-                            name: "organizationId",
+                            name: "organization_id",
                             type: "integer",
                             isPrimary: true,
                         },
@@ -37,13 +37,13 @@ export class CreateDepartmentStaffTable1691679775756 implements MigrationInterfa
                 queryRunner.createIndex(
                     "organizations_staff",
                     new TableIndex({
-                        columnNames: ["staffId"],
+                        columnNames: ["staff_id"],
                     })
                 )
                 queryRunner.createForeignKey(
                     "organizations_staff",
                     new TableForeignKey({
-                        columnNames: ['staffId'],
+                        columnNames: ['staff_id'],
                         referencedTableName: 'staff',
                         referencedColumnNames: ['id']
                     })
@@ -51,7 +51,7 @@ export class CreateDepartmentStaffTable1691679775756 implements MigrationInterfa
                 queryRunner.createForeignKey(
                     "organizations_staff",
                     new TableForeignKey({
-                        columnNames: ['organizationId'],
+                        columnNames: ['organization_id'],
                         referencedTableName: 'organizations',
                         referencedColumnNames: ['id']
                     })

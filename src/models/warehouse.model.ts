@@ -66,7 +66,7 @@ export class Warehouse {
   customer_order_number_rules: string;
 
   @Column()
-  stateId: number;
+  state_id: number;
 
   //@ManyToOne(() => WarehouseState, (warehouseState) => warehouseState.warehouses)
   //states: WarehouseState
@@ -75,7 +75,7 @@ export class Warehouse {
     (type) => WarehouseState,
     (warehouseState) => warehouseState.staffs
   )
-  @JoinColumn({ name: "stateId", referencedColumnName: "id" })
+  @JoinColumn({ name: "state_id", referencedColumnName: "id" })
   states: WarehouseState;
 
   @ManyToMany(() => Staff, (staff) => staff.warehouses)

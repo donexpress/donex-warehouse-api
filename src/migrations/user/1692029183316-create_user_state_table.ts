@@ -17,9 +17,7 @@ export class CreateUserStateTable1692029183316 implements MigrationInterface {
                         },
                         {
                             name: "name",
-                            type: "varchar",
-                            isNullable: true,
-                            default: null,
+                            type: "varchar"
                         },
                         {
                             name: "created_at",

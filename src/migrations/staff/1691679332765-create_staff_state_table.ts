@@ -17,9 +17,7 @@ export class CreateStaffStateTable1691679332765 implements MigrationInterface {
               },
               {
                 name: "name",
-                type: "varchar",
-                isNullable: true,
-                default: null,
+                type: "varchar"
               },
               {
                 name: "created_at",

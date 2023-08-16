@@ -17,9 +17,7 @@ export class CreateSubsidiaryTable1692029396279 implements MigrationInterface {
                         },
                         {
                             name: "name",
-                            type: "varchar",
-                            isNullable: true,
-                            default: null,
+                            type: "varchar"
                         },
                         {
                             name: "created_at",
