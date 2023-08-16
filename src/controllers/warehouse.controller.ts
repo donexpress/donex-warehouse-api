@@ -8,6 +8,7 @@ export const index = async (req: Request, res: Response) => {
         const affiliations = await listWarehouse(current_page, number_of_rows)
         res.json(affiliations)
     } catch (e) {
+        console.log(e)
         res.status(500).send(e)
     }
 }

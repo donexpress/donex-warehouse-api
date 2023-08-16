@@ -12,10 +12,10 @@ export const listWarehouse = async (
     order: {
       id: "ASC",
     },
-    relations: {
-      // @ts-ignore
-      states: true,
-    },
+    // relations: {
+    //   // @ts-ignore
+    //   states: true,
+    // },
   });
 };
 

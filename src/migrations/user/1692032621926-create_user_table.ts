@@ -130,6 +130,12 @@ export class CreateUserTable1692032621926 implements MigrationInterface {
                             default: null,
                         },
                         {
+                            name: "stateId",
+                            type: "integer",
+                            isNullable: true,
+                            default: null,
+                        },
+                        {
                             name: "shipping_control",
                             type: "boolean",
                             default: false,
@@ -162,7 +168,7 @@ export class CreateUserTable1692032621926 implements MigrationInterface {
                 queryRunner.createIndex(
                     "users",
                     new TableIndex({
-                        columnNames: ["name"],
+                        columnNames: ["username"],
                     })
                 )
                 queryRunner.createForeignKey(
