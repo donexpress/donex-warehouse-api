@@ -31,46 +31,57 @@ export class CreateWarehouseTable1691674575218 implements MigrationInterface {
             {
               name: "receiving_area",
               type: "varchar",
+              isNullable: true,
             },
             {
               name: "principal",
               type: "varchar",
+              isNullable: true,
             },
             {
               name: "contact_phone",
               type: "varchar",
+              isNullable: true,
             },
             {
               name: "address",
               type: "varchar",
+              isNullable: true,
             },
             {
               name: "city",
               type: "varchar",
+              isNullable: true,
             },
             {
               name: "province",
               type: "varchar",
+              isNullable: true,
             },
             {
               name: "country",
+              isNullable: true,
               type: "varchar",
             },
             {
               name: "cp",
               type: "varchar",
+              isNullable: true,
             },
             {
               name: "shared_warehouse_system_code",
               type: "varchar",
+              isNullable: true,
             },
             {
               name: "shared_warehouse_docking_code",
               type: "varchar",
+              isNullable: true,
             },
             {
               name: "customer_order_number_rules",
               type: "varchar",
+              isNullable: true,
             },
             {
               name: "state_id",
