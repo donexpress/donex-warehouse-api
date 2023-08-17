@@ -78,65 +78,72 @@ export class User {
     type: 'integer',
     nullable: false,
   })
-  //@IsOptional()
-  //@IsInt()
-  //@Min(1)
+  @IsOptional()
+  @IsInt()
+  @Min(1)
   state_id: number | null;
 
   @Column({
     type: 'integer',
     nullable: false,
   })
-  //@IsInt()
-  //@Min(1)
+  @IsOptional()
+  @IsInt()
+  @Min(1)
   finantial_representative: number | null;
 
   @Column({
     type: 'integer',
     nullable: false,
   })
-  //@IsInt()
-  //@Min(1)
+  @IsOptional()
+  @IsInt()
+  @Min(1)
   client_service_representative: number | null;
 
   @Column({
     type: 'integer',
     nullable: false,
   })
-  //@IsInt()
-  //@Min(1)
+  @IsOptional()
+  @IsInt()
+  @Min(1)
   sales_representative: number | null;
 
   @Column({
     type: 'integer',
     nullable: false,
   })
-  //@IsInt()
-  //@Min(1)
+  @IsOptional()
+  @IsInt()
+  @Min(1)
   sales_source: number | null;
 
   @Column({
     type: 'integer',
     nullable: false,
   })
-  //@IsInt()
-  //@Min(1)
+  @IsOptional()
+  @IsInt()
+  @Min(1)
   subsidiary_id: number | null;
 
   @Column({
     type: 'integer',
     nullable: false,
   })
-  //@IsInt()
-  //@Min(1)
+  @IsOptional()
+  @IsInt()
+  @Min(1)
   regional_division_id: number | null;
 
   @Column({
     type: 'integer',
     nullable: true,
   })
-  //@IsInt()
-  //@Min(1)
+  @IsOptional()
+  @IsInt()
+  @Min(1)
   warehouse_id: number | null;
 
   @Column({
@@ -161,16 +168,18 @@ export class User {
     type: 'integer',
     nullable: false,
   })
-  //@IsInt()
-  //@Min(1)
+  @IsOptional()
+  @IsInt()
+  @Min(1)
   user_level_id: number | null;
 
   @Column({
     type: 'integer',
     nullable: false,
   })
-  //@IsInt()
-  //@Min(1)
+  @IsOptional()
+  @IsInt()
+  @Min(1)
   payment_method_id: number | null;
 
   @ManyToOne((type) => UserState, (state) => state.users)
