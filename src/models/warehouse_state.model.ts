@@ -20,7 +20,4 @@ export class WarehouseState {
   })
   name: string;
 
-  @OneToMany((type) => Warehouse, (warehouse) => warehouse.states)
-  @JoinColumn({ referencedColumnName: 'state_id' })
-  staffs: Warehouse[];
 }

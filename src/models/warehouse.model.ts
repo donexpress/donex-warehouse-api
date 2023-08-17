@@ -65,23 +65,8 @@ export class Warehouse {
   @Column()
   customer_order_number_rules: string;
 
-  @Column()
+  @Column({
+    nullable: true
+  })
   state_id: number;
-
-  //@ManyToOne(() => WarehouseState, (warehouseState) => warehouseState.warehouses)
-  //states: WarehouseState
-
-  @ManyToOne(
-    (type) => WarehouseState,
-    (warehouseState) => warehouseState.staffs
-  )
-  @JoinColumn({ name: 'state_id', referencedColumnName: 'id' })
-  states: WarehouseState;
-
-  @ManyToMany(() => Staff, (staff) => staff.warehouses)
-  staff: Staff[];
-
-  @OneToMany((type) => User, (user) => user.warehouses)
-  @JoinColumn({ referencedColumnName: 'warehouse_id ' })
-  users: User[];
 }

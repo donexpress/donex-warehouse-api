@@ -20,7 +20,4 @@ export class Service {
   })
   name: string;
 
-  @OneToMany((type) => UserLevel, (user_level) => user_level.services)
-  @JoinColumn({ referencedColumnName: 'service_id ' })
-  userLevels: UserLevel[];
 }

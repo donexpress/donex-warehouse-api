@@ -56,67 +56,19 @@ export class Staff {
   })
   observations: string;
 
-  @Column()
+  @Column({
+    nullable: true
+  })
   state_id: number;
 
-  @Column()
+  @Column({
+    nullable: true
+  })
   organization_id: number;
 
-  @Column()
+  @Column({
+    nullable: true
+  })
   role_id: number;
 
-  //@ManyToOne(() => StaffState, (staffState) => staffState.staff)
-  //states: StaffState;
-
-  @ManyToOne((type) => StaffState, (staffState) => staffState.staffs)
-  @JoinColumn({ name: 'state_id', referencedColumnName: 'id' })
-  states: StaffState;
-
-  //@ManyToOne(() => Organization, (organization) => organization.staff)
-  //organizations: Organization;
-
-  @ManyToOne((type) => Organization, (organization) => organization.staffs)
-  @JoinColumn({ name: 'organization_id', referencedColumnName: 'id' })
-  organizations: Organization;
-
-  //@ManyToMany(() => Warehouse, (warehouse) => warehouse.staff)
-  //@JoinTable()
-  //warehouses: Warehouse[];
-
-  @ManyToMany(() => Warehouse, (warehouse) => warehouse.staff)
-  @JoinTable({
-    name: 'staff_warehouses_warehouse',
-    joinColumn: {
-      name: 'staff_id',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'warehouse_id',
-      referencedColumnName: 'id',
-    },
-  })
-  warehouses: Warehouse[];
-
-  //@ManyToOne(() => Role, (role) => role.staff)
-  //roles: Role;
-
-  @ManyToOne((type) => Role, (role) => role.staffs)
-  @JoinColumn({ name: 'role_id', referencedColumnName: 'id' })
-  roles: Role;
-
-  @OneToMany((type) => User, (user) => user.finantial_representatives)
-  @JoinColumn({ referencedColumnName: 'finantial_representative ' })
-  finantial_representatives: User[];
-
-  @OneToMany((type) => User, (user) => user.client_service_representatives)
-  @JoinColumn({ referencedColumnName: 'client_service_representative ' })
-  client_service_representative: User[];
-
-  @OneToMany((type) => User, (user) => user.sales_representatives)
-  @JoinColumn({ referencedColumnName: 'sales_representative ' })
-  sales_representatives: User[];
-
-  @OneToMany((type) => User, (user) => user.sales_representatives)
-  @JoinColumn({ referencedColumnName: 'sales_source ' })
-  sales_sources: User[];
 }

@@ -40,24 +40,6 @@ export class CreateStaffWarehouseTable1691679934653 implements MigrationInterfac
                         columnNames: ["staff_id"],
                     })
                 )
-                queryRunner.createForeignKey(
-                    "staff_warehouses_warehouse",
-                    new TableForeignKey({
-                        name: 'staff',
-                        columnNames: ['staff_id'],
-                        referencedTableName: 'staff',
-                        referencedColumnNames: ['id']
-                    })
-                )
-                queryRunner.createForeignKey(
-                    "staff_warehouses_warehouse",
-                    new TableForeignKey({
-                        name: 'warehouses',
-                        columnNames: ['warehouse_id'],
-                        referencedTableName: 'warehouses',
-                        referencedColumnNames: ['id']
-                    })
-                )
             });
     }
 

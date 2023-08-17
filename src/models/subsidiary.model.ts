@@ -20,7 +20,4 @@ export class Subsidiary {
   })
   name: string;
 
-  @OneToMany((type) => User, (user) => user.subsidiaries)
-  @JoinColumn({ referencedColumnName: 'subsidiary_id ' })
-  users: User[];
 }

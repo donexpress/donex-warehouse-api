@@ -20,7 +20,4 @@ export class RegionalDivision {
   })
   name: string;
 
-  @OneToMany((type) => User, (user) => user.regional_divisions)
-  @JoinColumn({ referencedColumnName: 'regional_division_id ' })
-  users: User[];
 }

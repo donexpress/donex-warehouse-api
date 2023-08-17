@@ -20,10 +20,4 @@ export class Role {
   })
   name: string;
 
-  //@OneToMany(() => Staff, (staff) => staff.roles)
-  //staff: Staff[]
-
-  @OneToMany((type) => Staff, (staff) => staff.roles)
-  @JoinColumn({ referencedColumnName: 'role_id ' })
-  staffs: Staff[];
 }
