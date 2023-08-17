@@ -25,6 +25,10 @@ export class CreateUserTable1692032621926 implements MigrationInterface {
               type: "integer",
             },
             {
+              name: "customer_number",
+              type: "integer",
+            },
+            {
               name: "payment_method_id",
               type: "integer",
             },

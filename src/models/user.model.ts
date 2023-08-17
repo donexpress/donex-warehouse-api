@@ -27,6 +27,12 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({
+    type: 'integer',
+    nullable: true,
+  })
+  customer_number: number;
+
   @Column()
   username: string;
 

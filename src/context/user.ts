@@ -73,12 +73,7 @@ export const showUser = async (id: number) => {
 
 export const createUser = async (user_data) => {
   const repository = await AppDataSource.getRepository(User);
-  const user_obj = { ...user_data, state_id: parseInt(user_data.state_id, 10) };
-  //const user_obj = user_data;
-  const new_user_data = {
-    ...user_data,
-    state_id: parseInt(user_data.state_id, 10),
-  };
+  const user_obj = user_data;
   user_obj.password = bcrypt.hashSync(
     user_obj.password,
     isNaN(Number(process.env.PASSWORD_SALT))
