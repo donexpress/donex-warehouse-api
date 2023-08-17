@@ -12,10 +12,7 @@ export const listWarehouse = async (
     order: {
       id: 'ASC',
     },
-    // relations: {
-    //   // @ts-ignore
-    //   states: true,
-    // },
+    relations: ['states'],
   });
 };
 
@@ -26,10 +23,7 @@ export const countWarehouse = async () => {
 export const showWarehouse = async (id: number) => {
   return await AppDataSource.manager.findOne(Warehouse, {
     where: { id },
-    relations: {
-      // @ts-ignore
-      state: true,
-    },
+    relations: ['states'],
   });
 };
 
