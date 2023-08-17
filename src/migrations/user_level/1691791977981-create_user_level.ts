@@ -53,15 +53,6 @@ export class CreateUserLevel1691791977981 implements MigrationInterface {
             columnNames: ["name"],
           })
         );
-
-        queryRunner.createForeignKey(
-          "user_levels",
-          new TableForeignKey({
-            columnNames: ["service_id"],
-            referencedTableName: "services",
-            referencedColumnNames: ["id"],
-          })
-        );
       });
   }
 

@@ -104,14 +104,6 @@ export class CreateWarehouseTable1691674575218 implements MigrationInterface {
             columnNames: ["receiving_area"],
           })
         );
-        queryRunner.createForeignKey(
-          "warehouses",
-          new TableForeignKey({
-            columnNames: ["state_id"],
-            referencedTableName: "warehouses_states",
-            referencedColumnNames: ["id"],
-          })
-        );
       });
   }
 

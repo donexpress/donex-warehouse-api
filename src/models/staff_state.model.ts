@@ -20,7 +20,4 @@ export class StaffState {
   })
   name: string;
 
-  @OneToMany((type) => Staff, (staff) => staff.states)
-  @JoinColumn({ referencedColumnName: "state_id" })
-  staffs: Staff[];
 }
