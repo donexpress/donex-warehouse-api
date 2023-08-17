@@ -71,10 +71,11 @@ export class User {
   @Column({
     type: "integer",
     nullable: true,
+    default: 1
   })
   //@IsOptional()
-  //@IsInt()
-  //@Min(1)
+  @IsInt()
+  @Min(1)
   state_id: number;
 
   @Column({
