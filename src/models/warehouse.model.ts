@@ -7,13 +7,13 @@ import {
   Index,
   JoinColumn,
   OneToMany,
-} from "typeorm";
-import { WarehouseState } from "./warehouse_state.model";
-import { Staff } from "./staff.model";
-import { User } from "./user.model";
+} from 'typeorm';
+import { WarehouseState } from './warehouse_state.model';
+import { Staff } from './staff.model';
+import { User } from './user.model';
 
-@Index(["name", "receiving_area"])
-@Entity({ name: "warehouses" })
+@Index(['name', 'receiving_area'])
+@Entity({ name: 'warehouses' })
 export class Warehouse {
   @PrimaryGeneratedColumn()
   id: number;
@@ -75,13 +75,13 @@ export class Warehouse {
     (type) => WarehouseState,
     (warehouseState) => warehouseState.staffs
   )
-  @JoinColumn({ name: "state_id", referencedColumnName: "id" })
+  @JoinColumn({ name: 'state_id', referencedColumnName: 'id' })
   states: WarehouseState;
 
   @ManyToMany(() => Staff, (staff) => staff.warehouses)
   staff: Staff[];
 
   @OneToMany((type) => User, (user) => user.warehouses)
-  @JoinColumn({ referencedColumnName: "warehouse_id " })
+  @JoinColumn({ referencedColumnName: 'warehouse_id ' })
   users: User[];
 }

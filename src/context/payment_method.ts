@@ -1,7 +1,7 @@
-import { AppDataSource } from "../config/ormconfig";
-import { validateContext } from "../helpers/validate";
-import { PaymentMethod } from "../models/payment_method.model";
-import { ILike } from "typeorm";
+import { AppDataSource } from '../config/ormconfig';
+import { validateContext } from '../helpers/validate';
+import { PaymentMethod } from '../models/payment_method.model';
+import { ILike } from 'typeorm';
 export const listPaymentMethods = async (
   current_page: number,
   number_of_rows: number,
@@ -11,10 +11,10 @@ export const listPaymentMethods = async (
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
     where: {
-      name: ILike(`%${query}%`)
+      name: ILike(`%${query}%`),
     },
     order: {
-      id: "ASC",
+      id: 'ASC',
     },
   });
 };

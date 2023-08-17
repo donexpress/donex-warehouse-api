@@ -1,6 +1,6 @@
-import { AppDataSource } from "../config/ormconfig";
-import { validateContext } from "../helpers/validate";
-import { Organization } from "../models/organization.model";
+import { AppDataSource } from '../config/ormconfig';
+import { validateContext } from '../helpers/validate';
+import { Organization } from '../models/organization.model';
 
 export const listDepataments = async (
   current_page: number,
@@ -10,7 +10,7 @@ export const listDepataments = async (
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
     order: {
-      id: "ASC",
+      id: 'ASC',
     },
   });
 };

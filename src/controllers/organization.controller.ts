@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
 import {
   countDepataments,
   createDepataments,
@@ -6,7 +6,7 @@ import {
   removeDepataments,
   showDepataments,
   updateDepataments,
-} from "../context/organization";
+} from '../context/organization';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -19,7 +19,7 @@ export const index = async (req: Request, res: Response) => {
     const organization = await listDepataments(current_page, number_of_rows);
     res.json(organization);
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -29,7 +29,7 @@ export const show = async (req: Request, res: Response) => {
     const organization = await showDepataments(Number(req.params.id));
     res.json(organization);
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -39,7 +39,7 @@ export const count = async (req: Request, res: Response) => {
     const count = await countDepataments();
     res.json({ count });
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -49,7 +49,7 @@ export const create = async (req: Request, res: Response) => {
     const organization = createDepataments(req.body);
     res.status(201).json(organization);
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -59,7 +59,7 @@ export const update = async (req: Request, res: Response) => {
     const result = await updateDepataments(Number(req.params.id), req.body);
     res.status(200).json(result);
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -69,7 +69,7 @@ export const remove = async (req: Request, res: Response) => {
     const result = await removeDepataments(Number(req.params.id));
     res.status(200).json(result);
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(500).send(e);
   }
 };

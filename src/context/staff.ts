@@ -1,9 +1,9 @@
-import { AppDataSource } from "../config/ormconfig";
-import { Staff } from "../models/staff.model";
-import { Warehouse } from "../models/warehouse.model";
-import bcrypt from "bcryptjs";
-import { In } from "typeorm";
-import { validate } from "class-validator";
+import { AppDataSource } from '../config/ormconfig';
+import { Staff } from '../models/staff.model';
+import { Warehouse } from '../models/warehouse.model';
+import bcrypt from 'bcryptjs';
+import { In } from 'typeorm';
+import { validate } from 'class-validator';
 
 export const listStaff = async (
   current_page: number,
@@ -13,9 +13,9 @@ export const listStaff = async (
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
     order: {
-      id: "ASC",
+      id: 'ASC',
     },
-    relations: ["states", "roles", "organizations", "warehouses"],
+    relations: ['states', 'roles', 'organizations', 'warehouses'],
   });
   users.map((user) => delete user.password);
   return users;
@@ -28,7 +28,7 @@ export const countStaff = async () => {
 export const showStaff = async (id: number) => {
   const user = await AppDataSource.manager.findOne(Staff, {
     where: { id },
-    relations: ["states", "roles", "organizations", "warehouses"],
+    relations: ['states', 'roles', 'organizations', 'warehouses'],
   });
   delete user.password;
   return user;

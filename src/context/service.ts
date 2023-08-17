@@ -1,6 +1,6 @@
-import { AppDataSource } from "../config/ormconfig";
-import { validateContext } from "../helpers/validate";
-import { Service } from "../models/service.model";
+import { AppDataSource } from '../config/ormconfig';
+import { validateContext } from '../helpers/validate';
+import { Service } from '../models/service.model';
 
 export const listServices = async (
   current_page: number,
@@ -10,7 +10,7 @@ export const listServices = async (
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
     order: {
-      id: "ASC",
+      id: 'ASC',
     },
   });
 };
@@ -22,7 +22,7 @@ export const countServices = async () => {
 export const showService = async (id: number) => {
   return await AppDataSource.manager.findOne(Service, {
     where: { id },
-});
+  });
 };
 
 export const createService = async (service_data) => {

@@ -1,34 +1,34 @@
-import { AppDataSource } from "../config/ormconfig";
-import { User } from "../models/user.model";
-import { Warehouse } from "../models/warehouse.model";
-import bcrypt from "bcryptjs";
-import { In } from "typeorm";
-import { validate } from "class-validator";
+import { AppDataSource } from '../config/ormconfig';
+import { User } from '../models/user.model';
+import { Warehouse } from '../models/warehouse.model';
+import bcrypt from 'bcryptjs';
+import { In } from 'typeorm';
+import { validate } from 'class-validator';
 
 const user_relations = [
-  "warehouses",
-  "warehouses.states",
-  "regional_divisions",
-  "subsidiaries",
-  "finantial_representatives",
-  "finantial_representatives.states",
-  "finantial_representatives.organizations",
-  "finantial_representatives.warehouses",
-  "client_service_representatives",
-  "client_service_representatives.states",
-  "client_service_representatives.organizations",
-  "client_service_representatives.warehouses",
-  "sales_representatives",
-  "sales_representatives.states",
-  "sales_representatives.organizations",
-  "sales_representatives.warehouses",
-  "sales_sources",
-  "sales_sources.states",
-  "sales_sources.organizations",
-  "sales_sources.warehouses",
-  "payment_methods",
-  "user_level"
-]
+  'warehouses',
+  'warehouses.states',
+  'regional_divisions',
+  'subsidiaries',
+  'finantial_representatives',
+  'finantial_representatives.states',
+  'finantial_representatives.organizations',
+  'finantial_representatives.warehouses',
+  'client_service_representatives',
+  'client_service_representatives.states',
+  'client_service_representatives.organizations',
+  'client_service_representatives.warehouses',
+  'sales_representatives',
+  'sales_representatives.states',
+  'sales_representatives.organizations',
+  'sales_representatives.warehouses',
+  'sales_sources',
+  'sales_sources.states',
+  'sales_sources.organizations',
+  'sales_sources.warehouses',
+  'payment_methods',
+  'user_level',
+];
 
 export const listUser = async (
   current_page: number,
@@ -38,20 +38,18 @@ export const listUser = async (
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
     order: {
-      id: "ASC",
+      id: 'ASC',
     },
     relations: user_relations,
   });
   users.map((user) => {
-    delete user.password
-    if(user.client_service_representatives)
-      delete user.client_service_representatives.password
-    if(user.sales_representatives)
-      delete user.sales_representatives.password
-    if(user.finantial_representatives)
-      delete user.finantial_representatives.password
-    if(user.sales_sources)
-      delete user.sales_sources.password
+    delete user.password;
+    if (user.client_service_representatives)
+      delete user.client_service_representatives.password;
+    if (user.sales_representatives) delete user.sales_representatives.password;
+    if (user.finantial_representatives)
+      delete user.finantial_representatives.password;
+    if (user.sales_sources) delete user.sales_sources.password;
   });
   return users;
 };
@@ -66,18 +64,21 @@ export const showUser = async (id: number) => {
     relations: user_relations,
   });
   delete user.password;
-  delete user.client_service_representatives.password
-  delete user.sales_representatives.password
-  delete user.finantial_representatives.password
-  delete user.sales_sources.password
+  delete user.client_service_representatives.password;
+  delete user.sales_representatives.password;
+  delete user.finantial_representatives.password;
+  delete user.sales_sources.password;
   return user;
 };
 
 export const createUser = async (user_data) => {
   const repository = await AppDataSource.getRepository(User);
-  const user_obj = {...user_data, state_id: parseInt(user_data.state_id, 10)};
+  const user_obj = { ...user_data, state_id: parseInt(user_data.state_id, 10) };
   //const user_obj = user_data;
-  const new_user_data = {...user_data, state_id: parseInt(user_data.state_id, 10)};
+  const new_user_data = {
+    ...user_data,
+    state_id: parseInt(user_data.state_id, 10),
+  };
   user_obj.password = bcrypt.hashSync(
     user_obj.password,
     isNaN(Number(process.env.PASSWORD_SALT))
