@@ -50,7 +50,7 @@ export class User {
     nullable: true,
   })
   @IsOptional()
-  @IsEmail()
+  //@IsEmail()
   email: string;
 
   @Column({
@@ -72,9 +72,9 @@ export class User {
     type: "integer",
     nullable: true,
   })
-  @IsOptional()
-  @IsInt()
-  @Min(1)
+  //@IsOptional()
+  //@IsInt()
+  //@Min(1)
   state_id: number;
 
   @Column({
