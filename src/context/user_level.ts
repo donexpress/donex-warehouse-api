@@ -12,7 +12,7 @@ export const listUserLevel = async (
     order: {
       id: 'ASC',
     },
-    relations: ['services'],
+    // relations: ['services'],
   });
 };
 
@@ -23,7 +23,7 @@ export const countUserLevel = async () => {
 export const showUserLevel = async (id: number) => {
   return await AppDataSource.manager.findOne(UserLevel, {
     where: { id },
-    relations: ['services'],
+    // relations: ['services'],
   });
 };
 

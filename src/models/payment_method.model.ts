@@ -27,8 +27,4 @@ export class PaymentMethod {
     nullable: false,
   })
   name: string;
-
-  @OneToMany((type) => User, (user) => user.states)
-  @JoinColumn({ referencedColumnName: 'payment_method_id ' })
-  users: User[];
 }

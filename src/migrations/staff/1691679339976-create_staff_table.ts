@@ -79,31 +79,6 @@ export class CreateStaffTable1691679339976 implements MigrationInterface {
                         columnNames: ["username"],
                     })
                 )
-                queryRunner.createForeignKey(
-                    "staff",
-                    new TableForeignKey({
-                        columnNames: ['state_id'],
-                        referencedTableName: 'staff_states',
-                        referencedColumnNames: ['id']
-                    })
-                )
-
-                queryRunner.createForeignKey(
-                    "staff",
-                    new TableForeignKey({
-                        columnNames: ['organization_id'],
-                        referencedTableName: 'organizations',
-                        referencedColumnNames: ['id']
-                    })
-                )
-                queryRunner.createForeignKey(
-                    "staff",
-                    new TableForeignKey({
-                        columnNames: ['role_id'],
-                        referencedTableName: 'roles',
-                        referencedColumnNames: ['id']
-                    })
-                )
             });
     }
 

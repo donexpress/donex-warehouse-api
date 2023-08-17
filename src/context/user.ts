@@ -5,30 +5,30 @@ import bcrypt from 'bcryptjs';
 import { In } from 'typeorm';
 import { validate } from 'class-validator';
 
-const user_relations = [
-  'warehouses',
-  'warehouses.states',
-  'regional_divisions',
-  'subsidiaries',
-  'finantial_representatives',
-  'finantial_representatives.states',
-  'finantial_representatives.organizations',
-  'finantial_representatives.warehouses',
-  'client_service_representatives',
-  'client_service_representatives.states',
-  'client_service_representatives.organizations',
-  'client_service_representatives.warehouses',
-  'sales_representatives',
-  'sales_representatives.states',
-  'sales_representatives.organizations',
-  'sales_representatives.warehouses',
-  'sales_sources',
-  'sales_sources.states',
-  'sales_sources.organizations',
-  'sales_sources.warehouses',
-  'payment_methods',
-  'user_level',
-];
+// const user_relations = [
+//   'warehouses',
+//   'warehouses.states',
+//   'regional_divisions',
+//   'subsidiaries',
+//   'finantial_representatives',
+//   'finantial_representatives.states',
+//   'finantial_representatives.organizations',
+//   'finantial_representatives.warehouses',
+//   'client_service_representatives',
+//   'client_service_representatives.states',
+//   'client_service_representatives.organizations',
+//   'client_service_representatives.warehouses',
+//   'sales_representatives',
+//   'sales_representatives.states',
+//   'sales_representatives.organizations',
+//   'sales_representatives.warehouses',
+//   'sales_sources',
+//   'sales_sources.states',
+//   'sales_sources.organizations',
+//   'sales_sources.warehouses',
+//   'payment_methods',
+//   'user_level',
+// ];
 
 export const listUser = async (
   current_page: number,
@@ -40,16 +40,16 @@ export const listUser = async (
     order: {
       id: 'ASC',
     },
-    relations: user_relations,
+    // relations: user_relations,
   });
   users.map((user) => {
     delete user.password;
-    if (user.client_service_representatives)
-      delete user.client_service_representatives.password;
-    if (user.sales_representatives) delete user.sales_representatives.password;
-    if (user.finantial_representatives)
-      delete user.finantial_representatives.password;
-    if (user.sales_sources) delete user.sales_sources.password;
+    // if (user.client_service_representatives)
+    //   delete user.client_service_representatives.password;
+    // if (user.sales_representatives) delete user.sales_representatives.password;
+    // if (user.finantial_representatives)
+    //   delete user.finantial_representatives.password;
+    // if (user.sales_sources) delete user.sales_sources.password;
   });
   return users;
 };
@@ -61,13 +61,13 @@ export const countUser = async () => {
 export const showUser = async (id: number) => {
   const user = await AppDataSource.manager.findOne(User, {
     where: { id },
-    relations: user_relations,
+    // relations: user_relations,
   });
   delete user.password;
-  delete user.client_service_representatives.password;
-  delete user.sales_representatives.password;
-  delete user.finantial_representatives.password;
-  delete user.sales_sources.password;
+  // delete user.client_service_representatives.password;
+  // delete user.sales_representatives.password;
+  // delete user.finantial_representatives.password;
+  // delete user.sales_sources.password;
   return user;
 };
 

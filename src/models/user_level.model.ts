@@ -32,17 +32,9 @@ export class UserLevel {
 
   @Column({
     type: 'integer',
-    nullable: false,
+    nullable: true,
   })
   @IsInt()
   @Min(1)
   service_id: number;
-
-  @ManyToOne((type) => Service, (role) => role.userLevels)
-  @JoinColumn({ name: 'service_id', referencedColumnName: 'id' })
-  services: Service;
-
-  @OneToMany((type) => User, (user) => user.user_level)
-  @JoinColumn({ referencedColumnName: 'user_level_id' })
-  users: User[];
 }

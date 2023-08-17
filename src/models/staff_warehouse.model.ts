@@ -11,11 +11,4 @@ export class StaffWarehouse {
   @PrimaryColumn()
   warehouse_id: string;
 
-  @OneToOne(() => Staff)
-  @JoinTable()
-  staff: Staff;
-
-  @OneToOne(() => Warehouse)
-  @JoinTable()
-  warehouses: Warehouse;
 }
