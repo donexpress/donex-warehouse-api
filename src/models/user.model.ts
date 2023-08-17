@@ -49,6 +49,7 @@ export class User {
     type: "varchar",
     nullable: false,
   })
+  @IsOptional()
   @IsEmail()
   email: string;
 

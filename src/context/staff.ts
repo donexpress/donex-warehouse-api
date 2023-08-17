@@ -17,7 +17,6 @@ export const listStaff = async (
     },
     relations: ["states", "roles", "organizations", "warehouses"],
   });
-  console.log(users);
   users.map((user) => delete user.password);
   return users;
 };
