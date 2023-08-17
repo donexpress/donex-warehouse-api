@@ -130,8 +130,10 @@ export class User {
 
   @Column({
     type: "integer",
-    nullable: true,
+    nullable: false,
   })
+  @IsInt()
+  @Min(1)
   user_level_id: number;
 
   @Column()
