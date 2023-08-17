@@ -27,10 +27,12 @@ export class CreateUserLevel1691791977981 implements MigrationInterface {
             {
               name: "observations",
               type: "varchar",
+              isNullable: true,
             },
             {
               name: "service_id",
               type: "integer",
+              isNullable: true,
             },
             {
               name: "created_at",

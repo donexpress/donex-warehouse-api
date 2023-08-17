@@ -15,7 +15,6 @@ import { UserLevel } from './user_level.model';
 import { PaymentMethod } from './payment_method.model';
 import {
   IsOptional,
-  IsInt,
   Min,
   IsEmail,
   IsPhoneNumber,
@@ -73,65 +72,48 @@ export class User {
     type: 'integer',
     nullable: true,
   })
-  //@IsOptional()
-  @IsInt()
-  @Min(1)
   state_id: number;
 
   @Column({
     type: 'integer',
     nullable: true,
   })
-  @IsInt()
-  @Min(1)
   finantial_representative: number;
 
   @Column({
     type: 'integer',
     nullable: true,
   })
-  @IsInt()
-  @Min(1)
   client_service_representative: number;
 
   @Column({
     type: 'integer',
     nullable: true,
   })
-  @IsInt()
-  @Min(1)
   sales_representative: number;
 
   @Column({
     type: 'integer',
     nullable: true,
   })
-  @IsInt()
-  @Min(1)
   sales_source: number;
 
   @Column({
     type: 'integer',
     nullable: true,
   })
-  @IsInt()
-  @Min(1)
   subsidiary_id: number;
 
   @Column({
     type: 'integer',
     nullable: true,
   })
-  @IsInt()
-  @Min(1)
   regional_division_id: number;
 
   @Column({
     type: 'integer',
     nullable: true,
   })
-  @IsInt()
-  @Min(1)
   warehouse_id: number;
 
   @Column({
@@ -156,15 +138,11 @@ export class User {
     type: 'integer',
     nullable: true,
   })
-  @IsInt()
-  @Min(1)
   user_level_id: number;
 
   @Column({
     type: 'integer',
     nullable: true,
   })
-  @IsInt()
-  @Min(1)
   payment_method_id: number;
 }
