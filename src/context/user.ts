@@ -42,13 +42,16 @@ export const listUser = async (
     },
     relations: user_relations,
   });
-  console.log(users);
   users.map((user) => {
     delete user.password
-    delete user.client_service_representatives.password
-    delete user.sales_representatives.password
-    delete user.finantial_representatives.password
-    delete user.sales_sources.password
+    if(user.client_service_representatives)
+      delete user.client_service_representatives.password
+    if(user.sales_representatives)
+      delete user.sales_representatives.password
+    if(user.finantial_representatives)
+      delete user.finantial_representatives.password
+    if(user.sales_sources)
+      delete user.sales_sources.password
   });
   return users;
 };

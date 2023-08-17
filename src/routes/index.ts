@@ -13,6 +13,7 @@ import subsidiaryRoutes from "./subsidiary.route";
 import userStateRoutes from "./user_state.route";
 import userRoutes from "./user.route";
 import homeRoutes from "./home.route";
+import aosWarehouseRoutes from './aos_warehouse.route'
 
 export default (app) => {
   app.use("/", organizationRouter);
@@ -30,5 +31,6 @@ export default (app) => {
   app.use("/", userStateRoutes);
   app.use("/", userRoutes);
   app.use("/", homeRoutes);
+  app.use("/", aosWarehouseRoutes);
   app.get("/api/v1", (req, res) => res.sendStatus(200));
 };

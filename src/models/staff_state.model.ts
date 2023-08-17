@@ -14,7 +14,10 @@ export class StaffState {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({
+    type: "varchar",
+    nullable: false,
+  })
   name: string;
 
   //@OneToMany(() => Staff, (staff) => staff.states)

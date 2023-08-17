@@ -44,7 +44,7 @@ export class CreateSubsidiaryTable1692029396279 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable('user_levels');
+        await queryRunner.dropTable('subsidiaries');
     }
 
 }

@@ -13,6 +13,7 @@ import * as SubsidiaryController from './subsidiary.controller';
 import * as UserStateController from './user_state.controller';
 import * as UserController from './user.controller';
 import * as HomeController from './home.controller';
+import * as AOSWarehouseController from './aos_warehouse.controller';
 
 export {
     DepartmentController,
@@ -29,5 +30,6 @@ export {
     SubsidiaryController,
     UserStateController,
     UserController,
-    HomeController
+    HomeController,
+    AOSWarehouseController
 }

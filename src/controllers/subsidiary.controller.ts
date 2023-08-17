@@ -21,6 +21,7 @@ export const show = async (req: Request, res: Response) => {
     const role = await showSubsidiary(Number(req.params.id));
     res.json(role);
   } catch (e) {
+    console.log(e)
     res.status(500).send(e);
   }
 };
@@ -30,6 +31,7 @@ export const count = async (req: Request, res: Response) => {
     const count = await countSubsidiary();
     res.json({ count });
   } catch (e) {
+    console.log(e)
     res.status(500).send(e);
   }
 };
@@ -39,6 +41,7 @@ export const create = async (req: Request, res: Response) => {
     const role = await createSubsidiary(req.body);
     res.status(201).json(role);
   } catch (e) {
+    console.log(e)
     res.status(500).send(e);
   }
 };
@@ -48,6 +51,7 @@ export const update = async (req: Request, res: Response) => {
     const result = await updateSubsidiary(Number(req.params.id), req.body);
     res.status(200).json(result);
   } catch (e) {
+    console.log(e)
     res.status(500).send(e);
   }
 };
@@ -57,6 +61,7 @@ export const remove = async (req: Request, res: Response) => {
     const result = await removeSubsidiary(Number(req.params.id));
     res.status(200).json(result);
   } catch (e) {
+    console.log(e)
     res.status(500).send(e);
   }
 };

@@ -19,6 +19,7 @@ export const index = async (req: Request, res: Response) => {
     const states = await listStaffState(current_page, number_of_rows);
     res.json(states);
   } catch (e) {
+    console.log(e)
     res.status(500).send(e);
   }
 };
@@ -28,6 +29,7 @@ export const show = async (req: Request, res: Response) => {
     const state = await showStaffState(Number(req.params.id));
     res.json(state);
   } catch (e) {
+    console.log(e)
     res.status(500).send(e);
   }
 };
@@ -37,6 +39,7 @@ export const count = async (req: Request, res: Response) => {
     const count = await countStaffState();
     res.json({ count });
   } catch (e) {
+    console.log(e)
     res.status(500).send(e);
   }
 };
@@ -46,6 +49,7 @@ export const create = async (req: Request, res: Response) => {
     const state = await createStaffState(req.body);
     res.status(201).json(state);
   } catch (e) {
+    console.log(e)
     res.status(500).send(e);
   }
 };
@@ -55,6 +59,7 @@ export const update = async (req: Request, res: Response) => {
     const result = await updateStaffState(Number(req.params.id), req.body);
     res.status(200).json(result);
   } catch (e) {
+    console.log(e)
     res.status(500).send(e);
   }
 };
@@ -64,6 +69,7 @@ export const remove = async (req: Request, res: Response) => {
     const result = await removeStaffState(Number(req.params.id));
     res.status(200).json(result);
   } catch (e) {
+    console.log(e)
     res.status(500).send(e);
   }
 };

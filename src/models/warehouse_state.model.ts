@@ -14,7 +14,10 @@ export class WarehouseState {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({
+    type: "varchar",
+    nullable: false,
+  })
   name: string;
 
   //@OneToMany(() => Warehouse, (warehouse) => warehouse.states)
@@ -24,4 +27,3 @@ export class WarehouseState {
   @JoinColumn({ referencedColumnName: "state_id" })
   staffs: Warehouse[];
 }
- 

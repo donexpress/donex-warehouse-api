@@ -14,7 +14,10 @@ export class Subsidiary {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({
+        type: "varchar",
+        nullable: false,
+    })
     name: string;
 
     @OneToMany((type) => User, (user) => user.subsidiaries)
