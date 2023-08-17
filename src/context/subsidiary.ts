@@ -1,6 +1,6 @@
-import { AppDataSource } from "../config/ormconfig";
-import { validateContext } from "../helpers/validate";
-import { Subsidiary } from "../models/subsidiary.model";
+import { AppDataSource } from '../config/ormconfig';
+import { validateContext } from '../helpers/validate';
+import { Subsidiary } from '../models/subsidiary.model';
 
 export const listSubsidiary = async (
   current_page: number,
@@ -10,7 +10,7 @@ export const listSubsidiary = async (
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
     order: {
-      id: "ASC",
+      id: 'ASC',
     },
   });
 };

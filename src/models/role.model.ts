@@ -5,17 +5,17 @@ import {
   OneToMany,
   Index,
   JoinColumn,
-} from "typeorm";
-import { Staff } from "./staff.model";
+} from 'typeorm';
+import { Staff } from './staff.model';
 
-@Index(["name"])
-@Entity({ name: "roles" })
+@Index(['name'])
+@Entity({ name: 'roles' })
 export class Role {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({
-    type: "varchar",
+    type: 'varchar',
     nullable: false,
   })
   name: string;
@@ -24,6 +24,6 @@ export class Role {
   //staff: Staff[]
 
   @OneToMany((type) => Staff, (staff) => staff.roles)
-  @JoinColumn({ referencedColumnName: "role_id " })
+  @JoinColumn({ referencedColumnName: 'role_id ' })
   staffs: Staff[];
 }

@@ -1,6 +1,6 @@
-import { AppDataSource } from "../config/ormconfig";
-import { validateContext } from "../helpers/validate";
-import { RegionalDivision } from "../models/regional_division.model";
+import { AppDataSource } from '../config/ormconfig';
+import { validateContext } from '../helpers/validate';
+import { RegionalDivision } from '../models/regional_division.model';
 
 export const listRegionalDivision = async (
   current_page: number,
@@ -10,7 +10,7 @@ export const listRegionalDivision = async (
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
     order: {
-      id: "ASC",
+      id: 'ASC',
     },
   });
 };
@@ -31,7 +31,10 @@ export const createRegionalDivision = async (regional_division_data) => {
   return await validateContext(AppDataSource, role);
 };
 
-export const updateRegionalDivision = async (id: number, regional_division_data) => {
+export const updateRegionalDivision = async (
+  id: number,
+  regional_division_data
+) => {
   const repository = await AppDataSource.getRepository(RegionalDivision);
   const result = await repository.update({ id }, regional_division_data);
   return result;

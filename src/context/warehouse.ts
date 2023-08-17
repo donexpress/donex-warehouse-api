@@ -1,6 +1,6 @@
-import { AppDataSource } from "../config/ormconfig";
-import { validateContext } from "../helpers/validate";
-import { Warehouse } from "../models/warehouse.model";
+import { AppDataSource } from '../config/ormconfig';
+import { validateContext } from '../helpers/validate';
+import { Warehouse } from '../models/warehouse.model';
 
 export const listWarehouse = async (
   current_page: number,
@@ -10,7 +10,7 @@ export const listWarehouse = async (
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
     order: {
-      id: "ASC",
+      id: 'ASC',
     },
     relations: ['states'],
   });

@@ -1,8 +1,8 @@
-import { Request, Response } from "express";
-import { AppDataSource } from "../config/ormconfig";
-import { Staff } from "../models/staff.model";
-import bcrypt from "bcryptjs";
-import JWT from "jsonwebtoken";
+import { Request, Response } from 'express';
+import { AppDataSource } from '../config/ormconfig';
+import { Staff } from '../models/staff.model';
+import bcrypt from 'bcryptjs';
+import JWT from 'jsonwebtoken';
 
 export const login = async (req: Request, res: Response) => {
   const repository = await AppDataSource.getRepository(Staff);
@@ -11,7 +11,7 @@ export const login = async (req: Request, res: Response) => {
   });
   if (!user || !bcrypt.compareSync(req.body.password, user.password)) {
     res.status(401).json({
-      message: "User or password incorrect",
+      message: 'User or password incorrect',
     });
   } else {
     const token = JWT.sign(

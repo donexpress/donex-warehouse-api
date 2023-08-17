@@ -1,27 +1,26 @@
 import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    Index,
-    OneToMany,
-    JoinColumn,
-} from "typeorm";
-import { User } from "./user.model";
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  Index,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
+import { User } from './user.model';
 
-@Index(["name"])
-@Entity({ name: "subsidiaries" })
+@Index(['name'])
+@Entity({ name: 'subsidiaries' })
 export class Subsidiary {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({
-        type: "varchar",
-        nullable: false,
-    })
-    name: string;
+  @Column({
+    type: 'varchar',
+    nullable: false,
+  })
+  name: string;
 
-    @OneToMany((type) => User, (user) => user.subsidiaries)
-    @JoinColumn({ referencedColumnName: "subsidiary_id " })
-    users: User[];
-
+  @OneToMany((type) => User, (user) => user.subsidiaries)
+  @JoinColumn({ referencedColumnName: 'subsidiary_id ' })
+  users: User[];
 }

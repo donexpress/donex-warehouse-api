@@ -5,24 +5,24 @@ import {
   Index,
   ManyToOne,
   JoinColumn,
-} from "typeorm";
-import { UserState } from "./user_state.model";
-import { Staff } from "./staff.model";
-import { Subsidiary } from "./subsidiary.model";
-import { RegionalDivision } from "./regional_division.model";
-import { Warehouse } from "./warehouse.model";
-import { UserLevel } from "./user_level.model";
-import { PaymentMethod } from "./payment_method.model";
+} from 'typeorm';
+import { UserState } from './user_state.model';
+import { Staff } from './staff.model';
+import { Subsidiary } from './subsidiary.model';
+import { RegionalDivision } from './regional_division.model';
+import { Warehouse } from './warehouse.model';
+import { UserLevel } from './user_level.model';
+import { PaymentMethod } from './payment_method.model';
 import {
   IsOptional,
   IsInt,
   Min,
   IsEmail,
   IsPhoneNumber,
-} from "class-validator";
+} from 'class-validator';
 
-@Index(["username"])
-@Entity({ name: "users" })
+@Index(['username'])
+@Entity({ name: 'users' })
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -46,7 +46,7 @@ export class User {
   company: string;
 
   @Column({
-    type: "varchar",
+    type: 'varchar',
     nullable: true,
   })
   @IsOptional()
@@ -54,7 +54,7 @@ export class User {
   email: string;
 
   @Column({
-    type: "varchar",
+    type: 'varchar',
     nullable: true,
   })
   phone: string;
@@ -69,7 +69,7 @@ export class User {
   observations: string;
 
   @Column({
-    type: "integer",
+    type: 'integer',
     nullable: false,
   })
   //@IsOptional()
@@ -78,7 +78,7 @@ export class User {
   state_id: number;
 
   @Column({
-    type: "integer",
+    type: 'integer',
     nullable: false,
   })
   @IsInt()
@@ -86,7 +86,7 @@ export class User {
   finantial_representative: number;
 
   @Column({
-    type: "integer",
+    type: 'integer',
     nullable: false,
   })
   @IsInt()
@@ -94,7 +94,7 @@ export class User {
   client_service_representative: number;
 
   @Column({
-    type: "integer",
+    type: 'integer',
     nullable: false,
   })
   @IsInt()
@@ -102,7 +102,7 @@ export class User {
   sales_representative: number;
 
   @Column({
-    type: "integer",
+    type: 'integer',
     nullable: false,
   })
   @IsInt()
@@ -110,7 +110,7 @@ export class User {
   sales_source: number;
 
   @Column({
-    type: "integer",
+    type: 'integer',
     nullable: false,
   })
   @IsInt()
@@ -118,7 +118,7 @@ export class User {
   subsidiary_id: number;
 
   @Column({
-    type: "integer",
+    type: 'integer',
     nullable: false,
   })
   @IsInt()
@@ -126,7 +126,7 @@ export class User {
   regional_division_id: number;
 
   @Column({
-    type: "integer",
+    type: 'integer',
     nullable: true,
   })
   @IsInt()
@@ -134,25 +134,25 @@ export class User {
   warehouse_id: number;
 
   @Column({
-    type: "boolean",
+    type: 'boolean',
     default: false,
   })
   shipping_control: boolean;
 
   @Column({
     type: 'boolean',
-    default: false
+    default: false,
   })
   hidde_transfer_order: boolean;
 
   @Column({
     type: 'boolean',
-    default: false
+    default: false,
   })
   reset_password: boolean;
 
   @Column({
-    type: "integer",
+    type: 'integer',
     nullable: false,
   })
   @IsInt()
@@ -160,7 +160,7 @@ export class User {
   user_level_id: number;
 
   @Column({
-    type: "integer",
+    type: 'integer',
     nullable: false,
   })
   @IsInt()
@@ -168,48 +168,48 @@ export class User {
   payment_method_id: number;
 
   @ManyToOne((type) => UserState, (state) => state.users)
-  @JoinColumn({ name: "state_id", referencedColumnName: "id" })
+  @JoinColumn({ name: 'state_id', referencedColumnName: 'id' })
   states: UserState;
 
   @ManyToOne((type) => Staff, (staff) => staff.finantial_representatives)
-  @JoinColumn({ name: "finantial_representative", referencedColumnName: "id" })
+  @JoinColumn({ name: 'finantial_representative', referencedColumnName: 'id' })
   finantial_representatives: Staff;
 
   @ManyToOne((type) => Staff, (staff) => staff.client_service_representative)
   @JoinColumn({
-    name: "client_service_representative",
-    referencedColumnName: "id",
+    name: 'client_service_representative',
+    referencedColumnName: 'id',
   })
   client_service_representatives: Staff;
 
   @ManyToOne((type) => Staff, (staff) => staff.sales_representatives)
-  @JoinColumn({ name: "sales_representative", referencedColumnName: "id" })
+  @JoinColumn({ name: 'sales_representative', referencedColumnName: 'id' })
   sales_representatives: Staff;
 
   @ManyToOne((type) => Staff, (staff) => staff.sales_sources)
-  @JoinColumn({ name: "sales_source", referencedColumnName: "id" })
+  @JoinColumn({ name: 'sales_source', referencedColumnName: 'id' })
   sales_sources: Staff;
 
   @ManyToOne((type) => Subsidiary, (subsidiary) => subsidiary.users)
-  @JoinColumn({ name: "subsidiary_id", referencedColumnName: "id" })
+  @JoinColumn({ name: 'subsidiary_id', referencedColumnName: 'id' })
   subsidiaries: Subsidiary;
 
   @ManyToOne(
     (type) => RegionalDivision,
     (regionalDivision) => regionalDivision.users
   )
-  @JoinColumn({ name: "regional_division_id", referencedColumnName: "id" })
+  @JoinColumn({ name: 'regional_division_id', referencedColumnName: 'id' })
   regional_divisions: RegionalDivision;
 
   @ManyToOne((type) => Warehouse, (warehouse) => warehouse.users)
-  @JoinColumn({ name: "warehouse_id", referencedColumnName: "id" })
+  @JoinColumn({ name: 'warehouse_id', referencedColumnName: 'id' })
   warehouses: RegionalDivision;
 
   @ManyToOne((type) => UserLevel, (user_level) => user_level.users)
-  @JoinColumn({ name: "user_level_id", referencedColumnName: "id" })
+  @JoinColumn({ name: 'user_level_id', referencedColumnName: 'id' })
   user_level: UserLevel;
 
   @ManyToOne((type) => PaymentMethod, (payment_method) => payment_method.users)
-  @JoinColumn({ name: "payment_method_id", referencedColumnName: "id" })
+  @JoinColumn({ name: 'payment_method_id', referencedColumnName: 'id' })
   payment_methods: PaymentMethod;
 }

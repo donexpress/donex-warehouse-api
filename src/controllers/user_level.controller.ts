@@ -1,5 +1,12 @@
-import { Request, Response } from "express";
-import { countUserLevel, createUserLevel, listUserLevel, removeUserLevel, showUserLevel, updateUserLevel } from "../context/user_level";
+import { Request, Response } from 'express';
+import {
+  countUserLevel,
+  createUserLevel,
+  listUserLevel,
+  removeUserLevel,
+  showUserLevel,
+  updateUserLevel,
+} from '../context/user_level';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -12,7 +19,7 @@ export const index = async (req: Request, res: Response) => {
     const organization = await listUserLevel(current_page, number_of_rows);
     res.json(organization);
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -22,7 +29,7 @@ export const show = async (req: Request, res: Response) => {
     const organization = await showUserLevel(Number(req.params.id));
     res.json(organization);
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -32,7 +39,7 @@ export const count = async (req: Request, res: Response) => {
     const count = await countUserLevel();
     res.json({ count });
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -42,7 +49,7 @@ export const create = async (req: Request, res: Response) => {
     const organization = createUserLevel(req.body);
     res.status(201).json(organization);
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -52,7 +59,7 @@ export const update = async (req: Request, res: Response) => {
     const result = await updateUserLevel(Number(req.params.id), req.body);
     res.status(200).json(result);
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -62,7 +69,7 @@ export const remove = async (req: Request, res: Response) => {
     const result = await removeUserLevel(Number(req.params.id));
     res.status(200).json(result);
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(500).send(e);
   }
 };

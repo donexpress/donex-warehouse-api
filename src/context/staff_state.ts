@@ -1,6 +1,6 @@
-import { AppDataSource } from "../config/ormconfig";
-import { validateContext } from "../helpers/validate";
-import { StaffState } from "../models/staff_state.model";
+import { AppDataSource } from '../config/ormconfig';
+import { validateContext } from '../helpers/validate';
+import { StaffState } from '../models/staff_state.model';
 
 export const listStaffState = async (
   current_page: number,
@@ -10,7 +10,7 @@ export const listStaffState = async (
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
     order: {
-      id: "ASC",
+      id: 'ASC',
     },
   });
 };

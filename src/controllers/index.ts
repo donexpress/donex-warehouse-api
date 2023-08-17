@@ -16,20 +16,20 @@ import * as HomeController from './home.controller';
 import * as AOSWarehouseController from './aos_warehouse.controller';
 
 export {
-    DepartmentController,
-    StaffStateController,
-    RoleController,
-    WarehouseController,
-    WarehouseStateController,
-    StaffController,
-    LoginController,
-    PaymentMethodController,
-    ServiceController,
-    UserLevelController,
-    RegionalDivisionController,
-    SubsidiaryController,
-    UserStateController,
-    UserController,
-    HomeController,
-    AOSWarehouseController
-}
+  DepartmentController,
+  StaffStateController,
+  RoleController,
+  WarehouseController,
+  WarehouseStateController,
+  StaffController,
+  LoginController,
+  PaymentMethodController,
+  ServiceController,
+  UserLevelController,
+  RegionalDivisionController,
+  SubsidiaryController,
+  UserStateController,
+  UserController,
+  HomeController,
+  AOSWarehouseController,
+};

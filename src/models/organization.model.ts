@@ -35,9 +35,6 @@ export class Organization {
   @IsOptional()
   organization_type: string;
 
-  //@OneToMany(() => Staff, (staff) => staff.organizations)
-  //staff: Staff[]
-
   @OneToMany((type) => Staff, (staff) => staff.organizations)
   @JoinColumn({ referencedColumnName: "organization_id " })
   staffs: Staff[];

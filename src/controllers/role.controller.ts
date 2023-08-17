@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
 import {
   countRole,
   createRole,
@@ -6,7 +6,7 @@ import {
   removeRole,
   showRole,
   updateRole,
-} from "../context/role";
+} from '../context/role';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -19,7 +19,7 @@ export const index = async (req: Request, res: Response) => {
     const roles = await listRole(current_page, number_of_rows);
     res.json(roles);
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -29,7 +29,7 @@ export const show = async (req: Request, res: Response) => {
     const role = await showRole(Number(req.params.id));
     res.json(role);
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -39,7 +39,7 @@ export const count = async (req: Request, res: Response) => {
     const count = await countRole();
     res.json({ count });
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -49,7 +49,7 @@ export const create = async (req: Request, res: Response) => {
     const role = await createRole(req.body);
     res.status(201).json(role);
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -59,7 +59,7 @@ export const update = async (req: Request, res: Response) => {
     const result = await updateRole(Number(req.params.id), req.body);
     res.status(200).json(result);
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -69,7 +69,7 @@ export const remove = async (req: Request, res: Response) => {
     const result = await removeRole(Number(req.params.id));
     res.status(200).json(result);
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(500).send(e);
   }
 };

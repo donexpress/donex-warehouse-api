@@ -5,22 +5,22 @@ import {
   OneToMany,
   Index,
   JoinColumn,
-} from "typeorm";
-import { UserLevel } from "./user_level.model";
+} from 'typeorm';
+import { UserLevel } from './user_level.model';
 
-@Index(["name"])
-@Entity({ name: "services" })
+@Index(['name'])
+@Entity({ name: 'services' })
 export class Service {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({
-    type: "varchar",
+    type: 'varchar',
     nullable: false,
   })
   name: string;
 
   @OneToMany((type) => UserLevel, (user_level) => user_level.services)
-  @JoinColumn({ referencedColumnName: "service_id " })
+  @JoinColumn({ referencedColumnName: 'service_id ' })
   userLevels: UserLevel[];
 }

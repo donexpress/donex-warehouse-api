@@ -6,32 +6,32 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
-} from "typeorm";
-import { Service } from "./service.model";
-import { User } from "./user.model";
-import { IsInt, IsOptional, Min } from "class-validator";
+} from 'typeorm';
+import { Service } from './service.model';
+import { User } from './user.model';
+import { IsInt, IsOptional, Min } from 'class-validator';
 
-@Index(["name"])
-@Entity({ name: "user_levels" })
+@Index(['name'])
+@Entity({ name: 'user_levels' })
 export class UserLevel {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({
-    type: "varchar",
+    type: 'varchar',
     nullable: false,
   })
   name: string;
 
   @Column({
-    type: "varchar",
+    type: 'varchar',
     nullable: true,
   })
   @IsOptional()
   observations: string;
 
   @Column({
-    type: "integer",
+    type: 'integer',
     nullable: false,
   })
   @IsInt()
@@ -39,10 +39,10 @@ export class UserLevel {
   service_id: number;
 
   @ManyToOne((type) => Service, (role) => role.userLevels)
-  @JoinColumn({ name: "service_id", referencedColumnName: "id" })
+  @JoinColumn({ name: 'service_id', referencedColumnName: 'id' })
   services: Service;
 
   @OneToMany((type) => User, (user) => user.user_level)
-  @JoinColumn({ referencedColumnName: "user_level_id" })
+  @JoinColumn({ referencedColumnName: 'user_level_id' })
   users: User[];
 }

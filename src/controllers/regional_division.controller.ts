@@ -1,5 +1,12 @@
-import { Request, Response } from "express";
-import { countRegionalDivision, createRegionalDivision, listRegionalDivision, removeRegionalDivision, showRegionalDivision, updateRegionalDivision } from "../context/regional_division";
+import { Request, Response } from 'express';
+import {
+  countRegionalDivision,
+  createRegionalDivision,
+  listRegionalDivision,
+  removeRegionalDivision,
+  showRegionalDivision,
+  updateRegionalDivision,
+} from '../context/regional_division';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -12,7 +19,7 @@ export const index = async (req: Request, res: Response) => {
     const roles = await listRegionalDivision(current_page, number_of_rows);
     res.json(roles);
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -22,7 +29,7 @@ export const show = async (req: Request, res: Response) => {
     const role = await showRegionalDivision(Number(req.params.id));
     res.json(role);
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -32,7 +39,7 @@ export const count = async (req: Request, res: Response) => {
     const count = await countRegionalDivision();
     res.json({ count });
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -42,17 +49,20 @@ export const create = async (req: Request, res: Response) => {
     const role = await createRegionalDivision(req.body);
     res.status(201).json(role);
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(500).send(e);
   }
 };
 
 export const update = async (req: Request, res: Response) => {
   try {
-    const result = await updateRegionalDivision(Number(req.params.id), req.body);
+    const result = await updateRegionalDivision(
+      Number(req.params.id),
+      req.body
+    );
     res.status(200).json(result);
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -62,7 +72,7 @@ export const remove = async (req: Request, res: Response) => {
     const result = await removeRegionalDivision(Number(req.params.id));
     res.status(200).json(result);
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(500).send(e);
   }
 };

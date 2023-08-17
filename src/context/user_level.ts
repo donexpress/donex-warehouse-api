@@ -1,6 +1,6 @@
-import { AppDataSource } from "../config/ormconfig";
-import { validateContext } from "../helpers/validate";
-import { UserLevel } from "../models/user_level.model";
+import { AppDataSource } from '../config/ormconfig';
+import { validateContext } from '../helpers/validate';
+import { UserLevel } from '../models/user_level.model';
 
 export const listUserLevel = async (
   current_page: number,
@@ -10,9 +10,9 @@ export const listUserLevel = async (
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
     order: {
-      id: "ASC",
+      id: 'ASC',
     },
-    relations: ['services']
+    relations: ['services'],
   });
 };
 
@@ -23,8 +23,8 @@ export const countUserLevel = async () => {
 export const showUserLevel = async (id: number) => {
   return await AppDataSource.manager.findOne(UserLevel, {
     where: { id },
-    relations: ['services']
-});
+    relations: ['services'],
+  });
 };
 
 export const createUserLevel = async (user_level_data) => {

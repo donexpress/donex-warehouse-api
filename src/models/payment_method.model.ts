@@ -5,30 +5,30 @@ import {
   Index,
   OneToMany,
   JoinColumn,
-} from "typeorm";
-import { User } from "./user.model";
-import { IsOptional } from "class-validator";
+} from 'typeorm';
+import { User } from './user.model';
+import { IsOptional } from 'class-validator';
 
-@Index(["name"])
-@Entity({ name: "payment_methods" })
+@Index(['name'])
+@Entity({ name: 'payment_methods' })
 export class PaymentMethod {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({
-    type: "varchar",
+    type: 'varchar',
     nullable: true,
   })
   @IsOptional()
   code: string;
 
   @Column({
-    type: "varchar",
+    type: 'varchar',
     nullable: false,
   })
   name: string;
 
   @OneToMany((type) => User, (user) => user.states)
-  @JoinColumn({ referencedColumnName: "payment_method_id " })
+  @JoinColumn({ referencedColumnName: 'payment_method_id ' })
   users: User[];
 }
