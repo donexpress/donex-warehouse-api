@@ -47,7 +47,7 @@ export class User {
 
   @Column({
     type: "varchar",
-    nullable: false,
+    nullable: true,
   })
   @IsOptional()
   @IsEmail()
@@ -55,7 +55,7 @@ export class User {
 
   @Column({
     type: "varchar",
-    nullable: false,
+    nullable: true,
   })
   phone: string;
 
@@ -115,7 +115,7 @@ export class User {
 
   @Column({
     type: "integer",
-    nullable: false,
+    nullable: true,
   })
   warehouse_id: number;
 
