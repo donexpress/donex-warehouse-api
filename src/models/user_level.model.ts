@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { Service } from './service.model';
 import { User } from './user.model';
-import { IsInt, IsOptional, Min } from 'class-validator';
+import { IsOptional, Min } from 'class-validator';
 
 @Index(['name'])
 @Entity({ name: 'user_levels' })
@@ -34,7 +34,5 @@ export class UserLevel {
     type: 'integer',
     nullable: true,
   })
-  @IsInt()
-  @Min(1)
   service_id: number;
 }

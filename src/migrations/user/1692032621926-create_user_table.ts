@@ -23,6 +23,7 @@ export class CreateUserTable1692032621926 implements MigrationInterface {
             {
               name: "user_level_id",
               type: "integer",
+              isNullable: true,
             },
             {
               name: "customer_number",
@@ -31,6 +32,7 @@ export class CreateUserTable1692032621926 implements MigrationInterface {
             {
               name: "payment_method_id",
               type: "integer",
+              isNullable: true,
             },
             {
               name: "username",
@@ -43,6 +45,7 @@ export class CreateUserTable1692032621926 implements MigrationInterface {
             {
               name: "label_code",
               type: "varchar",
+              isNullable: true,
             },
             {
               name: "password",
@@ -51,30 +54,37 @@ export class CreateUserTable1692032621926 implements MigrationInterface {
             {
               name: "contact",
               type: "varchar",
+              isNullable: true,
             },
             {
               name: "company",
               type: "varchar",
+              isNullable: true,
             },
             {
               name: "email",
               type: "varchar",
+              isNullable: true,
             },
             {
               name: "phone",
               type: "varchar",
+              isNullable: true,
             },
             {
               name: "qq",
               type: "varchar",
+              isNullable: true,
             },
             {
               name: "credits",
               type: "varchar",
+              isNullable: true,
             },
             {
               name: "observations",
               type: "varchar",
+              isNullable: true,
             },
             {
               name: "finantial_representative",
