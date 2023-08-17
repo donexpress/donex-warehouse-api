@@ -70,8 +70,7 @@ export class User {
 
   @Column({
     type: "integer",
-    nullable: true,
-    default: 1
+    nullable: true
   })
   //@IsOptional()
   @IsInt()
