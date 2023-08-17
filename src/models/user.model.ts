@@ -6,13 +6,13 @@ import {
   ManyToOne,
   JoinColumn,
 } from "typeorm";
-import { UserState } from "./userState.model";
+import { UserState } from "./user_state.model";
 import { Staff } from "./staff.model";
 import { Subsidiary } from "./subsidiary.model";
-import { RegionalDivision } from "./regionalDivision.model";
+import { RegionalDivision } from "./regional_division.model";
 import { Warehouse } from "./warehouse.model";
 import { UserLevel } from "./user_level.model";
-import { PaymentMethod } from "./paymentMethod.model";
+import { PaymentMethod } from "./payment_method.model";
 import {
   IsOptional,
   IsInt,

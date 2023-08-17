@@ -9,7 +9,7 @@ import {
   JoinColumn,
   OneToMany,
 } from "typeorm";
-import { StaffState } from "./staffState.model";
+import { StaffState } from "./staff_state.model";
 import { Organization } from "./organization.model";
 import { Warehouse } from "./warehouse.model";
 import { Role } from "./role.model";

@@ -1,6 +1,6 @@
 import { AppDataSource } from "../config/ormconfig";
 import { validateContext } from "../helpers/validate";
-import { RegionalDivision } from "../models/regionalDivision.model";
+import { RegionalDivision } from "../models/regional_division.model";
 
 export const listRegionalDivision = async (
   current_page: number,

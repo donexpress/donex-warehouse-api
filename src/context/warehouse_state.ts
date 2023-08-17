@@ -1,5 +1,5 @@
 import { AppDataSource } from "../config/ormconfig";
-import { WarehouseState } from "../models/warehouseState.model";
+import { WarehouseState } from "../models/warehouse_state.model";
 import { validateContext } from "../helpers/validate";
 
 export const listWarehouseState = async (

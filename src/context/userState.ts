@@ -1,6 +1,6 @@
 import { AppDataSource } from "../config/ormconfig";
 import { validateContext } from "../helpers/validate";
-import { UserState } from "../models/userState.model";
+import { UserState } from "../models/user_state.model";
 
 export const listUserState = async (
   current_page: number,

@@ -1,6 +1,6 @@
 import { AppDataSource } from "../config/ormconfig";
 import { validateContext } from "../helpers/validate";
-import { StaffState } from "../models/staffState.model";
+import { StaffState } from "../models/staff_state.model";
 
 export const listStaffState = async (
   current_page: number,

@@ -2,7 +2,7 @@ import * as DepartmentController from './organization.controller';
 import * as StaffStateController from './staff_state.controller';
 import * as RoleController from './role.controller';
 import * as WarehouseController from './warehouse.controller';
-import * as WarehouseStateController from './warehouseState.controller';
+import * as WarehouseStateController from './warehouse_state.controller';
 import * as StaffController from './staff.controller';
 import * as LoginController from './login.controller';
 import * as PaymentMethodController from './payment_method.controller';

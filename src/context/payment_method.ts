@@ -1,6 +1,6 @@
 import { AppDataSource } from "../config/ormconfig";
 import { validateContext } from "../helpers/validate";
-import { PaymentMethod } from "../models/paymentMethod.model";
+import { PaymentMethod } from "../models/payment_method.model";
 import { ILike } from "typeorm";
 export const listPaymentMethods = async (
   current_page: number,
