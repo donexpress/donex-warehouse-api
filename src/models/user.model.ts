@@ -70,7 +70,7 @@ export class User {
 
   @Column({
     type: "integer",
-    nullable: true
+    nullable: false,
   })
   //@IsOptional()
   @IsInt()
@@ -79,53 +79,76 @@ export class User {
 
   @Column({
     type: "integer",
-    nullable: true,
+    nullable: false,
   })
+  @IsInt()
+  @Min(1)
   finantial_representative: number;
 
   @Column({
     type: "integer",
-    nullable: true,
+    nullable: false,
   })
+  @IsInt()
+  @Min(1)
   client_service_representative: number;
 
   @Column({
     type: "integer",
-    nullable: true,
+    nullable: false,
   })
+  @IsInt()
+  @Min(1)
   sales_representative: number;
 
   @Column({
     type: "integer",
-    nullable: true,
+    nullable: false,
   })
+  @IsInt()
+  @Min(1)
   sales_source: number;
 
   @Column({
     type: "integer",
-    nullable: true,
+    nullable: false,
   })
+  @IsInt()
+  @Min(1)
   subsidiary_id: number;
 
   @Column({
     type: "integer",
-    nullable: true,
+    nullable: false,
   })
+  @IsInt()
+  @Min(1)
   regional_division_id: number;
 
   @Column({
     type: "integer",
     nullable: true,
   })
+  @IsInt()
+  @Min(1)
   warehouse_id: number;
 
-  @Column()
+  @Column({
+    type: "boolean",
+    default: false,
+  })
   shipping_control: boolean;
 
-  @Column()
+  @Column({
+    type: 'boolean',
+    default: false
+  })
   hidde_transfer_order: boolean;
 
-  @Column()
+  @Column({
+    type: 'boolean',
+    default: false
+  })
   reset_password: boolean;
 
   @Column({
@@ -136,7 +159,12 @@ export class User {
   @Min(1)
   user_level_id: number;
 
-  @Column()
+  @Column({
+    type: "integer",
+    nullable: false,
+  })
+  @IsInt()
+  @Min(1)
   payment_method_id: number;
 
   @ManyToOne((type) => UserState, (state) => state.users)
