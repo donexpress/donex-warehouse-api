@@ -7,6 +7,7 @@ import {
   showWarehouse,
   updateWarehouse,
 } from '../context/warehouse';
+import { Warehouse } from '../models/warehouse.model';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -45,12 +46,12 @@ export const count = async (req: Request, res: Response) => {
 };
 
 export const create = async (req: Request, res: Response) => {
-  try {
-    const affiliation = await createWarehouse(req.body);
-    res.status(201).json(affiliation);
-  } catch (e) {
-    console.log(e);
-    res.status(500).send(e);
+  const body = req.body;
+  const cargo_station = await createWarehouse(body);
+  if (cargo_station instanceof Warehouse) {
+    res.status(201).json(cargo_station);
+  } else {
+    res.status(422).send(cargo_station);
   }
 };
 
