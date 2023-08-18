@@ -7,6 +7,7 @@ import {
   showRole,
   updateRole,
 } from '../context/role';
+import { Role } from '../models/role.model';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -45,12 +46,11 @@ export const count = async (req: Request, res: Response) => {
 };
 
 export const create = async (req: Request, res: Response) => {
-  try {
-    const role = await createRole(req.body);
+  const role = await createRole(req.body);
+  if (role instanceof Role) {
     res.status(201).json(role);
-  } catch (e) {
-    console.log(e);
-    res.status(500).send(e);
+  } else {
+    res.status(422).json(role)
   }
 };
 

@@ -7,6 +7,7 @@ import {
   showStaff,
   updateStaff,
 } from '../context/staff';
+import { Staff } from '../models/staff.model';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -45,12 +46,11 @@ export const count = async (req: Request, res: Response) => {
 };
 
 export const create = async (req: Request, res: Response) => {
-  try {
-    const user = await createStaff(req.body);
+  const user = await createStaff(req.body);
+  if(user instanceof Staff) {
     res.status(201).json(user);
-  } catch (e) {
-    console.log(e);
-    res.status(500).send(e);
+  } else {
+    res.status(422).json(user)
   }
 };
 

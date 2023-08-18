@@ -7,6 +7,7 @@ import {
   showSubsidiary,
   updateSubsidiary,
 } from '../context/subsidiary';
+import { Subsidiary } from '../models/subsidiary.model';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -44,12 +45,11 @@ export const count = async (req: Request, res: Response) => {
 };
 
 export const create = async (req: Request, res: Response) => {
-  try {
-    const role = await createSubsidiary(req.body);
-    res.status(201).json(role);
-  } catch (e) {
-    console.log(e);
-    res.status(500).send(e);
+  const subsidiary = await createSubsidiary(req.body);
+  if(subsidiary instanceof Subsidiary) {
+    res.status(201).json(subsidiary);
+  } else {
+    res.status(422).json(subsidiary);
   }
 };
 

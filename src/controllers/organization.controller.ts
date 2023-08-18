@@ -7,6 +7,7 @@ import {
   showDepataments,
   updateDepataments,
 } from '../context/organization';
+import { Organization } from '../models/organization.model';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -45,12 +46,12 @@ export const count = async (req: Request, res: Response) => {
 };
 
 export const create = async (req: Request, res: Response) => {
-  try {
-    const organization = createDepataments(req.body);
+  const organization = await createDepataments(req.body);
+  if(organization instanceof Organization) {
     res.status(201).json(organization);
-  } catch (e) {
-    console.log(e);
-    res.status(500).send(e);
+  } else {
+    console.log(organization)
+    res.status(422).json(organization)
   }
 };
 

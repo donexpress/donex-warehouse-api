@@ -7,6 +7,7 @@ import {
   showUserLevel,
   updateUserLevel,
 } from '../context/user_level';
+import { UserLevel } from '../models/user_level.model';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -45,12 +46,11 @@ export const count = async (req: Request, res: Response) => {
 };
 
 export const create = async (req: Request, res: Response) => {
-  try {
-    const organization = createUserLevel(req.body);
-    res.status(201).json(organization);
-  } catch (e) {
-    console.log(e);
-    res.status(500).send(e);
+  const user_level = await createUserLevel(req.body);
+  if(user_level instanceof UserLevel) {
+    res.status(201).json(user_level);
+  } else {
+    res.status(422).json(user_level)
   }
 };
 
