@@ -14,6 +14,10 @@ import * as UserStateController from './user_state.controller';
 import * as UserController from './user.controller';
 import * as HomeController from './home.controller';
 import * as AOSWarehouseController from './aos_warehouse.controller';
+import * as ShelfBillingType from './shelf_billing_type.controller';
+import * as ShelfLocation from './shelf_location.controller';
+import * as ShelfType from './shelf_type.controller';
+import * as Shelf from './shelf.controller';
 
 export {
   DepartmentController,
@@ -32,4 +36,8 @@ export {
   UserController,
   HomeController,
   AOSWarehouseController,
+  ShelfBillingType,
+  ShelfLocation,
+  ShelfType,
+  Shelf,
 };

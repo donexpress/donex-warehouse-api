@@ -13,7 +13,11 @@ import subsidiaryRoutes from "./subsidiary.route";
 import userStateRoutes from "./user_state.route";
 import userRoutes from "./user.route";
 import homeRoutes from "./home.route";
-import aosWarehouseRoutes from './aos_warehouse.route'
+import aosWarehouseRoutes from './aos_warehouse.route';
+import shelfBillingType from './shelf_billing_type.route';
+import shelfLocation from './shelf_location.route';
+import shelfType from './shelf_type.route';
+import shelf from './shelf.route';
 
 export default (app) => {
   app.use("/", organizationRouter);
@@ -32,5 +36,9 @@ export default (app) => {
   app.use("/", userRoutes);
   app.use("/", homeRoutes);
   app.use("/", aosWarehouseRoutes);
+  app.use("/", shelfBillingType);
+  app.use("/", shelfLocation);
+  app.use("/", shelfType);
+  app.use("/", shelf);
   app.get("/api/v1", (req, res) => res.sendStatus(200));
 };
