@@ -74,7 +74,7 @@ export const showUser = async (id: number) => {
 export const createUser = async (user_data) => {
   const repository = await AppDataSource.getRepository(User);
   const count_user = await countUser();
-  const customer_count = count_user >= 10 ? '1000' + count_user :'10000' + count_user;
+  const customer_count = count_user >= 10 ? '1000' + count_user + 1 :'10000' + count_user + 1;
   //const user_obj = {...user_data, customer_number: Math.floor(100000 + Math.random() * 900000)};
   const user_obj = {...user_data, customer_number: customer_count};
   user_obj.password = bcrypt.hashSync(
