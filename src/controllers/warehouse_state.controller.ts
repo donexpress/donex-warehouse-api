@@ -7,6 +7,7 @@ import {
   showWarehouseState,
   updateWarehouseState,
 } from '../context/warehouse_state';
+import { WarehouseState } from '../models/warehouse_state.model';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -45,12 +46,11 @@ export const count = async (req: Request, res: Response) => {
 };
 
 export const create = async (req: Request, res: Response) => {
-  try {
-    const state = await createWarehouseState(req.body);
+  const state = await createWarehouseState(req.body);
+  if(state instanceof WarehouseState) {
     res.status(201).json(state);
-  } catch (e) {
-    console.log(e);
-    res.status(500).send(e);
+  } else {
+    res.status(422).json(state)
   }
 };
 

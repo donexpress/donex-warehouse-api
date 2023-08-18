@@ -7,6 +7,7 @@ import {
   showAOSWarehouse,
   updateAOSWarehouse,
 } from '../context/aos_warehouse';
+import { AOSWarehouse } from '../models/aos_warehouse.model';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -51,13 +52,12 @@ export const count = async (req: Request, res: Response) => {
 };
 
 export const create = async (req: Request, res: Response) => {
-  try {
-    const organization = createAOSWarehouse(req.body);
-    res.status(201).json(organization);
-  } catch (e) {
-    console.log(e);
-    res.status(500).send(e);
-  }
+  const aosWarehouse = await createAOSWarehouse(req.body);
+  if(aosWarehouse instanceof AOSWarehouse) {
+    res.status(201).json(aosWarehouse);
+  } else {
+    res.status(422).json(aosWarehouse)
+  } 
 };
 
 export const update = async (req: Request, res: Response) => {

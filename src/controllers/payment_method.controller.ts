@@ -7,6 +7,7 @@ import {
   showPaymentMethod,
   updatePaymentMethod,
 } from '../context/payment_method';
+import { PaymentMethod } from '../models/payment_method.model';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -50,12 +51,11 @@ export const count = async (req: Request, res: Response) => {
 };
 
 export const create = async (req: Request, res: Response) => {
-  try {
-    const organization = createPaymentMethod(req.body);
-    res.status(201).json(organization);
-  } catch (e) {
-    console.log(e);
-    res.status(500).send(e);
+  const payment_method = await createPaymentMethod(req.body);
+  if(payment_method instanceof PaymentMethod) {
+    res.status(201).json(payment_method);
+  } else {
+    res.status(422).json(payment_method)
   }
 };
 

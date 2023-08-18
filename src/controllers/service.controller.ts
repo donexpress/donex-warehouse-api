@@ -7,6 +7,7 @@ import {
   showService,
   updateService,
 } from '../context/service';
+import { Service } from '../models/service.model';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -45,12 +46,11 @@ export const count = async (req: Request, res: Response) => {
 };
 
 export const create = async (req: Request, res: Response) => {
-  try {
-    const organization = createService(req.body);
-    res.status(201).json(organization);
-  } catch (e) {
-    console.log(e);
-    res.status(500).send(e);
+  const service = await createService(req.body);
+  if(service instanceof Service) {
+    res.status(201).json(service);
+  } else {
+    res.status(422).json(service)
   }
 };
 
