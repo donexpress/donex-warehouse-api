@@ -23,7 +23,6 @@ export class Shelf {
   @Min(1)
   warehouse_id: number;
 
-
   @Column({
     type: 'integer',
     nullable: false,
@@ -89,6 +88,7 @@ export class Shelf {
   @Column({
     type: 'json',
     nullable: true,
+    default: [],
   })
-  meta: any;
+  meta: object[];
 }
