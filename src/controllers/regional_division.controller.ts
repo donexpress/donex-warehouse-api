@@ -7,6 +7,7 @@ import {
   showRegionalDivision,
   updateRegionalDivision,
 } from '../context/regional_division';
+import { RegionalDivision } from '../models/regional_division.model';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -45,12 +46,11 @@ export const count = async (req: Request, res: Response) => {
 };
 
 export const create = async (req: Request, res: Response) => {
-  try {
-    const role = await createRegionalDivision(req.body);
-    res.status(201).json(role);
-  } catch (e) {
-    console.log(e);
-    res.status(500).send(e);
+  const regional_division = await createRegionalDivision(req.body);
+  if(regional_division instanceof RegionalDivision) {
+    res.status(201).json(regional_division);
+  } else {
+    res.status(422).json(regional_division)
   }
 };
 

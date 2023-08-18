@@ -7,6 +7,7 @@ import {
   showUserState,
   updateUserState,
 } from '../context/userState';
+import { UserState } from '../models/user_state.model';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -45,12 +46,11 @@ export const count = async (req: Request, res: Response) => {
 };
 
 export const create = async (req: Request, res: Response) => {
-  try {
-    const role = await createUserState(req.body);
-    res.status(201).json(role);
-  } catch (e) {
-    console.log(e);
-    res.status(500).send(e);
+  const user_state = await createUserState(req.body);
+  if(user_state instanceof UserState) {
+    res.status(201).json(user_state);
+  } else  {
+    res.status(422).json(user_state)
   }
 };
 
