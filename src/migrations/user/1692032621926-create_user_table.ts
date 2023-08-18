@@ -67,6 +67,11 @@ export class CreateUserTable1692032621926 implements MigrationInterface {
               isNullable: true,
             },
             {
+              name: "phone_number",
+              type: "varchar",
+              isNullable: true,
+            },
+            {
               name: "phone",
               type: "varchar",
               isNullable: true,

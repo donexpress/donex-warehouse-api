@@ -60,8 +60,13 @@ export class User {
 
   @Column({
     type: 'varchar',
-    nullable: true,
-    default: null
+    nullable: true
+  })
+  phone_number: string;
+
+  @Column({
+    type: 'varchar',
+    nullable: true
   })
   phone: string;
 
