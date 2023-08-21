@@ -54,12 +54,12 @@ export class CreateStaffTable1691679339976 implements MigrationInterface {
             {
               name: 'state_id',
               type: 'integer',
-              isNullable: false,
+              isNullable: true,
             },
             {
               name: 'organization_id',
               type: 'integer',
-              isNullable: false,
+              isNullable: true,
             },
             {
               name: 'role_id',
