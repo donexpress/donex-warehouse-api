@@ -28,7 +28,10 @@ export const showAOSWarehouse = async (id: number) => {
   });
 };
 
-export const createAOSWarehouse = async (aos_warehouse_data) => {
+export const createAOSWarehouse = async (aos_warehouse_data: any) => {
+  if(aos_warehouse_data.email === '') {
+    aos_warehouse_data.email = null
+  }
   const repository = await AppDataSource.getRepository(AOSWarehouse);
   const aos_warehouse = repository.create(aos_warehouse_data);
   return await validateContext(AppDataSource, aos_warehouse);
