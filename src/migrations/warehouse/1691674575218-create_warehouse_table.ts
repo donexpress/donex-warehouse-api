@@ -86,7 +86,7 @@ export class CreateWarehouseTable1691674575218 implements MigrationInterface {
             {
               name: "state_id",
               type: "integer",
-              isNullable: false,
+              isNullable: true,
             },
             {
               name: "created_at",

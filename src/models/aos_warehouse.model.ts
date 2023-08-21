@@ -10,12 +10,14 @@ export class AOSWarehouse {
   @Column({
     type: "varchar",
     nullable: false,
+    unique: true
   })
   code: string;
 
   @Column({
     type: "varchar",
     nullable: false,
+    unique: true
   })
   name: string;
 
