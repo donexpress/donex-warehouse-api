@@ -17,7 +17,12 @@ export const index = async (req: Request, res: Response) => {
     const number_of_rows = req.query.number_of_rows
       ? Number(req.query.number_of_rows)
       : await countUser();
-    const users = await listUser(current_page, number_of_rows);
+    const query = req.query.query;
+    const users = await listUser(
+      current_page,
+      number_of_rows,
+      query == undefined ? '' : String(query)
+    );
     res.json(users);
   } catch (e) {
     console.log(e);
@@ -28,7 +33,11 @@ export const index = async (req: Request, res: Response) => {
 export const show = async (req: Request, res: Response) => {
   try {
     const user = await showUser(Number(req.params.id));
-    res.json(user);
+    if(!user) {
+      res.status(404).send(null);
+    } else {
+      res.json(user);
+    }
   } catch (e) {
     console.log(e);
     res.status(500).send(e);

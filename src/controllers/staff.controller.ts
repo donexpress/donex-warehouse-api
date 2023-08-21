@@ -17,7 +17,12 @@ export const index = async (req: Request, res: Response) => {
     const number_of_rows = req.query.number_of_rows
       ? Number(req.query.number_of_rows)
       : await countStaff();
-    const users = await listStaff(current_page, number_of_rows);
+    const query = req.query.query;
+    const users = await listStaff(
+      current_page,
+      number_of_rows,
+      query == undefined ? '' : String(query)
+    );
     res.json(users);
   } catch (e) {
     console.log(e);
@@ -47,10 +52,10 @@ export const count = async (req: Request, res: Response) => {
 
 export const create = async (req: Request, res: Response) => {
   const user = await createStaff(req.body);
-  if(user instanceof Staff) {
+  if (user instanceof Staff) {
     res.status(201).json(user);
   } else {
-    res.status(422).json(user)
+    res.status(422).json(user);
   }
 };
 

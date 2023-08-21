@@ -17,7 +17,12 @@ export const index = async (req: Request, res: Response) => {
     const number_of_rows = req.query.number_of_rows
       ? Number(req.query.number_of_rows)
       : await countDepataments();
-    const organization = await listDepataments(current_page, number_of_rows);
+    const query = req.query.query;
+    const organization = await listDepataments(
+      current_page,
+      number_of_rows,
+      query == undefined ? '' : String(query)
+    );
     res.json(organization);
   } catch (e) {
     console.log(e);
@@ -47,11 +52,11 @@ export const count = async (req: Request, res: Response) => {
 
 export const create = async (req: Request, res: Response) => {
   const organization = await createDepataments(req.body);
-  if(organization instanceof Organization) {
+  if (organization instanceof Organization) {
     res.status(201).json(organization);
   } else {
-    console.log(organization)
-    res.status(422).json(organization)
+    console.log(organization);
+    res.status(422).json(organization);
   }
 };
 

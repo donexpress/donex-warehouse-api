@@ -1,14 +1,17 @@
+import { ILike } from 'typeorm';
 import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { Organization } from '../models/organization.model';
 
 export const listDepataments = async (
   current_page: number,
-  number_of_rows: number
+  number_of_rows: number,
+  query: string
 ) => {
   return AppDataSource.manager.find(Organization, {
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
+    where: [{ name: ILike(`%${query}%`) }],
     order: {
       id: 'ASC',
     },
