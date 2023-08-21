@@ -19,10 +19,12 @@ export class CreateAosWarehouseTable1692286529351
             {
               name: 'name',
               type: 'varchar',
+              isUnique: true
             },
             {
               name: 'code',
               type: 'varchar',
+              isUnique: true
             },
             {
               name: 'contact',
