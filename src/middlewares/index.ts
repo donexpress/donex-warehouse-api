@@ -12,6 +12,8 @@ const decode_token = (token) => {
 
 const verifyTokenPresent = (req, res, next) => {
   if (req.headers.authorization) {
+    const token = req.headers.authorization.split(' ')[1]
+    req.user = decode_token(token)
     next();
   } else {
     res.status(401).send("This user not access this request");
