@@ -14,6 +14,7 @@ export const login = async (req: Request, res: Response) => {
       message: 'User or password incorrect',
     });
   } else {
+    delete user.password
     const token = JWT.sign(
       {
         exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,

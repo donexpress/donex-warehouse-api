@@ -18,6 +18,8 @@ import * as ShelfBillingType from './shelf_billing_type.controller';
 import * as ShelfLocation from './shelf_location.controller';
 import * as ShelfType from './shelf_type.controller';
 import * as Shelf from './shelf.controller';
+import * as PackingList from './packing_list.controller';
+import * as StoragePlan from './storage_plan.controller';
 
 export {
   DepartmentController,
@@ -40,4 +42,6 @@ export {
   ShelfLocation,
   ShelfType,
   Shelf,
+  PackingList,
+  StoragePlan,
 };
