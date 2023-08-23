@@ -2,16 +2,18 @@ import { AppDataSource } from '../config/ormconfig';
 import { Staff } from '../models/staff.model';
 import { Warehouse } from '../models/warehouse.model';
 import bcrypt from 'bcryptjs';
-import { In } from 'typeorm';
+import { ILike, In } from 'typeorm';
 import { validate } from 'class-validator';
 
 export const listStaff = async (
   current_page: number,
-  number_of_rows: number
+  number_of_rows: number,
+  query: string
 ) => {
   const users = await AppDataSource.manager.find(Staff, {
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
+    where: [{ english_name: ILike(`%${query}%`) }, { chinesse_name: ILike(`%${query}%`) }],
     order: {
       id: 'ASC',
     },

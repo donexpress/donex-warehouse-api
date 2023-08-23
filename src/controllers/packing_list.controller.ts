@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 import {
-  countDepataments,
-  createDepataments,
-  listDepataments,
-  removeDepataments,
-  showDepataments,
-  updateDepataments,
-} from '../context/organization';
-import { Organization } from '../models/organization.model';
+  countPackingList,
+  createPackingList,
+  listPackingList,
+  removePackingList,
+  showPackingList,
+  updatePackingList,
+} from '../context/packing_list';
+import { PackingList } from '../models/packing_list.model';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -16,9 +16,9 @@ export const index = async (req: Request, res: Response) => {
       : 1;
     const number_of_rows = req.query.number_of_rows
       ? Number(req.query.number_of_rows)
-      : await countDepataments();
+      : await countPackingList();
     const query = req.query.query;
-    const organization = await listDepataments(
+    const organization = await listPackingList(
       current_page,
       number_of_rows,
       query == undefined ? '' : String(query)
@@ -32,8 +32,12 @@ export const index = async (req: Request, res: Response) => {
 
 export const show = async (req: Request, res: Response) => {
   try {
-    const organization = await showDepataments(Number(req.params.id));
-    res.json(organization);
+    const result = await showPackingList(Number(req.params.id));
+    if (!result) {
+      res.status(404).json(result);
+    } else {
+      res.json(result);
+    }
   } catch (e) {
     console.log(e);
     res.status(500).send(e);
@@ -42,7 +46,7 @@ export const show = async (req: Request, res: Response) => {
 
 export const count = async (req: Request, res: Response) => {
   try {
-    const count = await countDepataments();
+    const count = await countPackingList();
     res.json({ count });
   } catch (e) {
     console.log(e);
@@ -51,19 +55,23 @@ export const count = async (req: Request, res: Response) => {
 };
 
 export const create = async (req: Request, res: Response) => {
-  const organization = await createDepataments(req.body);
-  if (organization instanceof Organization) {
-    res.status(201).json(organization);
+  const result = await createPackingList(req.body);
+  if (result instanceof PackingList) {
+    res.status(201).json(result);
   } else {
-    console.log(organization);
-    res.status(422).json(organization);
+    console.log(result);
+    res.status(422).json(result);
   }
 };
 
 export const update = async (req: Request, res: Response) => {
   try {
-    const result = await updateDepataments(Number(req.params.id), req.body);
-    res.status(200).json(result);
+    const result = await updatePackingList(Number(req.params.id), req.body);
+    if (!result || result.affected === 0) {
+      res.status(404).json(result);
+    } else {
+      res.status(200).json(result);
+    }
   } catch (e) {
     console.log(e);
     res.status(500).send(e);
@@ -72,8 +80,12 @@ export const update = async (req: Request, res: Response) => {
 
 export const remove = async (req: Request, res: Response) => {
   try {
-    const result = await removeDepataments(Number(req.params.id));
-    res.status(200).json(result);
+    const result = await removePackingList(Number(req.params.id));
+    if (result.affected === 0) {
+      res.status(404).json(result);
+    } else {
+      res.status(200).json(result);
+    }
   } catch (e) {
     console.log(e);
     res.status(500).send(e);
