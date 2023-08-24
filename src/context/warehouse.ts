@@ -1,12 +1,13 @@
 import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { Warehouse } from '../models/warehouse.model';
+import { WarehouseState } from '../models/warehouse_state.model';
 
 export const listWarehouse = async (
   current_page: number,
   number_of_rows: number
 ) => {
-  return AppDataSource.manager.find(Warehouse, {
+  const warehouses = await AppDataSource.manager.find(Warehouse, {
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
     order: {
@@ -14,6 +15,18 @@ export const listWarehouse = async (
     },
     // relations: ['states'],
   });
+  const states = await AppDataSource.manager.find(WarehouseState);
+  const mod_warehouses = warehouses.map((warehouse) => {
+    if (warehouse.state_id) {
+      return {
+        ...warehouse,
+        ...{ state: states.find((el) => el.id === warehouse.state_id) },
+      };
+    } else {
+      return { ...warehouse, ...{ state: null } };
+    }
+  });
+  return mod_warehouses;
 };
 
 export const countWarehouse = async () => {
@@ -21,10 +34,20 @@ export const countWarehouse = async () => {
 };
 
 export const showWarehouse = async (id: number) => {
-  return await AppDataSource.manager.findOne(Warehouse, {
+  const warehouse = await AppDataSource.manager.findOne(Warehouse, {
     where: { id },
     // relations: ['states'],
   });
+
+  const states = await AppDataSource.manager.find(WarehouseState);
+  if (warehouse.state_id) {
+    return {
+      ...warehouse,
+      ...{ state: states.find((el) => el.id === warehouse.state_id) },
+    };
+  } else {
+    return { ...warehouse, ...{ state: null } };
+  }
 };
 
 export const createWarehouse = async (warehouse_data) => {
