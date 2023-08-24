@@ -9,6 +9,6 @@ export class StaffWarehouse {
   staff_id: number;
 
   @PrimaryColumn()
-  warehouse_id: string;
+  warehouse_id: number;
 
 }
