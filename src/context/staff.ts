@@ -4,6 +4,10 @@ import { Warehouse } from '../models/warehouse.model';
 import bcrypt from 'bcryptjs';
 import { ILike, In } from 'typeorm';
 import { validate } from 'class-validator';
+import { StaffState } from '../models/staff_state.model';
+import { Role } from '../models/role.model';
+import { Organization } from '../models/organization.model';
+import { StaffWarehouse } from '../models/staff_warehouse.model';
 
 export const listStaff = async (
   current_page: number,
@@ -13,14 +17,52 @@ export const listStaff = async (
   const users = await AppDataSource.manager.find(Staff, {
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
-    where: [{ english_name: ILike(`%${query}%`) }, { chinesse_name: ILike(`%${query}%`) }],
+    where: [
+      { english_name: ILike(`%${query}%`) },
+      { chinesse_name: ILike(`%${query}%`) },
+    ],
     order: {
       id: 'ASC',
     },
     // relations: ['states', 'roles', 'organizations', 'warehouses'],
   });
-  users.map((user) => delete user.password);
-  return users;
+  const states = await AppDataSource.manager.find(StaffState);
+  const roles = await AppDataSource.manager.find(Role);
+  const organizations = await AppDataSource.manager.find(Organization);
+  const warehouse = await AppDataSource.manager.find(Warehouse);
+  const mod_staff = [];
+  for (let i = 0; i < users.length; i++) {
+    const user = users[i];
+    delete user.password;
+    let state = null;
+    if (user.state_id) {
+      state = states.find((el) => el.id === user.state_id);
+    }
+    let role = null;
+    if (user.role_id) {
+      role = roles.find((el) => el.id === user.role_id);
+    }
+    let organization = null;
+    if (user.organization_id) {
+      organization = organizations.find((el) => el.id === user.organization_id);
+    }
+    const ref = await AppDataSource.getRepository(StaffWarehouse);
+    const warehouse_ids = await ref.find({ where: { staff_id: user.id } });
+    const warehouses = [];
+    for (let j = 0; j < warehouse_ids.length; j++) {
+      const element = warehouse_ids[j];
+      warehouses.push(warehouse.find((el) => el.id === element.warehouse_id));
+    }
+    mod_staff.push({
+      ...user,
+      state,
+      role,
+      organization,
+      ...{ warehouses: warehouses.filter((el) => el) },
+    });
+  }
+
+  return mod_staff;
 };
 
 export const countStaff = async () => {
@@ -32,18 +74,39 @@ export const showStaff = async (id: number) => {
     where: { id },
     // relations: ['states', 'roles', 'organizations', 'warehouses'],
   });
+  let state = null;
+  if (user.state_id) {
+    state = await AppDataSource.manager.findOne(StaffState, {
+      where: { id: user.state_id },
+    });
+  }
+  let role = null;
+  if (user.role_id) {
+    role = await AppDataSource.manager.find(Role, {
+      where: { id: user.role_id },
+    });
+  }
+  let organization = null;
+  if (user.organization_id) {
+    organization = await AppDataSource.manager.find(Organization, {
+      where: { id: user.organization_id },
+    });
+  }
+  const warehouse = await AppDataSource.manager.find(Warehouse);
+  const ref = await AppDataSource.getRepository(StaffWarehouse);
+  const warehouse_ids = await ref.find({ where: { staff_id: user.id } });
+  const warehouses = [];
+  for (let j = 0; j < warehouse_ids.length; j++) {
+    const element = warehouse_ids[j];
+    warehouses.push(warehouse.find((el) => el.id === element.warehouse_id));
+  }
   delete user.password;
-  return user;
+  return { ...user, state, role, organization,...{ warehouses: warehouses.filter((el) => el) } };
 };
 
 export const createStaff = async (user_data) => {
   const repository = await AppDataSource.getRepository(Staff);
   const user_obj = user_data;
-  const warehouse_repository = await AppDataSource.getRepository(Warehouse);
-  const warehouse_ref = await warehouse_repository.find({
-    where: { id: In(user_obj.affiliations) },
-  });
-  user_obj.affiliations = warehouse_ref;
   user_obj.password = bcrypt.hashSync(
     user_obj.password,
     isNaN(Number(process.env.PASSWORD_SALT))
@@ -55,7 +118,19 @@ export const createStaff = async (user_data) => {
   if (errors.length > 0) {
     return errors;
   } else {
-    await AppDataSource.manager.save(user);
+    const saved = await AppDataSource.manager.save(user);
+    if (user_data.affiliations) {
+      const ref = await AppDataSource.getRepository(StaffWarehouse);
+      const data = user_data.affiliations.map((el) => {
+        return {
+          // @ts-ignore
+          staff_id: saved.id,
+          warehouse_id: el,
+        };
+      });
+      const relations = await ref.create(data);
+      await AppDataSource.manager.save(relations);
+    }
     // @ts-ignore
     delete user.password;
     return user;
@@ -64,11 +139,26 @@ export const createStaff = async (user_data) => {
 
 export const updateStaff = async (id: number, user_data) => {
   const repository = await AppDataSource.getRepository(Staff);
-  if(user_data.password) {
-    delete user_data.password
+  if (user_data.password) {
+    delete user_data.password;
   }
-  const result = await repository.update({ id }, user_data);
-  return result;
+  if (user_data.affiliations) {
+    const ref = await AppDataSource.getRepository(StaffWarehouse);
+    const data = user_data.affiliations.map((el) => {
+      return {
+        staff_id: id,
+        warehouse_id: el,
+      };
+    });
+    const relations = await ref.create(data);
+    await AppDataSource.manager.save(relations);
+    delete user_data.affiliations;
+  }
+  if (user_data) {
+    const result = await repository.update({ id }, user_data);
+    return result;
+  }
+  return null;
 };
 
 export const removeStaff = async (id: number) => {
