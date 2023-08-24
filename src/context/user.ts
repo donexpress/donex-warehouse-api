@@ -175,6 +175,9 @@ export const createUser = async (user_data) => {
 
 export const updateUser = async (id: number, user_data) => {
   const repository = await AppDataSource.getRepository(User);
+  if(user_data.password) {
+    delete user_data.password
+  }
   const result = await repository.update({ id }, user_data);
   return result;
 };
