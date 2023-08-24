@@ -47,20 +47,47 @@ export const listUser = async (
       { nickname: ILike(`%${query}%`) },
     ],
     order: {
-      id: 'ASC',
+      id: 'DESC',
     },
     // relations: user_relations,
   });
-  users.map((user) => {
+  const staffs = await AppDataSource.manager.find(Staff)
+  const payment_methods = await AppDataSource.manager.find(PaymentMethod)
+  const user_levels = await AppDataSource.manager.find(UserLevel)
+  const users_mod = users.map((user) => {
     delete user.password;
-    // if (user.client_service_representatives)
-    //   delete user.client_service_representatives.password;
-    // if (user.sales_representatives) delete user.sales_representatives.password;
-    // if (user.finantial_representatives)
-    //   delete user.finantial_representatives.password;
-    // if (user.sales_sources) delete user.sales_sources.password;
+    let client_service_representatives = null
+    if(user.client_service_representative) {
+      client_service_representatives = staffs.find(el => el.id === user.client_service_representative)
+      delete client_service_representatives.password
+    }
+    let sales_representatives = null
+    if (user.sales_representative) {
+      sales_representatives = staffs.find(el => el.id === user.sales_representative)
+      delete sales_representatives.password
+    }
+    let finantial_representatives = null
+    if (user.finantial_representative) {
+      finantial_representatives = staffs.find(el => el.id === user.finantial_representative)
+      delete finantial_representatives.password
+    }
+    let sale_sources = null
+    if(user.sales_source) {
+      sale_sources = staffs.find(el => el.id === user.finantial_representative)
+      delete sale_sources.password
+    }
+    let payment_method = null
+    if(user.payment_method_id) {
+      payment_method = payment_methods.find(el => el.id === user.payment_method_id)
+    }
+
+    let user_level = null
+    if(user.user_level_id) {
+      user_level = user_levels.find(el => el.id === user.user_level_id)
+    }
+    return{...user, client_service_representatives, sales_representatives, finantial_representatives, sale_sources, payment_method, user_level}
   });
-  return users;
+  return users_mod;
 };
 
 export const countUser = async () => {
