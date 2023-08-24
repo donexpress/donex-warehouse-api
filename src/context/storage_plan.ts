@@ -37,7 +37,9 @@ export const createStoragePlan = async (data, user_id: number) => {
     number+='0'
   }
   data.order_number = `${date.getFullYear()}${month}${date.getDate()}${number}${count+1}`
-  data.user_id = user_id
+  if(!data.user_id) {
+    data.user_id = user_id
+  }
   const repository = await AppDataSource.getRepository(StoragePlan);
   const result = repository.create(data);
   return await validateContext(AppDataSource, result);
@@ -50,7 +52,7 @@ export const updateStoragePlan = async (id: number, data) => {
     return null
   }
   delete old_data.history;
-  const result = await repository.update({ id }, data);
+  const result = await repository.update({ id }, {...data, updated_at: (new Date()).toDateString()});
   const history_data = await repository.findOne({where: {id}})
   if(!history_data.history) {
     history_data.history = []

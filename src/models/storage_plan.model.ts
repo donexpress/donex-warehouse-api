@@ -99,4 +99,18 @@ export class StoragePlan {
     default: [],
   })
   meta: object[];
+
+  @Column({
+    type: 'varchar',
+    nullable: true,
+    default: (new Date()).toDateString()
+  })
+  created_at: string
+
+  @Column({
+    type: 'varchar',
+    nullable: true,
+    default: (new Date()).toDateString()
+  })
+  updated_at: string
 }

@@ -9,7 +9,7 @@ router.get("/api/v1/cargo_station/:id", WarehouseController.show);
 router.post("/api/v1/cargo_station", WarehouseController.create);
 router.put("/api/v1/cargo_station/:id", WarehouseController.update);
 router.delete(
-  "/api/v1/warehouse/:id",
+  "/api/v1/cargo_station/:id",
   verifyTokenPresent,
   WarehouseController.remove
 );
