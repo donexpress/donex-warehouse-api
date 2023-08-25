@@ -71,4 +71,40 @@ export class Staff {
   })
   role_id: number;
 
+  @Column({
+    nullable: true
+  })
+  default_cargo_station_id: number;
+
+  @Column({
+    nullable: true
+  })
+  change_password_on_login: boolean;
+
+  @Column({
+    nullable: true
+  })
+  allow_search: boolean;
+
+  @Column({
+    type: 'json',
+    nullable: true,
+    default: [],
+  })
+  meta: object[];
+
+  @Column({
+    type: 'varchar',
+    nullable: true,
+    default: (new Date()).toDateString()
+  })
+  created_at: string
+
+  @Column({
+    type: 'varchar',
+    nullable: true,
+    default: (new Date()).toDateString()
+  })
+  updated_at: string
+
 }
