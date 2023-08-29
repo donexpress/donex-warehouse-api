@@ -20,6 +20,8 @@ import shelfType from './shelf_type.route';
 import shelf from './shelf.route';
 import packingList from './packing_list.route'
 import storagePlan from './storage_plan.route'
+import lineClassification from './line_classification.route'
+import outputPlan from './output_plan.route'
 
 export default (app) => {
   app.use("/", organizationRouter);
@@ -44,5 +46,7 @@ export default (app) => {
   app.use("/", shelf);
   app.use("/", packingList);
   app.use("/", storagePlan);
+  app.use("/", lineClassification);
+  app.use("/", outputPlan);
   app.get("/api/v1", (req, res) => res.sendStatus(200));
 };

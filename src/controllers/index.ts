@@ -14,12 +14,14 @@ import * as UserStateController from './user_state.controller';
 import * as UserController from './user.controller';
 import * as HomeController from './home.controller';
 import * as AOSWarehouseController from './aos_warehouse.controller';
-import * as ShelfBillingType from './shelf_billing_type.controller';
-import * as ShelfLocation from './shelf_location.controller';
-import * as ShelfType from './shelf_type.controller';
-import * as Shelf from './shelf.controller';
-import * as PackingList from './packing_list.controller';
-import * as StoragePlan from './storage_plan.controller';
+import * as ShelfBillingTypeController from './shelf_billing_type.controller';
+import * as ShelfLocationController from './shelf_location.controller';
+import * as ShelfTypeController from './shelf_type.controller';
+import * as ShelfController from './shelf.controller';
+import * as PackingListController from './packing_list.controller';
+import * as StoragePlanController from './storage_plan.controller';
+import * as LineClassificationController from './line_classification.controller'
+import * as OutputPlanController from './output_plan.controller'
 
 export {
   DepartmentController,
@@ -38,10 +40,12 @@ export {
   UserController,
   HomeController,
   AOSWarehouseController,
-  ShelfBillingType,
-  ShelfLocation,
-  ShelfType,
-  Shelf,
-  PackingList,
-  StoragePlan,
+  ShelfBillingTypeController,
+  ShelfLocationController,
+  ShelfTypeController,
+  ShelfController,
+  PackingListController,
+  StoragePlanController,
+  LineClassificationController,
+  OutputPlanController
 };

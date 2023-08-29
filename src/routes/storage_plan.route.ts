@@ -1,17 +1,17 @@
 import express from 'express';
-import { StoragePlan } from '../controllers';
+import { StoragePlanController } from '../controllers';
 import { verifyTokenPresent } from '../middlewares';
 const router = express.Router();
 
-router.get('/api/v1/storage_plan', verifyTokenPresent, StoragePlan.index);
-router.get('/api/v1/storage_plan/count', StoragePlan.count);
-router.get('/api/v1/storage_plan/:id', StoragePlan.show);
-router.post('/api/v1/storage_plan', verifyTokenPresent, StoragePlan.create);
-router.put('/api/v1/storage_plan/:id', StoragePlan.update);
+router.get('/api/v1/storage_plan', verifyTokenPresent, StoragePlanController.index);
+router.get('/api/v1/storage_plan/count', StoragePlanController.count);
+router.get('/api/v1/storage_plan/:id', StoragePlanController.show);
+router.post('/api/v1/storage_plan', verifyTokenPresent, StoragePlanController.create);
+router.put('/api/v1/storage_plan/:id', StoragePlanController.update);
 router.delete(
   '/api/v1/storage_plan/:id',
   verifyTokenPresent,
-  StoragePlan.remove
+  StoragePlanController.remove
 );
 
 export default router;

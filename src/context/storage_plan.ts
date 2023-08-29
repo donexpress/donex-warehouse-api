@@ -33,10 +33,10 @@ export const createStoragePlan = async (data, user_id: number) => {
   const month = date.getMonth() > 9 ? date.getMonth() : (`0${date.getMonth()}`)
   const count = await countStoragePlan()
   let number = ''
-  for (let i = 0; i < 8- (count+1).toString().length; i++) {
+  for (let i = 0; i < 6- (count+1).toString().length; i++) {
     number+='0'
   }
-  data.order_number = `${date.getFullYear()}${month}${date.getDate()}${number}${count+1}`
+  data.order_number = `DEWMXI${date.getFullYear()}${month}${date.getDate()}${number}${count+1}`
   if(!data.user_id) {
     data.user_id = user_id
   }
