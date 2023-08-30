@@ -2,6 +2,7 @@ import { ILike } from 'typeorm';
 import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { StoragePlan } from '../models/storage_plan.model';
+import { PackingList } from '../models/packing_list.model';
 
 export const listStoragePlan = async (
   current_page: number,
@@ -11,7 +12,10 @@ export const listStoragePlan = async (
   return AppDataSource.manager.find(StoragePlan, {
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
-    where: [{ customer_order_number: ILike(`%${query}%`) }, { order_number: ILike(`%${query}%`) }],
+    where: [
+      { customer_order_number: ILike(`%${query}%`) },
+      { order_number: ILike(`%${query}%`) },
+    ],
     order: {
       id: 'ASC',
     },
@@ -23,22 +27,31 @@ export const countStoragePlan = async () => {
 };
 
 export const showStoragePlan = async (id: number) => {
-  return await AppDataSource.manager.findOne(StoragePlan, {
+  const storage_plan = await AppDataSource.manager.findOne(StoragePlan, {
     where: { id },
   });
+  let packing_list = null;
+  if (storage_plan) {
+    packing_list = await AppDataSource.manager.find(PackingList, {
+      where: { storage_plan_id: id },
+    });
+  }
+  return { ...storage_plan, packing_list };
 };
 
 export const createStoragePlan = async (data, user_id: number) => {
   const date = new Date();
-  const month = date.getMonth() > 9 ? date.getMonth() : (`0${date.getMonth()}`)
-  const count = await countStoragePlan()
-  let number = ''
-  for (let i = 0; i < 6- (count+1).toString().length; i++) {
-    number+='0'
+  const month = date.getMonth() > 9 ? date.getMonth() : `0${date.getMonth()}`;
+  const count = await countStoragePlan();
+  let number = '';
+  for (let i = 0; i < 6 - (count + 1).toString().length; i++) {
+    number += '0';
   }
-  data.order_number = `DEWMXI${date.getFullYear()}${month}${date.getDate()}${number}${count+1}`
-  if(!data.user_id) {
-    data.user_id = user_id
+  data.order_number = `DEWMXI${date.getFullYear()}${month}${date.getDate()}${number}${
+    count + 1
+  }`;
+  if (!data.user_id) {
+    data.user_id = user_id;
   }
   const repository = await AppDataSource.getRepository(StoragePlan);
   const result = repository.create(data);
@@ -47,17 +60,20 @@ export const createStoragePlan = async (data, user_id: number) => {
 
 export const updateStoragePlan = async (id: number, data) => {
   const repository = await AppDataSource.getRepository(StoragePlan);
-  const old_data = await repository.findOne({where: {id}})
-  if(!old_data) {
-    return null
+  const old_data = await repository.findOne({ where: { id } });
+  if (!old_data) {
+    return null;
   }
   delete old_data.history;
-  const result = await repository.update({ id }, {...data, updated_at: (new Date()).toDateString()});
-  const history_data = await repository.findOne({where: {id}})
-  if(!history_data.history) {
-    history_data.history = []
+  const result = await repository.update(
+    { id },
+    { ...data, updated_at: new Date().toDateString() }
+  );
+  const history_data = await repository.findOne({ where: { id } });
+  if (!history_data.history) {
+    history_data.history = [];
   }
-  history_data.history.push({type: 'storage_plan', data: old_data})
+  history_data.history.push({ type: 'storage_plan', data: old_data });
   await repository.update({ id }, history_data);
 
   return result;
