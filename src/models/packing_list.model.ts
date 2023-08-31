@@ -96,6 +96,12 @@ export class PackingList {
   storage_plan_id: number;
 
   @Column({
+    nullable: true,
+    type: 'varchar'
+  })
+  order_transfer_number: string;
+
+  @Column({
     type: 'json',
     nullable: true,
     default: [],
