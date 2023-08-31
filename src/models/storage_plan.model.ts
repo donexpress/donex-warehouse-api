@@ -94,6 +94,20 @@ export class StoragePlan {
   changes: boolean;
 
   @Column({
+    nullable: true,
+    default: false,
+    type: 'boolean'
+  })
+  rejected_boxes: boolean
+
+  @Column({
+    nullable: true,
+    default: false,
+    type: 'boolean'
+  })
+  return: boolean
+
+  @Column({
     type: 'json',
     nullable: true,
     default: [],
