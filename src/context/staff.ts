@@ -144,6 +144,7 @@ export const updateStaff = async (id: number, user_data) => {
   }
   if (user_data.affiliations) {
     const ref = await AppDataSource.getRepository(StaffWarehouse);
+    await ref.delete({staff_id: id})
     const data = user_data.affiliations.map((el) => {
       return {
         staff_id: id,
