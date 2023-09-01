@@ -58,6 +58,9 @@ export const create = async (req: Request, res: Response) => {
   const user = await createStaff(req.body);
   if (user instanceof Staff) {
     res.status(201).json(user);
+    //@ts-ignore
+  } else if (user.message) {
+    res.status(409).json(user);
   } else {
     res.status(422).json(user);
   }

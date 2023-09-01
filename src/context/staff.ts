@@ -101,11 +101,31 @@ export const showStaff = async (id: number) => {
     warehouses.push(warehouse.find((el) => el.id === element.warehouse_id));
   }
   delete user.password;
-  return { ...user, state, role, organization,...{ warehouses: warehouses.filter((el) => el) } };
+  return {
+    ...user,
+    state,
+    role,
+    organization,
+    ...{ warehouses: warehouses.filter((el) => el) },
+  };
 };
 
 export const createStaff = async (user_data) => {
   const repository = await AppDataSource.getRepository(Staff);
+  const username_count = await repository.count({
+    where: { username: user_data.username },
+  });
+  if (username_count > 0) {
+    return { message: 'username already exists' };
+  }
+  if (user_data.email) {
+    const email_count = await repository.count({
+      where: { email: user_data.email },
+    });
+    if (email_count > 0) {
+      return { message: 'email already exists' };
+    }
+  }
   const user_obj = user_data;
   user_obj.password = bcrypt.hashSync(
     user_obj.password,
@@ -144,7 +164,7 @@ export const updateStaff = async (id: number, user_data) => {
   }
   if (user_data.affiliations) {
     const ref = await AppDataSource.getRepository(StaffWarehouse);
-    await ref.delete({staff_id: id})
+    await ref.delete({ staff_id: id });
     const data = user_data.affiliations.map((el) => {
       return {
         staff_id: id,

@@ -54,6 +54,9 @@ export const create = async (req: Request, res: Response) => {
   const cargo_station = await createWarehouse(body);
   if (cargo_station instanceof Warehouse) {
     res.status(201).json(cargo_station);
+    //@ts-ignore
+  } else if (cargo_station.message) {
+    res.status(409).json(cargo_station);
   } else {
     res.status(422).send(cargo_station);
   }
