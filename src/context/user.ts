@@ -51,41 +51,59 @@ export const listUser = async (
     },
     // relations: user_relations,
   });
-  const staffs = await AppDataSource.manager.find(Staff)
-  const payment_methods = await AppDataSource.manager.find(PaymentMethod)
-  const user_levels = await AppDataSource.manager.find(UserLevel)
+  const staffs = await AppDataSource.manager.find(Staff);
+  const payment_methods = await AppDataSource.manager.find(PaymentMethod);
+  const user_levels = await AppDataSource.manager.find(UserLevel);
   const users_mod = users.map((user) => {
     delete user.password;
-    let client_service_representatives = null
-    if(user.client_service_representative) {
-      client_service_representatives = staffs.find(el => el.id === user.client_service_representative)
-      delete client_service_representatives.password
+    let client_service_representatives = null;
+    if (user.client_service_representative) {
+      client_service_representatives = staffs.find(
+        (el) => el.id === user.client_service_representative
+      );
+      delete client_service_representatives.password;
     }
-    let sales_representatives = null
+    let sales_representatives = null;
     if (user.sales_representative) {
-      sales_representatives = staffs.find(el => el.id === user.sales_representative)
-      delete sales_representatives.password
+      sales_representatives = staffs.find(
+        (el) => el.id === user.sales_representative
+      );
+      delete sales_representatives.password;
     }
-    let finantial_representatives = null
+    let finantial_representatives = null;
     if (user.finantial_representative) {
-      finantial_representatives = staffs.find(el => el.id === user.finantial_representative)
-      delete finantial_representatives.password
+      finantial_representatives = staffs.find(
+        (el) => el.id === user.finantial_representative
+      );
+      delete finantial_representatives.password;
     }
-    let sale_sources = null
-    if(user.sales_source) {
-      sale_sources = staffs.find(el => el.id === user.finantial_representative)
-      delete sale_sources.password
+    let sale_sources = null;
+    if (user.sales_source) {
+      sale_sources = staffs.find(
+        (el) => el.id === user.finantial_representative
+      );
+      delete sale_sources.password;
     }
-    let payment_method = null
-    if(user.payment_method_id) {
-      payment_method = payment_methods.find(el => el.id === user.payment_method_id)
+    let payment_method = null;
+    if (user.payment_method_id) {
+      payment_method = payment_methods.find(
+        (el) => el.id === user.payment_method_id
+      );
     }
 
-    let user_level = null
-    if(user.user_level_id) {
-      user_level = user_levels.find(el => el.id === user.user_level_id)
+    let user_level = null;
+    if (user.user_level_id) {
+      user_level = user_levels.find((el) => el.id === user.user_level_id);
     }
-    return{...user, client_service_representatives, sales_representatives, finantial_representatives, sale_sources, payment_method, user_level}
+    return {
+      ...user,
+      client_service_representatives,
+      sales_representatives,
+      finantial_representatives,
+      sale_sources,
+      payment_method,
+      user_level,
+    };
   });
   return users_mod;
 };
@@ -98,8 +116,8 @@ export const showUser = async (id: number) => {
   let user = await AppDataSource.manager.findOne(User, {
     where: { id },
   });
-  if(!user) {
-    return null
+  if (!user) {
+    return null;
   }
   delete user.password;
   let user_state = null;
@@ -152,16 +170,18 @@ export const showUser = async (id: number) => {
     }
   }
 
-  let payment_method = null
-  if(user.payment_method_id) {
+  let payment_method = null;
+  if (user.payment_method_id) {
     payment_method = await AppDataSource.manager.findOne(PaymentMethod, {
-      where: {id: user.payment_method_id}
-    })
+      where: { id: user.payment_method_id },
+    });
   }
 
-  let user_level = null
-  if(user.user_level_id) {
-    user_level = await AppDataSource.manager.findOne(UserLevel, {where: {id: user.user_level_id}})
+  let user_level = null;
+  if (user.user_level_id) {
+    user_level = await AppDataSource.manager.findOne(UserLevel, {
+      where: { id: user.user_level_id },
+    });
   }
   return {
     ...user,
@@ -171,16 +191,27 @@ export const showUser = async (id: number) => {
     sales_sources,
     sales_representatives,
     payment_method,
-    user_level
+    user_level,
   };
 };
 
 export const createUser = async (user_data) => {
+
   const repository = await AppDataSource.getRepository(User);
+  const username_count = await repository.count({where:{username: user_data.username}})
+  if(username_count > 0) {
+    return {message: "username already exists"}
+  }
+  if(user_data.email) {
+    const email_count = await repository.count({where: {email: user_data.email}})
+    if(email_count > 0) {
+      return {message: "email already exists"}
+    }
+  }
+
   const count_user = await countUser();
   const customer_count =
     count_user >= 10 ? '1000' + (count_user + 1) : '10000' + (count_user + 1);
-  //const user_obj = {...user_data, customer_number: Math.floor(100000 + Math.random() * 900000)};
   const user_obj = { ...user_data, customer_number: customer_count };
   user_obj.password = bcrypt.hashSync(
     user_obj.password,
@@ -202,8 +233,8 @@ export const createUser = async (user_data) => {
 
 export const updateUser = async (id: number, user_data) => {
   const repository = await AppDataSource.getRepository(User);
-  if(user_data.password) {
-    delete user_data.password
+  if (user_data.password) {
+    delete user_data.password;
   }
   const result = await repository.update({ id }, user_data);
   return result;

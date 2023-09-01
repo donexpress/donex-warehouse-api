@@ -60,6 +60,9 @@ export const create = async (req: Request, res: Response) => {
   console.log(user);
   if (user instanceof User) {
     res.status(201).json(user);
+  //@ts-ignore
+  } else if(user.message) {
+    res.status(409).json(user)
   } else {
     return res.status(422).json(user);
   }

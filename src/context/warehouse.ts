@@ -52,6 +52,20 @@ export const showWarehouse = async (id: number) => {
 
 export const createWarehouse = async (warehouse_data) => {
   const repository = await AppDataSource.getRepository(Warehouse);
+  const name_count = await repository.count({
+    where: { name: warehouse_data.name },
+  });
+  if (name_count > 0) {
+    return { message: 'name already exists' };
+  }
+  if (warehouse_data.english_name) {
+    const english_name_count = await repository.count({
+      where: { english_name: warehouse_data.english_name },
+    });
+    if (english_name_count > 0) {
+      return { message: 'english name already exists' };
+    }
+  }
   const warehouse = repository.create(warehouse_data);
   return await validateContext(AppDataSource, warehouse);
 };
