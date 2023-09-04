@@ -43,7 +43,7 @@ export const updateStoragePlan = async (id: number, data) => {
   const repository = await AppDataSource.getRepository(StoragePlanState);
   const result = await repository.update(
     { id },
-    { ...data, updated_at: new Date().toDateString() }
+    { ...data, updated_at: new Date().toISOString() }
   );
   return result;
 };
