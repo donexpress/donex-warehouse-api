@@ -5,7 +5,6 @@ import bcrypt from 'bcryptjs';
 import JWT from 'jsonwebtoken';
 
 export const login = async (req: Request, res: Response) => {
-  console.log(req);
   const repository = await AppDataSource.getRepository(Staff);
   const user = await repository.findOne({
     where: { username: req.body.username },
