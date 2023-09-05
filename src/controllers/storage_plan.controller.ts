@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import {
   countStoragePlan,
   createStoragePlan,
+  filterByState,
   listStoragePlan,
   removeStoragePlan,
   showStoragePlan,
@@ -18,12 +19,22 @@ export const index = async (req: Request, res: Response) => {
       ? Number(req.query.number_of_rows)
       : await countStoragePlan();
     const query = req.query.query;
-    const organization = await listStoragePlan(
-      current_page,
-      number_of_rows,
-      query == undefined ? '' : String(query)
-    );
-    res.json(organization);
+    const state = req.query.state
+    if(!state) {
+      const storage_plans = await listStoragePlan(
+        current_page,
+        number_of_rows,
+        query == undefined ? '' : String(query)
+      );
+      res.json(storage_plans);
+    } else {
+      const storage_plans = await filterByState(
+        current_page,
+        number_of_rows,
+        state == undefined ? 1 : Number(state)
+      );
+      res.json(storage_plans);
+    }
   } catch (e) {
     console.log(e);
     res.status(500).send(e);

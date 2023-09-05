@@ -96,14 +96,14 @@ export class Staff {
   @Column({
     type: 'varchar',
     nullable: true,
-    default: (new Date()).toDateString()
+    default: (new Date()).toISOString()
   })
   created_at: string
 
   @Column({
     type: 'varchar',
     nullable: true,
-    default: (new Date()).toDateString()
+    default: (new Date()).toISOString()
   })
   updated_at: string
 

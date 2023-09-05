@@ -70,7 +70,7 @@ export const createOutputPlan = async (data: any) => {
 
 export const updateOutputPlan = async (id: number, data) => {
   const repository = await AppDataSource.getRepository(OutputPlan);
-  data.updated_at = new Date().toDateString();
+  data.updated_at = new Date().toISOString();
   const result = await repository.update({ id }, data);
   return result;
 };
