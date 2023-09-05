@@ -3,10 +3,10 @@ import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { StoragePlan } from '../models/storage_plan.model';
 import { PackingList } from '../models/packing_list.model';
-import { Warehouse } from '../models/warehouse.model';
 import { User } from '../models/user.model';
 import { showUser } from './user';
-import { showWarehouse } from './warehouse';
+import { AOSWarehouse } from '../models/aos_warehouse.model';
+import { showAOSWarehouse } from './aos_warehouse';
 
 export const listStoragePlan = async (
   current_page: number,
@@ -24,7 +24,36 @@ export const listStoragePlan = async (
       id: 'ASC',
     },
   });
-  const warehouses = await AppDataSource.manager.find(Warehouse);
+  const warehouses = await AppDataSource.manager.find(AOSWarehouse);
+  const users = await AppDataSource.manager.find(User);
+
+  return storage_plans.map((storage_plan) => {
+    let warehouse = null;
+    if (storage_plan.warehouse_id) {
+      warehouse = warehouses.find((w) => w.id === storage_plan.warehouse_id);
+    }
+    let user = null;
+    if (storage_plan.user_id) {
+      user = users.find((u) => u.id === storage_plan.user_id);
+    }
+    return { ...storage_plan, warehouse, user };
+  });
+};
+
+export const filterByState = async (
+  current_page: number,
+  number_of_rows: number,
+  state: number
+) => {
+  const storage_plans = await AppDataSource.manager.find(StoragePlan, {
+    take: number_of_rows,
+    skip: (current_page - 1) * number_of_rows,
+    where: { state },
+    order: {
+      id: 'ASC',
+    },
+  });
+  const warehouses = await AppDataSource.manager.find(AOSWarehouse);
   const users = await AppDataSource.manager.find(User);
 
   return storage_plans.map((storage_plan) => {
@@ -56,7 +85,7 @@ export const showStoragePlan = async (id: number) => {
   }
   let warehouse = null;
   if (storage_plan.warehouse_id) {
-    warehouse = await showWarehouse(storage_plan.warehouse_id);
+    warehouse = await showAOSWarehouse(storage_plan.warehouse_id);
   }
   let user = null;
   if (storage_plan.user_id) {
@@ -104,13 +133,13 @@ export const updateStoragePlan = async (id: number, data) => {
   delete old_data.history;
   const result = await repository.update(
     { id },
-    { ...data, updated_at: new Date().toDateString() }
+    { ...data, updated_at: new Date().toISOString() }
   );
   const history_data = await repository.findOne({ where: { id } });
   if (!history_data.history) {
     history_data.history = [];
   }
-  history_data.history.push({ type: 'storage_plan', data: old_data });
+  history_data.history.push({ type: 'storage_plan', data: {...old_data, updated_at: new Date().toISOString()} });
   await repository.update({ id }, history_data);
 
   return result;

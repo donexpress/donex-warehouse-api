@@ -36,7 +36,7 @@ export const createLineClassification = async (data: any) => {
 
 export const updateLineClassification = async (id: number, data) => {
   const repository = await AppDataSource.getRepository(LineClassification);
-  data.updated_at =  new Date().toDateString()
+  data.updated_at =  new Date().toISOString()
   const result = await repository.update({ id }, data);
   return result;
 };
