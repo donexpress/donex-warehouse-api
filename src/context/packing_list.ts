@@ -60,8 +60,7 @@ export const updatePackingList = async (id: number, data) => {
   if(!storage_plan.history) {
     storage_plan.history = []
   }
-  console.log(old_data)
-  storage_plan.history.push({type: 'packing_list', data: old_data})
+  storage_plan.history.push({type: 'packing_list', data: {...old_data, updated_at: new Date().toISOString()}})
   await storage_plan_repository.update({ id: storage_plan.id }, storage_plan);
   
   const result = await repository.update({ id }, data);
