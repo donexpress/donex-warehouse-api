@@ -184,6 +184,12 @@ export const updateStaff = async (id: number, user_data) => {
 
 export const removeStaff = async (id: number) => {
   const repository = await AppDataSource.getRepository(Staff);
-  const result = await repository.delete({ id });
-  return result;
+  const states = await AppDataSource.manager.find(StaffState);
+  //const result = await repository.delete({ id });
+  const state = states.find((state) => state.name === 'Congelar');
+  const data = {
+    state_id: state.id,
+  };
+  const staff = await repository.update({ id }, data);
+  return staff;
 };
