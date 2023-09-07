@@ -15,7 +15,7 @@ export const listOutputPlan = async (
     skip: (current_page - 1) * number_of_rows,
     where: [{ output_number: ILike(`%${query}%`) }],
     order: {
-      id: 'ASC',
+      id: 'DESC',
     },
   });
   const users = await AppDataSource.manager.find(User)

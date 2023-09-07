@@ -21,7 +21,7 @@ export const listStoragePlan = async (
       { order_number: ILike(`%${query}%`) },
     ],
     order: {
-      id: 'ASC',
+      id: 'DESC',
     },
   });
   const warehouses = await AppDataSource.manager.find(AOSWarehouse);
@@ -50,7 +50,7 @@ export const filterByState = async (
     skip: (current_page - 1) * number_of_rows,
     where: { state },
     order: {
-      id: 'ASC',
+      id: 'DESC',
     },
   });
   const warehouses = await AppDataSource.manager.find(AOSWarehouse);

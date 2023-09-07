@@ -23,7 +23,7 @@ export const listStaff = async (
       { chinesse_name: ILike(`%${query}%`) },
     ],
     order: {
-      id: 'ASC',
+      id: 'DESC',
     },
     // relations: ['states', 'roles', 'organizations', 'warehouses'],
   });

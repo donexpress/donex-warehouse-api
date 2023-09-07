@@ -13,7 +13,7 @@ export const listLineClassification = async (
     skip: (current_page - 1) * number_of_rows,
     where: [{ name: ILike(`%${query}%`) }],
     order: {
-      id: 'ASC',
+      id: 'DESC',
     },
   });
 };

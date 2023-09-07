@@ -11,7 +11,7 @@ export const listUserLevel = async (
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
     order: {
-      id: 'ASC',
+      id: 'DESC',
     },
     // relations: ['services'],
   });

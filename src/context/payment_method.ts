@@ -14,7 +14,7 @@ export const listPaymentMethods = async (
       name: ILike(`%${query}%`),
     },
     order: {
-      id: 'ASC',
+      id: 'DESC',
     },
   });
 };
