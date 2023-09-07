@@ -69,4 +69,9 @@ export class Warehouse {
     nullable: true
   })
   state_id: number;
+
+  @Column({
+    nullable: true
+  })
+  state: string;
 }

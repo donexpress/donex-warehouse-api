@@ -156,4 +156,9 @@ export class User {
     nullable: true,
   })
   payment_method_id: number;
+
+  @Column({
+    nullable: true
+  })
+  state: string;
 }

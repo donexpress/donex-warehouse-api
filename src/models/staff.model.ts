@@ -94,6 +94,11 @@ export class Staff {
   meta: object[];
 
   @Column({
+    nullable: true
+  })
+  state: string;
+
+  @Column({
     type: 'varchar',
     nullable: true,
     default: (new Date()).toISOString()
