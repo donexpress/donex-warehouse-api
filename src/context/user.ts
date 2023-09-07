@@ -242,6 +242,12 @@ export const updateUser = async (id: number, user_data) => {
 
 export const removeUser = async (id: number) => {
   const repository = await AppDataSource.getRepository(User);
-  const result = await repository.delete({ id });
-  return result;
+  //const result = await repository.delete({ id });
+  const user = await repository.update(
+    { id },
+    {
+      state: 'deleted',
+    }
+  );
+  return user;
 };

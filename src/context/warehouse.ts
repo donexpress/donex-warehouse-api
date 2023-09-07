@@ -78,6 +78,12 @@ export const updateWarehouse = async (id: number, warehouse_data) => {
 
 export const removeWarehouse = async (id: number) => {
   const repository = await AppDataSource.getRepository(Warehouse);
-  const result = await repository.delete({ id });
-  return result;
+  //const result = await repository.delete({ id });
+  const warehouse = await repository.update(
+    { id },
+    {
+      state: 'deleted',
+    }
+  );
+  return warehouse;
 };
