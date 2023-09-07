@@ -13,8 +13,16 @@ router.get(
   ShelfBillingTypeController.count
 );
 router.get('/api/v1/shelf_billing_type/:id', ShelfBillingTypeController.show);
-router.post('/api/v1/shelf_billing_type', ShelfBillingTypeController.create);
-router.put('/api/v1/shelf_billing_type/:id', ShelfBillingTypeController.update);
+router.post(
+  '/api/v1/shelf_billing_type',
+  verifyTokenPresent,
+  ShelfBillingTypeController.create
+);
+router.put(
+  '/api/v1/shelf_billing_type/:id',
+  verifyTokenPresent,
+  ShelfBillingTypeController.update
+);
 router.delete(
   '/api/v1/shelf_billing_type/:id',
   verifyTokenPresent,

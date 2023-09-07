@@ -10,8 +10,16 @@ router.get(
 );
 router.get('/api/v1/shelf_location/count', ShelfLocationController.count);
 router.get('/api/v1/shelf_location/:id', ShelfLocationController.show);
-router.post('/api/v1/shelf_location', ShelfLocationController.create);
-router.put('/api/v1/shelf_location/:id', ShelfLocationController.update);
+router.post(
+  '/api/v1/shelf_location',
+  verifyTokenPresent,
+  ShelfLocationController.create
+);
+router.put(
+  '/api/v1/shelf_location/:id',
+  verifyTokenPresent,
+  ShelfLocationController.update
+);
 router.delete(
   '/api/v1/shelf_location/:id',
   verifyTokenPresent,
