@@ -8,21 +8,10 @@ import {
   updateUserState,
 } from '../context/userState';
 import { UserState } from '../models/user_state.model';
+import states from '../config/states';
 
 export const index = async (req: Request, res: Response) => {
-  try {
-    const current_page = req.query.current_page
-      ? Number(req.query.current_page)
-      : 1;
-    const number_of_rows = req.query.number_of_rows
-      ? Number(req.query.number_of_rows)
-      : await countUserState();
-    const roles = await listUserState(current_page, number_of_rows);
-    res.json(roles);
-  } catch (e) {
-    console.log(e);
-    res.status(500).send(e);
-  }
+  res.json(states.user);
 };
 
 export const show = async (req: Request, res: Response) => {
@@ -47,10 +36,10 @@ export const count = async (req: Request, res: Response) => {
 
 export const create = async (req: Request, res: Response) => {
   const user_state = await createUserState(req.body);
-  if(user_state instanceof UserState) {
+  if (user_state instanceof UserState) {
     res.status(201).json(user_state);
-  } else  {
-    res.status(422).json(user_state)
+  } else {
+    res.status(422).json(user_state);
   }
 };
 

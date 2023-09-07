@@ -8,21 +8,10 @@ import {
   updateWarehouseState,
 } from '../context/warehouse_state';
 import { WarehouseState } from '../models/warehouse_state.model';
+import states from '../config/states';
 
 export const index = async (req: Request, res: Response) => {
-  try {
-    const current_page = req.query.current_page
-      ? Number(req.query.current_page)
-      : 1;
-    const number_of_rows = req.query.number_of_rows
-      ? Number(req.query.number_of_rows)
-      : await countWarehouseState();
-    const states = await listWarehouseState(current_page, number_of_rows);
-    res.json(states);
-  } catch (e) {
-    console.log(e);
-    res.status(500).send(e);
-  }
+  res.json(states.warehouse);
 };
 
 export const show = async (req: Request, res: Response) => {
