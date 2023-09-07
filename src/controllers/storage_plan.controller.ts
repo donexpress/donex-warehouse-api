@@ -11,7 +11,6 @@ import {
 import { StoragePlan } from '../models/storage_plan.model';
 
 export const index = async (req: Request, res: Response) => {
-  console.log(req);
   try {
     const current_page = req.query.current_page
       ? Number(req.query.current_page)
