@@ -24,6 +24,7 @@ import * as LineClassificationController from './line_classification.controller'
 import * as OutputPlanController from './output_plan.controller'
 import * as FileController from './file.controller'
 import * as StoragePlanStateController from './storage_plan_type.controller'
+import * as ShelfPackageController from './shelf_package.controller'
 
 export {
   DepartmentController,
@@ -51,5 +52,6 @@ export {
   LineClassificationController,
   OutputPlanController,
   FileController,
-  StoragePlanStateController
+  StoragePlanStateController,
+  ShelfPackageController
 };
