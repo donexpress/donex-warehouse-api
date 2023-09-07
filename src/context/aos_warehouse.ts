@@ -3,6 +3,7 @@ import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { AOSWarehouse } from '../models/aos_warehouse.model';
 import { Shelf } from '../models/shelf.model';
+import { findShelfByWarehouseId } from './shelf';
 
 export const listAOSWarehouse = async (
   current_page: number,
@@ -17,11 +18,12 @@ export const listAOSWarehouse = async (
       id: 'DESC',
     },
   });
-  const shelfs_data = await AppDataSource.manager.find(Shelf)
+  const shelfs_data = await AppDataSource.manager.find(Shelf,{order: {partition_table: 'ASC'}})
   const mod_aos_warehouses = []
   aos_warehouses.map(warehouse => {
     let shelfs = shelfs_data.filter(shelf => shelf.warehouse_id === warehouse.id)
-    mod_aos_warehouses.push({...warehouse, shelfs})
+    const patition_amount = shelfs[shelfs.length - 1].partition_table
+    mod_aos_warehouses.push({...warehouse, shelfs, patition_amount})
   })
   return mod_aos_warehouses
 };
@@ -34,8 +36,9 @@ export const showAOSWarehouse = async (id: number) => {
   const aos_warehouse = await AppDataSource.manager.findOne(AOSWarehouse, {
     where: { id },
   });
-  const shelfs = await AppDataSource.manager.find(Shelf, {where: {warehouse_id: aos_warehouse.id}})
-  return {...aos_warehouse, shelfs}
+  const shelfs = await findShelfByWarehouseId(id)
+  const patition_amount = shelfs[shelfs.length - 1].partition_table
+    return {...aos_warehouse, shelfs, patition_amount}
 };
 
 export const createAOSWarehouse = async (aos_warehouse_data: any) => {

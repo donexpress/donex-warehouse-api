@@ -24,6 +24,7 @@ import lineClassification from './line_classification.route'
 import outputPlan from './output_plan.route'
 import fileRoute from './file.route'
 import storagePlanStateRoute from './storage_plan_state.route'
+import shelfPackageRoute from './shelf_package.route'
 export default (app) => {
   app.use("/", organizationRouter);
   app.use("/", staffStateRoutes);
@@ -51,5 +52,6 @@ export default (app) => {
   app.use("/", outputPlan);
   app.use("/", fileRoute);
   app.use("/", storagePlanStateRoute);
+  app.use("/", shelfPackageRoute);
   app.get("/api/v1", (req, res) => res.sendStatus(200));
 };
