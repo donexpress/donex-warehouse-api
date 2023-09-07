@@ -15,7 +15,7 @@ export const listAOSWarehouse = async (
     skip: (current_page - 1) * number_of_rows,
     where: [{ name: ILike(`%${query}%`) }, { code: ILike(`%${query}%`) }],
     order: {
-      id: 'ASC',
+      id: 'DESC',
     },
   });
   const shelfs_data = await AppDataSource.manager.find(Shelf,{order: {partition_table: 'ASC'}})

@@ -15,7 +15,7 @@ export const listStoragePlanState = async (
       { name: ILike(`%${query}%`) },
     ],
     order: {
-      id: 'ASC',
+      id: 'DESC',
     },
   });
 

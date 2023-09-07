@@ -19,6 +19,7 @@ router.get(
 router.post('/api/v1/line_classification', LineClassificationController.create);
 router.put(
   '/api/v1/line_classification/:id',
+  verifyTokenPresent,
   LineClassificationController.update
 );
 router.delete(

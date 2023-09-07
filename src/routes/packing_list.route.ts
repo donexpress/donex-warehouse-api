@@ -10,8 +10,16 @@ router.get(
 );
 router.get('/api/v1/packing_list/count', PackingListController.count);
 router.get('/api/v1/packing_list/:id', PackingListController.show);
-router.post('/api/v1/packing_list', PackingListController.create);
-router.put('/api/v1/packing_list/:id', PackingListController.update);
+router.post(
+  '/api/v1/packing_list',
+  verifyTokenPresent,
+  PackingListController.create
+);
+router.put(
+  '/api/v1/packing_list/:id',
+  verifyTokenPresent,
+  PackingListController.update
+);
 router.delete(
   '/api/v1/packing_list/:id',
   verifyTokenPresent,

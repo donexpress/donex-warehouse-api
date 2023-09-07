@@ -10,8 +10,16 @@ router.get(
 );
 router.get('/api/v1/output_plan/count', OutputPlanController.count);
 router.get('/api/v1/output_plan/:id', OutputPlanController.show);
-router.post('/api/v1/output_plan', OutputPlanController.create);
-router.put('/api/v1/output_plan/:id', OutputPlanController.update);
+router.post(
+  '/api/v1/output_plan',
+  verifyTokenPresent,
+  OutputPlanController.create
+);
+router.put(
+  '/api/v1/output_plan/:id',
+  verifyTokenPresent,
+  OutputPlanController.update
+);
 router.delete(
   '/api/v1/output_plan/:id',
   verifyTokenPresent,

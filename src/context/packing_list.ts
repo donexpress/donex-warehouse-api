@@ -14,7 +14,7 @@ export const listPackingList = async (
     skip: (current_page - 1) * number_of_rows,
     where: [{ box_number: ILike(`%${query}%`) }],
     order: {
-      id: 'ASC',
+      id: 'DESC',
     },
   });
 };
