@@ -1,4 +1,6 @@
 import { AppDataSource } from '../config/ormconfig';
+import states from '../config/states';
+import { state_value } from '../helpers/states';
 import { validateContext } from '../helpers/validate';
 import { Warehouse } from '../models/warehouse.model';
 import { WarehouseState } from '../models/warehouse_state.model';
@@ -15,12 +17,13 @@ export const listWarehouse = async (
     },
     // relations: ['states'],
   });
-  const states = await AppDataSource.manager.find(WarehouseState);
+  //const states = await AppDataSource.manager.find(WarehouseState);
+  const state = states.warehouse;
   const mod_warehouses = warehouses.map((warehouse) => {
-    if (warehouse.state_id) {
+    if (warehouse.state) {
       return {
         ...warehouse,
-        ...{ state: states.find((el) => el.id === warehouse.state_id) },
+        ...{ state: state_value(warehouse.state) },
       };
     } else {
       return { ...warehouse, ...{ state: null } };
