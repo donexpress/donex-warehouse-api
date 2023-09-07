@@ -1,6 +1,6 @@
 import { AppDataSource } from '../config/ormconfig';
 import states from '../config/states';
-import { state_value } from '../helpers/states';
+import { object_state_warehouse } from '../helpers/states';
 import { validateContext } from '../helpers/validate';
 import { Warehouse } from '../models/warehouse.model';
 import { WarehouseState } from '../models/warehouse_state.model';
@@ -18,12 +18,11 @@ export const listWarehouse = async (
     // relations: ['states'],
   });
   //const states = await AppDataSource.manager.find(WarehouseState);
-  const state = states.warehouse;
   const mod_warehouses = warehouses.map((warehouse) => {
     if (warehouse.state) {
       return {
         ...warehouse,
-        ...{ state: state_value(warehouse.state) },
+        ...{ state: object_state_warehouse(warehouse.state) },
       };
     } else {
       return { ...warehouse, ...{ state: null } };
@@ -42,11 +41,11 @@ export const showWarehouse = async (id: number) => {
     // relations: ['states'],
   });
 
-  const states = await AppDataSource.manager.find(WarehouseState);
-  if (warehouse.state_id) {
+  //const states = await AppDataSource.manager.find(WarehouseState);
+  if (warehouse.state) {
     return {
       ...warehouse,
-      ...{ state: states.find((el) => el.id === warehouse.state_id) },
+      ...{ state: object_state_warehouse(warehouse.state) },
     };
   } else {
     return { ...warehouse, ...{ state: null } };

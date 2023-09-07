@@ -8,6 +8,7 @@ import { UserState } from '../models/user_state.model';
 import { Staff } from '../models/staff.model';
 import { PaymentMethod } from '../models/payment_method.model';
 import { UserLevel } from '../models/user_level.model';
+import { object_state_user } from '../helpers/states';
 
 // const user_relations = [
 //   'warehouses',
@@ -56,6 +57,10 @@ export const listUser = async (
   const user_levels = await AppDataSource.manager.find(UserLevel);
   const users_mod = users.map((user) => {
     delete user.password;
+    let user_state = null;
+    if (user.state) {
+      user_state = object_state_user(user.state);
+    }
     let client_service_representatives = null;
     if (user.client_service_representative) {
       client_service_representatives = staffs.find(
@@ -97,6 +102,7 @@ export const listUser = async (
     }
     return {
       ...user,
+      user_state,
       client_service_representatives,
       sales_representatives,
       finantial_representatives,
@@ -121,10 +127,11 @@ export const showUser = async (id: number) => {
   }
   delete user.password;
   let user_state = null;
-  if (user.state_id) {
-    user_state = await AppDataSource.manager.findOne(UserState, {
-      where: { id: user.state_id },
-    });
+  if (user.state) {
+    //user_state = await AppDataSource.manager.findOne(UserState, {
+    //where: { id: user.state_id },
+    //});
+    user_state = object_state_user(user.state);
   }
 
   let client_service_representatives = null;
@@ -196,16 +203,19 @@ export const showUser = async (id: number) => {
 };
 
 export const createUser = async (user_data) => {
-
   const repository = await AppDataSource.getRepository(User);
-  const username_count = await repository.count({where:{username: user_data.username}})
-  if(username_count > 0) {
-    return {message: "username already exists"}
+  const username_count = await repository.count({
+    where: { username: user_data.username },
+  });
+  if (username_count > 0) {
+    return { message: 'username already exists' };
   }
-  if(user_data.email) {
-    const email_count = await repository.count({where: {email: user_data.email}})
-    if(email_count > 0) {
-      return {message: "email already exists"}
+  if (user_data.email) {
+    const email_count = await repository.count({
+      where: { email: user_data.email },
+    });
+    if (email_count > 0) {
+      return { message: 'email already exists' };
     }
   }
 

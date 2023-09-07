@@ -8,6 +8,7 @@ import { StaffState } from '../models/staff_state.model';
 import { Role } from '../models/role.model';
 import { Organization } from '../models/organization.model';
 import { StaffWarehouse } from '../models/staff_warehouse.model';
+import { object_state_user } from '../helpers/states';
 
 export const listStaff = async (
   current_page: number,
@@ -26,7 +27,6 @@ export const listStaff = async (
     },
     // relations: ['states', 'roles', 'organizations', 'warehouses'],
   });
-  const states = await AppDataSource.manager.find(StaffState);
   const roles = await AppDataSource.manager.find(Role);
   const organizations = await AppDataSource.manager.find(Organization);
   const warehouse = await AppDataSource.manager.find(Warehouse);
@@ -35,8 +35,8 @@ export const listStaff = async (
     const user = users[i];
     delete user.password;
     let state = null;
-    if (user.state_id) {
-      state = states.find((el) => el.id === user.state_id);
+    if (user.state) {
+      state = object_state_user(user.state);
     }
     let role = null;
     if (user.role_id) {
@@ -75,10 +75,8 @@ export const showStaff = async (id: number) => {
     // relations: ['states', 'roles', 'organizations', 'warehouses'],
   });
   let state = null;
-  if (user.state_id) {
-    state = await AppDataSource.manager.findOne(StaffState, {
-      where: { id: user.state_id },
-    });
+  if (user.state) {
+    state = object_state_user(user.state);
   }
   let role = null;
   if (user.role_id) {
