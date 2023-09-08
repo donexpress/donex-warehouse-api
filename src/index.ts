@@ -5,7 +5,7 @@ import morgan from 'morgan';
 import { AppDataSource } from './config/ormconfig';
 import routeInstantiator from './routes';
 import { appMode } from './config/app';
-import { LoggerMiddleware, verifyTokenPresent } from './middlewares';
+import { LoggerMiddleware, fetchcurrentUser, verifyTokenPresent } from './middlewares';
 
 const app: Express = express();
 const PORT = process.env.PORT ?? 3000;
@@ -24,7 +24,7 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-//app.use(LoggerMiddleware);
+app.use(fetchcurrentUser);
 
 if (appMode() === 'api') {
   routeInstantiator(app);

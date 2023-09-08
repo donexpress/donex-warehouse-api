@@ -5,7 +5,7 @@ import { Role } from '../models/role.model';
 
 const guardianMw = (roles: string[]) => (req, res, next) => {
   const token = req.headers.authorization.split(' ')[1];
-  const object = decode_token(token);
+  const object = decodeToken(token);
 
   AppDataSource.manager
     .find(Role, {
@@ -22,7 +22,7 @@ const guardianMw = (roles: string[]) => (req, res, next) => {
     });
 };
 
-const decode_token = (token) => {
+const decodeToken = (token) => {
   try {
     return JWT.decode(token, { json: true });
   } catch (error) {
@@ -32,8 +32,6 @@ const decode_token = (token) => {
 
 const verifyTokenPresent = (req, res, next) => {
   if (req.headers.authorization) {
-    const token = req.headers.authorization.split(' ')[1];
-    req.user = decode_token(token);
     next();
   } else {
     res.status(401).send('This user not access this request');
@@ -45,4 +43,15 @@ const LoggerMiddleware = (req, res, next) => {
   next();
 };
 
-export { guardianMw, verifyTokenPresent, LoggerMiddleware };
+const fetchcurrentUser = (req, res, next) => {
+  const token = req.headers.authorization.split(' ')[1];
+  const object = decodeToken(token);
+
+  if (!req.hasOwnProperty('assigns')) {
+    req.assigns = {};
+  }
+  req.assigns.currentUser = object.data;
+  next();
+};
+
+export { guardianMw, verifyTokenPresent, LoggerMiddleware, fetchcurrentUser };
