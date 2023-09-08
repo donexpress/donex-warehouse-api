@@ -22,13 +22,13 @@ export class Role {
 
   @Column({
     type: 'varchar',
-    nullable: false,
+    nullable: true,
   })
   type: string;
 
   @Column({
     type: 'varchar',
-    nullable: false,
+    nullable: true,
   })
   scope: string;
 
