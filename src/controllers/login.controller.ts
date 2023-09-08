@@ -45,11 +45,12 @@ export const self = async (req: Request, res: Response) => {
   const user = req.assigns.currentUser;
   const role_id = user.role_id;
 
-  const role = AppDataSource.getRepository(Role).find({
+  const role = await AppDataSource.getRepository(Role).find({
     where: {
       id: role_id,
     },
   });
+  delete user.password;
 
   res.send({ ...user, role });
 };
