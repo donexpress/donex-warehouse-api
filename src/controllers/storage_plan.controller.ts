@@ -9,6 +9,7 @@ import {
   updateStoragePlan,
 } from '../context/storage_plan';
 import { StoragePlan } from '../models/storage_plan.model';
+import { getCurrentUser } from '../middlewares';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -19,8 +20,8 @@ export const index = async (req: Request, res: Response) => {
       ? Number(req.query.number_of_rows)
       : await countStoragePlan();
     const query = req.query.query;
-    const state = req.query.state
-    if(!state) {
+    const state = req.query.state;
+    if (!state) {
       const storage_plans = await listStoragePlan(
         current_page,
         number_of_rows,
@@ -66,9 +67,9 @@ export const count = async (req: Request, res: Response) => {
 };
 
 export const create = async (req: Request, res: Response) => {
-  // @ts-ignore
-  const user_id: number = req.user.data.id;
-  const result = await createStoragePlan(req.body, user_id);
+  const user = getCurrentUser(req);
+  //@ts-ignore
+  const result = await createStoragePlan(req.body, parseInt(user.id));
   if (result instanceof StoragePlan) {
     res.status(201).json(result);
   } else {
