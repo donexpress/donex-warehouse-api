@@ -1,11 +1,12 @@
 import express from 'express';
 import { WarehouseController } from '../controllers';
-import { verifyTokenPresent } from '../middlewares';
+import { verifyTokenPresent, guardianMw } from '../middlewares';
 const router = express.Router();
 
 router.get(
   '/api/v1/cargo_station',
   verifyTokenPresent,
+  guardianMw(["ADMIN"]),
   WarehouseController.index
 );
 router.get('/api/v1/cargo_station/count', WarehouseController.count);

@@ -1,6 +1,6 @@
 import express from 'express';
 import { AOSWarehouseController } from '../controllers';
-import { verifyTokenPresent } from '../middlewares';
+import { verifyTokenPresent, guardianMw } from '../middlewares';
 const router = express.Router();
 
 router.get(
