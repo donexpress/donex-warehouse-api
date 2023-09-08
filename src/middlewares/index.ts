@@ -44,13 +44,16 @@ const LoggerMiddleware = (req, res, next) => {
 };
 
 const fetchcurrentUser = (req, res, next) => {
-  const token = req.headers.authorization.split(' ')[1];
-  const object = decodeToken(token);
+  const headers = req.headers;
+  if (headers.hasOwnProperty('authorization')) {
+    const token = req.headers.authorization.split(' ')[1];
+    const object = decodeToken(token);
 
-  if (!req.hasOwnProperty('assigns')) {
-    req.assigns = {};
+    if (!req.hasOwnProperty('assigns')) {
+      req.assigns = {};
+    }
+    req.assigns.currentUser = object.data;
   }
-  req.assigns.currentUser = object.data;
   next();
 };
 
@@ -60,6 +63,12 @@ const getCurrentUser = (req): string | null => {
   } catch (e) {
     return null;
   }
-}
+};
 
-export { guardianMw, verifyTokenPresent, LoggerMiddleware, fetchcurrentUser, getCurrentUser };
+export {
+  guardianMw,
+  verifyTokenPresent,
+  LoggerMiddleware,
+  fetchcurrentUser,
+  getCurrentUser,
+};
