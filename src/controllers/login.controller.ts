@@ -43,11 +43,10 @@ export const self = async (req: Request, res: Response) => {
   //const warehouse_service = req.headers.warehouse_service;
   //@ts-ignore
   const user = req.assigns.currentUser;
-  const role_id = user.role_id;
 
-  const role = await AppDataSource.getRepository(Role).find({
+  const role = await AppDataSource.getRepository(Role).findOne({
     where: {
-      id: role_id,
+      id: user.role_id,
     },
   });
   delete user.password;
