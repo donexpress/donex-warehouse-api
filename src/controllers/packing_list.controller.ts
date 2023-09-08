@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import {
   countPackingList,
   createPackingList,
+  getPackingListByCaseNumber,
   listPackingList,
   removePackingList,
   showPackingList,
@@ -91,3 +92,18 @@ export const remove = async (req: Request, res: Response) => {
     res.status(500).send(e);
   }
 };
+
+export const getByCaseNumber =async (req:Request, res: Response) => {
+  try {
+    const query = req.query.case_number;
+    const result = await getPackingListByCaseNumber(String(query));
+    if (!result) {
+      res.status(404).json(result);
+    } else {
+      res.json(result);
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(500).send(e);
+  }
+}

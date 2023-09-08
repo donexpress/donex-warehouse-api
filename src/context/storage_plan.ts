@@ -40,6 +40,25 @@ export const listStoragePlan = async (
   });
 };
 
+export const findStoragePlanByOrderNumber = async (order_number:string) => {
+  const storage_plan =  await AppDataSource.manager.findOne(StoragePlan, {where: {order_number}})
+  let packing_list = null;
+  if (storage_plan) {
+    packing_list = await AppDataSource.manager.find(PackingList, {
+      where: { storage_plan_id: storage_plan.id },
+    });
+  }
+  let warehouse = null;
+  if (storage_plan.warehouse_id) {
+    warehouse = await showAOSWarehouse(storage_plan.warehouse_id);
+  }
+  let user = null;
+  if (storage_plan.user_id) {
+    user = await showUser(storage_plan.user_id);
+  }
+  return { ...storage_plan, packing_list, warehouse, user };
+}
+
 export const filterByState = async (
   current_page: number,
   number_of_rows: number,

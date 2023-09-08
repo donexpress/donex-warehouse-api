@@ -82,3 +82,11 @@ export const removePackingList = async (id: number) => {
   const result = await repository.delete({ id });
   return result;
 };
+
+export const getPackingListByCaseNumber = async (case_number: string) => {
+  const packing_list = await AppDataSource.manager.findOne(PackingList, {
+    where: { case_number },
+  });
+  const package_shelf = await getDataByPackageId(packing_list.id)
+  return {...packing_list, package_shelf}
+};
