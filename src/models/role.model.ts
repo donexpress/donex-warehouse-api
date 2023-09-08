@@ -23,6 +23,18 @@ export class Role {
   @Column({
     type: 'varchar',
     nullable: true,
+  })
+  type: string;
+
+  @Column({
+    type: 'varchar',
+    nullable: true,
+  })
+  scope: string;
+
+  @Column({
+    type: 'varchar',
+    nullable: true,
     default: new Date().toISOString(),
   })
   created_at: string;
