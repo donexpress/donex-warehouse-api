@@ -18,14 +18,18 @@ export const listAOSWarehouse = async (
       id: 'DESC',
     },
   });
-  const shelfs_data = await AppDataSource.manager.find(Shelf,{order: {partition_table: 'ASC'}})
-  const mod_aos_warehouses = []
-  aos_warehouses.map(warehouse => {
-    let shelfs = shelfs_data.filter(shelf => shelf.warehouse_id === warehouse.id)
-    const patition_amount = shelfs[shelfs.length - 1].partition_table
-    mod_aos_warehouses.push({...warehouse, shelfs, patition_amount})
-  })
-  return mod_aos_warehouses
+  const shelfs_data = await AppDataSource.manager.find(Shelf, {
+    order: { partition_table: 'ASC' },
+  });
+  const mod_aos_warehouses = [];
+  aos_warehouses.map((warehouse) => {
+    let shelfs = shelfs_data.filter(
+      (shelf) => shelf.warehouse_id === warehouse.id
+    );
+    const patition_amount = shelfs[shelfs.length - 1].partition_table;
+    mod_aos_warehouses.push({ ...warehouse, shelfs, patition_amount });
+  });
+  return mod_aos_warehouses;
 };
 
 export const countAOSWarehouse = async () => {
@@ -36,14 +40,17 @@ export const showAOSWarehouse = async (id: number) => {
   const aos_warehouse = await AppDataSource.manager.findOne(AOSWarehouse, {
     where: { id },
   });
-  const shelfs = await findShelfByWarehouseId(id)
-  const patition_amount = shelfs[shelfs.length - 1].partition_table
-    return {...aos_warehouse, shelfs, patition_amount}
+  const shelfs = await findShelfByWarehouseId(id);
+  let patition_amount = 0;
+  if (shelfs[shelfs.length - 1] && shelfs[shelfs.length - 1].partition_table) {
+    patition_amount = shelfs[shelfs.length - 1].partition_table;
+  }
+  return { ...aos_warehouse, shelfs, patition_amount };
 };
 
 export const createAOSWarehouse = async (aos_warehouse_data: any) => {
-  if(aos_warehouse_data.email === '') {
-    aos_warehouse_data.email = null
+  if (aos_warehouse_data.email === '') {
+    aos_warehouse_data.email = null;
   }
   const repository = await AppDataSource.getRepository(AOSWarehouse);
   const aos_warehouse = repository.create(aos_warehouse_data);
