@@ -54,4 +54,12 @@ const fetchcurrentUser = (req, res, next) => {
   next();
 };
 
-export { guardianMw, verifyTokenPresent, LoggerMiddleware, fetchcurrentUser };
+const getCurrentUser = (req): string | null => {
+  try {
+    return req.assigns.currentUser;
+  } catch (e) {
+    return null;
+  }
+}
+
+export { guardianMw, verifyTokenPresent, LoggerMiddleware, fetchcurrentUser, getCurrentUser };

@@ -8,8 +8,10 @@ import {
   updateWarehouse,
 } from '../context/warehouse';
 import { Warehouse } from '../models/warehouse.model';
+import { getCurrentUser } from '../middlewares';
 
 export const index = async (req: Request, res: Response) => {
+  console.log(getCurrentUser(req));
   try {
     const current_page = req.query.current_page
       ? Number(req.query.current_page)
