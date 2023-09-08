@@ -26,7 +26,13 @@ export const listAOSWarehouse = async (
     let shelfs = shelfs_data.filter(
       (shelf) => shelf.warehouse_id === warehouse.id
     );
-    const patition_amount = shelfs[shelfs.length - 1].partition_table;
+    let patition_amount = 0;
+    if (
+      shelfs[shelfs.length - 1] &&
+      shelfs[shelfs.length - 1].partition_table
+    ) {
+      patition_amount = shelfs[shelfs.length - 1].partition_table;
+    }
     mod_aos_warehouses.push({ ...warehouse, shelfs, patition_amount });
   });
   return mod_aos_warehouses;

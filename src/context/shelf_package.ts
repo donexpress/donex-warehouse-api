@@ -42,6 +42,18 @@ export const getDataByShelfId = async (id: number) => {
   return mod_data
 };
 
+export const getDataByPackageId = async (id: number) => {
+  const shelf_packages = await AppDataSource.manager.find(ShelfPackages, {
+    where: { package_id: id },
+  });
+  const mod_data = []
+  for(let i = 0; i < shelf_packages.length; i++) {
+    const shelf = await AppDataSource.manager.findOne(Shelf, {where: {id: shelf_packages[i].shelf_id}})
+    mod_data.push({...shelf_packages[i], shelf})
+  }
+  return mod_data
+};
+
 export const createShelfPackages = async (data) => {
   const repository = await AppDataSource.getRepository(ShelfPackages);
   const result = repository.create(data);
