@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { countStoragePlanState, createStoragePlanState, listStoragePlanState, removeStoragePlan, showStoragePlanState, updateStoragePlan } from '../context/storage_plan_state';
 import { StoragePlan } from '../models/storage_plan.model';
+import { getCurrentUser } from '../middlewares';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -48,9 +49,9 @@ export const count = async (req: Request, res: Response) => {
 };
 
 export const create = async (req: Request, res: Response) => {
-  // @ts-ignore
-  const user_id: number = req.user.data.id;
-  const result = await createStoragePlanState(req.body, user_id);
+  const user = getCurrentUser(req);
+  //@ts-ignore
+  const result = await createStoragePlanState(req.body, parseInt(user.id));
   if (result instanceof StoragePlan) {
     res.status(201).json(result);
   } else {
