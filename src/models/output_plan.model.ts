@@ -126,6 +126,12 @@ export class OutputPlan {
   case_numbers: string[];
 
   @Column({
+    type: 'varchar',
+    nullable: true,
+  })
+  state: string;
+
+  @Column({
     type: 'json',
     nullable: true,
     default: [],

@@ -9,6 +9,7 @@ router.get(
   OutputPlanController.index
 );
 router.get('/api/v1/output_plan/count', OutputPlanController.count);
+router.get('/api/v1/output_plan/states', OutputPlanController.states);
 router.get('/api/v1/output_plan/:id', OutputPlanController.show);
 router.post(
   '/api/v1/output_plan',

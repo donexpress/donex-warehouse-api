@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import {
   countOutputPlan,
   createOutputPlan,
+  getOutputPlanByState,
+  getOutputPlanStates,
   listOutputPlan,
   removeOutputPlan,
   showOutputPlan,
@@ -19,12 +21,18 @@ export const index = async (req: Request, res: Response) => {
       : await countOutputPlan();
 
     const query = req.query.query;
-    const organization = await listOutputPlan(
-      current_page,
-      number_of_rows,
-      query == undefined ? '' : String(query)
-    );
-    res.json(organization);
+    const state = req.query.state;
+    let outpu_plans = []
+    if(state && state !== 'all') {
+      outpu_plans = await getOutputPlanByState(current_page, number_of_rows, String(state))
+    } else {
+      outpu_plans = await listOutputPlan(
+        current_page,
+        number_of_rows,
+        query == undefined ? '' : String(query)
+      );
+    }
+    res.json(outpu_plans);
   } catch (e) {
     console.log(e);
     res.status(500).send(e);
@@ -91,3 +99,7 @@ export const remove = async (req: Request, res: Response) => {
     res.status(500).send(e);
   }
 };
+
+export const states = (req: Request, res: Response) => {
+  res.send({states: getOutputPlanStates()})
+}
