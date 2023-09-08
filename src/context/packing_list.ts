@@ -3,13 +3,14 @@ import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { PackingList } from '../models/packing_list.model';
 import { StoragePlan } from '../models/storage_plan.model';
+import { getDataByPackageId } from './shelf_package';
 
 export const listPackingList = async (
   current_page: number,
   number_of_rows: number,
   query: string
 ) => {
-  return AppDataSource.manager.find(PackingList, {
+  const packing_lists = await AppDataSource.manager.find(PackingList, {
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
     where: [{ box_number: ILike(`%${query}%`) }],
@@ -17,6 +18,13 @@ export const listPackingList = async (
       id: 'DESC',
     },
   });
+  const mod_packing_list = []
+  for (let i = 0; i < packing_lists.length; i++) {
+    const packing_list = packing_lists[i];
+    const package_shelf = await getDataByPackageId(packing_list.id)
+    mod_packing_list.push({...packing_list, package_shelf})
+  }
+  return mod_packing_list
 };
 
 export const countPackingList = async () => {
@@ -24,9 +32,11 @@ export const countPackingList = async () => {
 };
 
 export const showPackingList = async (id: number) => {
-  return await AppDataSource.manager.findOne(PackingList, {
+  const packing_list = await AppDataSource.manager.findOne(PackingList, {
     where: { id },
   });
+  const package_shelf = await getDataByPackageId(packing_list.id)
+  return {...packing_list, package_shelf}
 };
 
 export const createPackingList = async (data) => {
