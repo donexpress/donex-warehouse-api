@@ -20,8 +20,15 @@ export const login = async (req: Request, res: Response) => {
   const repository = await getUserRepositoryData(warehouse_service);
 
   const user = await repository.findOne({
-    where: { username: req.body.username },
+    where: { username: req.body.username, state: "normal" },
   });
+  // Not login if you take this values
+  if (["resign", "frezze"].includes(user.state)) {
+    res.status(401).json({
+      message: 'We have a problem with this user. Please contact an administrator for a solution.',
+    });
+  }
+
   if (!user || !bcrypt.compareSync(req.body.password, user.password)) {
     res.status(401).json({
       message: 'User or password incorrect',
