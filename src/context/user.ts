@@ -47,7 +47,7 @@ export const listUser = async (
       { username: ILike(`%${query}%`) },
       { nickname: ILike(`%${query}%`) },
       { state: Not("deleted") },
-      { state: Not("null") }
+      { state: Not(IsNull()) }
     ],
     order: {
       id: 'DESC',
