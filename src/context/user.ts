@@ -40,14 +40,13 @@ export const listUser = async (
   number_of_rows: number,
   query: string
 ) => {
-  const users = await AppDataSource.manager.find(User, {
+  const users = await AppDataSource.getRepository(User).find({
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
     where: [
       { username: ILike(`%${query}%`) },
       { nickname: ILike(`%${query}%`) },
-      { state: Not("deleted") },
-      { state: Not(IsNull()) }
+      { state: Not("deleted") }
     ],
     order: {
       id: 'DESC',
