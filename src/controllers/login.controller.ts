@@ -20,7 +20,7 @@ export const login = async (req: Request, res: Response) => {
   const repository = await getUserRepositoryData(warehouse_service);
 
   const user = await repository.findOne({
-    where: { username: req.body.username},
+    where: { username: req.body.username },
   });
   // Not login if you take this values
   if (["resign", "frezze"].includes(user.state)) {
@@ -35,14 +35,15 @@ export const login = async (req: Request, res: Response) => {
     });
   } else {
     delete user.password;
+    const exp = Math.floor(Date.now() / 1000) + 60 * 60 * 24;
     const token = JWT.sign(
       {
-        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
+        exp: exp,
         data: user,
       },
       process.env.SECRET
     );
-    res.send({ token });
+    res.status(200).send({ token, expiration: exp });
   }
 };
 
