@@ -2,7 +2,7 @@ import { AppDataSource } from '../config/ormconfig';
 import { User } from '../models/user.model';
 import { Warehouse } from '../models/warehouse.model';
 import bcrypt from 'bcryptjs';
-import { ILike, In } from 'typeorm';
+import { ILike, In, IsNull, Not } from 'typeorm';
 import { validate } from 'class-validator';
 import { UserState } from '../models/user_state.model';
 import { Staff } from '../models/staff.model';
@@ -40,12 +40,16 @@ export const listUser = async (
   number_of_rows: number,
   query: string
 ) => {
+  const skip = (current_page - 1) * number_of_rows | 0;
+  const take = number_of_rows | 10;
+  const not_deleted = Not("deleted");
+
   const users = await AppDataSource.manager.find(User, {
-    take: number_of_rows,
-    skip: (current_page - 1) * number_of_rows,
+    take: take,
+    skip: skip,
     where: [
-      { username: ILike(`%${query}%`) },
-      { nickname: ILike(`%${query}%`) },
+      { username: ILike(`%${query}%`), state: not_deleted },
+      { nickname: ILike(`%${query}%`), state: not_deleted }
     ],
     order: {
       id: 'DESC',

@@ -1,3 +1,4 @@
+import { Not } from 'typeorm';
 import { AppDataSource } from '../config/ormconfig';
 import states from '../config/states';
 import { object_state_warehouse } from '../helpers/states';
@@ -9,9 +10,16 @@ export const listWarehouse = async (
   current_page: number,
   number_of_rows: number
 ) => {
+  const skip = (current_page - 1) * number_of_rows | 0;
+  const take = number_of_rows | 10;
+  const not_deleted = Not("deleted");
+  
   const warehouses = await AppDataSource.manager.find(Warehouse, {
-    take: number_of_rows,
-    skip: (current_page - 1) * number_of_rows,
+    take: take,
+    skip: skip,
+    where: {
+      state: not_deleted
+    },
     order: {
       id: 'DESC',
     },

@@ -2,7 +2,7 @@ import { AppDataSource } from '../config/ormconfig';
 import { Staff } from '../models/staff.model';
 import { Warehouse } from '../models/warehouse.model';
 import bcrypt from 'bcryptjs';
-import { ILike, In } from 'typeorm';
+import { ILike, In, Not } from 'typeorm';
 import { validate } from 'class-validator';
 import { StaffState } from '../models/staff_state.model';
 import { Role } from '../models/role.model';
@@ -15,12 +15,16 @@ export const listStaff = async (
   number_of_rows: number,
   query: string
 ) => {
+  const skip = (current_page - 1) * number_of_rows | 0;
+  const take = number_of_rows | 10;
+  const not_deleted = Not("deleted");
+
   const users = await AppDataSource.manager.find(Staff, {
-    take: number_of_rows,
-    skip: (current_page - 1) * number_of_rows,
+    take: take,
+    skip: skip,
     where: [
-      { english_name: ILike(`%${query}%`) },
-      { chinesse_name: ILike(`%${query}%`) },
+      { english_name: ILike(`%${query}%`), state: not_deleted },
+      { chinesse_name: ILike(`%${query}%`), state: not_deleted },
     ],
     order: {
       id: 'DESC',
