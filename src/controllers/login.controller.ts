@@ -20,7 +20,7 @@ export const login = async (req: Request, res: Response) => {
   const repository = await getUserRepositoryData(warehouse_service);
 
   const user = await repository.findOne({
-    where: { username: req.body.username },
+    where: { username: req.body.username, state: "normal" },
   });
   // Not login if you take this values
   if (["resign", "frezze"].includes(user.state)) {
