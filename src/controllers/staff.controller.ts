@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import {
   countStaff,
   createStaff,
+  getStaffByState,
   listStaff,
   removeStaff,
   showStaff,
@@ -18,11 +19,17 @@ export const index = async (req: Request, res: Response) => {
       ? Number(req.query.number_of_rows)
       : await countStaff();
     const query = req.query.query;
-    const users = await listStaff(
-      current_page,
-      number_of_rows,
-      query == undefined ? '' : String(query)
-    );
+    const state = req.query.state;
+    let users = [];
+    if (state) {
+      users = await getStaffByState(current_page, number_of_rows, String(state));
+    } else {
+      users = await listStaff(
+        current_page,
+        number_of_rows,
+        query == undefined ? '' : String(query)
+      );
+    }
     res.json(users);
   } catch (e) {
     console.log(e);
