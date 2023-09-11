@@ -124,7 +124,7 @@ export const getStaffByState = async (
 };
 
 export const countStaff = async () => {
-  return AppDataSource.manager.count(Staff);
+  return await AppDataSource.getRepository(Staff).count({ where: { state: Not("deleted") } });
 };
 
 export const showStaff = async (id: number) => {
