@@ -35,8 +35,11 @@ export const showPackingList = async (id: number) => {
   const packing_list = await AppDataSource.manager.findOne(PackingList, {
     where: { id },
   });
-  const package_shelf = await getDataByPackageId(packing_list.id)
-  return {...packing_list, package_shelf}
+  if(packing_list && packing_list.id) {
+    const package_shelf = await getDataByPackageId(packing_list.id)
+    return {...packing_list, package_shelf}
+  }
+  return packing_list
 };
 
 export const createPackingList = async (data) => {
@@ -89,4 +92,17 @@ export const getPackingListByCaseNumber = async (case_number: string) => {
   });
   const package_shelf = await getDataByPackageId(packing_list.id)
   return {...packing_list, package_shelf}
+};
+
+export const getPackingListByStoragePlanId = async (storage_plan_id: number) => {
+  const packing_list = await AppDataSource.manager.find(PackingList, {
+    where: { storage_plan_id },
+  });
+  const mod_packing_list = []
+  for (let i = 0; i < packing_list.length; i++) {
+    const pl = packing_list[i];
+    const package_shelf = await getDataByPackageId(pl.id)
+    mod_packing_list.push({...pl, package_shelf})
+  }
+  return mod_packing_list
 };
