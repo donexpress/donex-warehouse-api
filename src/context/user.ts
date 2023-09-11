@@ -43,22 +43,12 @@ export const listUser = async (
   const skip = (current_page - 1) * number_of_rows | 0;
   const take = number_of_rows | 10;
 
-  const usersQ = await AppDataSource.getRepository(User)
-    .createQueryBuilder("users")
-    .orWhere("username ilike :name", { name: '%' + query + '%' })
-    .orWhere("nickname ilike :name", { name: '%' + query + '%' })
-    .andWhere("state != 'deleted'")
-    .orderBy('id', "DESC")
-    .skip(skip)
-    .take(take)
-    .getMany()
-
   const users = await AppDataSource.manager.find(User, {
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
     where: [
-      { username: ILike(`%${query}%`) },
-      { nickname: ILike(`%${query}%`) }
+      { username: ILike(`%${query}%`), state: Not("deleted") },
+      { nickname: ILike(`%${query}%`), state: Not("deleted") }
     ],
     order: {
       id: 'DESC',
@@ -68,7 +58,7 @@ export const listUser = async (
   const staffs = await AppDataSource.manager.find(Staff);
   const payment_methods = await AppDataSource.manager.find(PaymentMethod);
   const user_levels = await AppDataSource.manager.find(UserLevel);
-  const users_mod = usersQ.map((user) => {
+  const users_mod = users.map((user) => {
     delete user.password;
     let user_state = null;
     if (user.state) {
