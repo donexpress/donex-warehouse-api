@@ -25,33 +25,45 @@ export const showShelfPackage = async (id: number) => {
   const shelf_package = await AppDataSource.manager.findOne(ShelfPackages, {
     where: { id },
   });
-  const shelf = await AppDataSource.manager.findOne(Shelf, {where: {id: shelf_package.shelf_id}})
-  const packages = await AppDataSource.manager.findOne(PackingList, {where: {id: shelf_package.package_id}})
-  return {...shelf_package, shelf, package: packages}
+  const shelf = await AppDataSource.manager.findOne(Shelf, {
+    where: { id: shelf_package.shelf_id },
+  });
+  const packages = await AppDataSource.manager.findOne(PackingList, {
+    where: { id: shelf_package.package_id },
+  });
+  return { ...shelf_package, shelf, package: packages };
 };
 
 export const getDataByShelfId = async (id: number) => {
   const shelf_packages = await AppDataSource.manager.find(ShelfPackages, {
     where: { shelf_id: id },
   });
-  const mod_data = []
-  for(let i = 0; i < shelf_packages.length; i++) {
-    const packages = await AppDataSource.manager.findOne(PackingList, {where: {id: shelf_packages[i].package_id}})
-    mod_data.push({...shelf_packages[i], package: packages})
+  const mod_data = [];
+  for (let i = 0; i < shelf_packages.length; i++) {
+    const packages = await AppDataSource.manager.findOne(PackingList, {
+      where: { id: shelf_packages[i].package_id },
+    });
+    mod_data.push({ ...shelf_packages[i], package: packages });
   }
-  return mod_data
+  return mod_data;
 };
 
 export const getDataByPackageId = async (id: number) => {
   const shelf_packages = await AppDataSource.manager.find(ShelfPackages, {
     where: { package_id: id },
   });
-  const mod_data = []
-  for(let i = 0; i < shelf_packages.length; i++) {
-    const shelf = await AppDataSource.manager.findOne(Shelf, {where: {id: shelf_packages[i].shelf_id}})
-    mod_data.push({...shelf_packages[i], shelf})
+  const mod_data = [];
+  for (let i = 0; i < shelf_packages.length; i++) {
+    const shelf = await AppDataSource.manager.findOne(Shelf, {
+      where: { id: shelf_packages[i].shelf_id },
+    });
+    if (!shelf) {
+      mod_data.push(shelf_packages[i])
+    } else {
+      mod_data.push({ ...shelf_packages[i], shelf });
+    }
   }
-  return mod_data
+  return mod_data;
 };
 
 export const createShelfPackages = async (data) => {
