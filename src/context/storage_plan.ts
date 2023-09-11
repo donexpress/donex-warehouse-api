@@ -38,7 +38,9 @@ export const listStoragePlan = async (
     let user = null;
     if (storage_plan.user_id) {
       user = users.find((u) => u.id === storage_plan.user_id);
-      delete user.password
+      if(user) {
+        delete user.password
+      }
     }
     let packing_list = await getPackingListByStoragePlanId(storage_plan.id);
     if(!packing_list) {
