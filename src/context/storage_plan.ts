@@ -7,6 +7,7 @@ import { User } from '../models/user.model';
 import { showUser } from './user';
 import { AOSWarehouse } from '../models/aos_warehouse.model';
 import { showAOSWarehouse } from './aos_warehouse';
+import { getPackingListByStoragePlanId } from './packing_list';
 
 export const listStoragePlan = async (
   current_page: number,
@@ -26,8 +27,10 @@ export const listStoragePlan = async (
   });
   const warehouses = await AppDataSource.manager.find(AOSWarehouse);
   const users = await AppDataSource.manager.find(User);
-
-  return storage_plans.map((storage_plan) => {
+  const data = []
+  for (let i = 0; i < storage_plans.length; i++) {
+    const storage_plan = storage_plans[i];
+    
     let warehouse = null;
     if (storage_plan.warehouse_id) {
       warehouse = warehouses.find((w) => w.id === storage_plan.warehouse_id);
@@ -35,9 +38,13 @@ export const listStoragePlan = async (
     let user = null;
     if (storage_plan.user_id) {
       user = users.find((u) => u.id === storage_plan.user_id);
+      delete user.password
     }
-    return { ...storage_plan, warehouse, user };
-  });
+    let packing_list = await getPackingListByStoragePlanId(storage_plan.id);
+
+    data.push({ ...storage_plan, warehouse, user, packing_list });
+  }
+  return data
 };
 
 export const findStoragePlanByOrderNumber = async (order_number:string) => {
