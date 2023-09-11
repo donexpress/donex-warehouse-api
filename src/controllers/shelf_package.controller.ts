@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import {} from '../context/shelf_type';
 import { countShelfPackages, createShelfPackages, listShelfPackages, removeShelfPackages, showShelfPackage, updateShelfPackages } from '../context/shelf_package';
 import { Shelf } from '../models/shelf.model';
+import { ShelfPackages } from '../models/shelf_package.model';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -46,7 +47,7 @@ export const count = async (req: Request, res: Response) => {
 export const create = async (req: Request, res: Response) => {
   try {
     const result = await createShelfPackages(req.body);
-    if (result instanceof Shelf) {
+    if (result instanceof ShelfPackages) {
       res.status(201).json(result);
     } else {
       res.status(422).json(result);
