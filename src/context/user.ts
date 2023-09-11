@@ -2,7 +2,7 @@ import { AppDataSource } from '../config/ormconfig';
 import { User } from '../models/user.model';
 import { Warehouse } from '../models/warehouse.model';
 import bcrypt from 'bcryptjs';
-import { ILike, In, Not } from 'typeorm';
+import { ILike, In, IsNull, Not } from 'typeorm';
 import { validate } from 'class-validator';
 import { UserState } from '../models/user_state.model';
 import { Staff } from '../models/staff.model';
@@ -46,7 +46,8 @@ export const listUser = async (
     where: [
       { username: ILike(`%${query}%`) },
       { nickname: ILike(`%${query}%`) },
-      {state: Not('DELETED')}
+      { state: Not("deleted") },
+      { state: Not("null") }
     ],
     order: {
       id: 'DESC',
