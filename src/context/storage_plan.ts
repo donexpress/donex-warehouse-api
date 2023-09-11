@@ -41,6 +41,9 @@ export const listStoragePlan = async (
       delete user.password
     }
     let packing_list = await getPackingListByStoragePlanId(storage_plan.id);
+    if(!packing_list) {
+      packing_list = []
+    }
 
     data.push({ ...storage_plan, warehouse, user, packing_list });
   }
