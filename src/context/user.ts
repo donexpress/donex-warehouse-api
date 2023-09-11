@@ -42,13 +42,14 @@ export const listUser = async (
 ) => {
   const skip = (current_page - 1) * number_of_rows | 0;
   const take = number_of_rows | 10;
+  const not_deleted = Not("deleted");
 
   const users = await AppDataSource.manager.find(User, {
-    take: number_of_rows,
-    skip: (current_page - 1) * number_of_rows,
+    take: take,
+    skip: skip,
     where: [
-      { username: ILike(`%${query}%`), state: Not("deleted") },
-      { nickname: ILike(`%${query}%`), state: Not("deleted") }
+      { username: ILike(`%${query}%`), state: not_deleted },
+      { nickname: ILike(`%${query}%`), state: not_deleted }
     ],
     order: {
       id: 'DESC',
