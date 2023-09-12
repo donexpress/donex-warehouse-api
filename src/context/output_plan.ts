@@ -29,7 +29,7 @@ export const listOutputPlan = async (
     let user = null;
     if (el.user_id) {
       user = users.find((t) => t.id === el.user_id);
-      delete user.password
+      delete user.password;
     }
     let warehouse = null;
     if (el.warehouse_id) {
@@ -38,13 +38,21 @@ export const listOutputPlan = async (
     if (el.state) {
       return { ...el, user, warehouse, state: states.output_plan[el.state] };
     }
-    let operation_instructions = oper_inst.map((oi) => (oi.output_plan_id === el.id));
-    
+    let operation_instructions = oper_inst.map((oi) => {
+      if (oi.output_plan_id === el.id) {
+        return oi;
+      }
+    });
+
     return { ...el, user, warehouse, operation_instructions };
   });
 };
 
-export const getOutputPlanByState = async(current_page: number, number_of_rows: number, state: string) => {
+export const getOutputPlanByState = async (
+  current_page: number,
+  number_of_rows: number,
+  state: string
+) => {
   const result = await AppDataSource.manager.find(OutputPlan, {
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
@@ -59,7 +67,7 @@ export const getOutputPlanByState = async(current_page: number, number_of_rows: 
     let user = null;
     if (el.user_id) {
       user = users.find((t) => t.id === el.user_id);
-      delete user.password
+      delete user.password;
     }
     let warehouse = null;
     if (el.warehouse_id) {
@@ -70,7 +78,7 @@ export const getOutputPlanByState = async(current_page: number, number_of_rows: 
     }
     return { ...el, user, warehouse };
   });
-}
+};
 
 export const listOutputPlanByState = async (
   current_page: number,
@@ -113,7 +121,7 @@ export const showOutputPlan = async (id: number) => {
     user = await AppDataSource.manager.findOne(User, {
       where: { id: result.user_id },
     });
-    delete user.password
+    delete user.password;
   }
   let warehouse = null;
   if (result.warehouse_id) {
@@ -121,10 +129,10 @@ export const showOutputPlan = async (id: number) => {
       where: { id: result.warehouse_id },
     });
   }
-  const packing_lists = []
+  const packing_lists = [];
   for (let i = 0; i < result.case_numbers.length; i++) {
     const element = result.case_numbers[i];
-    packing_lists.push(await getPackingListByCaseNumber(element))    
+    packing_lists.push(await getPackingListByCaseNumber(element));
   }
   return { ...result, user, warehouse, packing_lists };
 };
@@ -164,11 +172,10 @@ export const removeOutputPlan = async (id: number) => {
   return result;
 };
 
-
 export const getOutputPlanStates = () => {
-  const output_plan_states = []
+  const output_plan_states = [];
   for (const [key, value] of Object.entries(states.output_plan)) {
-    output_plan_states.push(value)
+    output_plan_states.push(value);
   }
-  return output_plan_states
-}
+  return output_plan_states;
+};
