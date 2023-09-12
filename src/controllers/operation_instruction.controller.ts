@@ -47,7 +47,7 @@ export const indexByOutputPlan = async (req: Request, res: Response) => {
     const operation_instruction = await listOIByOutputPlanId(
       current_page,
       number_of_rows,
-      String(state),
+      state == undefined ? '' : String(state),
       parseInt(output_plan_id)
     );
     res.json(operation_instruction);

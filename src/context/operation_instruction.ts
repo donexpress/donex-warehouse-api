@@ -26,7 +26,7 @@ export const listOIByOutputPlanId = async (
   output_plan_id: number
 ): Promise<OperationInstruction[] | null> => {
   const where_query =
-    state === '' ? { output_plan_id } : { state, output_plan_id };
+    state == '' ? { output_plan_id } : { state, output_plan_id };
   return AppDataSource.manager.find(OperationInstruction, {
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
