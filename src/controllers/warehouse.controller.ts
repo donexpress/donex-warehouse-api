@@ -18,7 +18,13 @@ export const index = async (req: Request, res: Response) => {
     const number_of_rows = req.query.number_of_rows
       ? Number(req.query.number_of_rows)
       : await countWarehouse();
-    const affiliations = await listWarehouse(current_page, number_of_rows);
+    const state = req.query.state;
+    const affiliations = await listWarehouse(
+      current_page,
+      number_of_rows,
+      state == undefined ? '' : String(state)
+    );
+
     res.json(affiliations);
   } catch (e) {
     console.log(e);

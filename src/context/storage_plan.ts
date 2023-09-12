@@ -88,9 +88,7 @@ export const showStoragePlan = async (id: number) => {
   });
   let packing_list = null;
   if (storage_plan) {
-    packing_list = await AppDataSource.manager.find(PackingList, {
-      where: { storage_plan_id: id },
-    });
+    packing_list = await getPackingListByStoragePlanId(storage_plan.id)
   }
   let warehouse = null;
   if (storage_plan.warehouse_id) {
