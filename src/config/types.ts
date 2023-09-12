@@ -3,7 +3,7 @@ const operation_instruction_type = {
     name: 'Change the Label',
     es_name: 'Reetiquetar',
     zh_name: '换标',
-    value: 'change_label',
+    value: 'change label',
     position: 1,
   },
   photograph: {
@@ -17,21 +17,21 @@ const operation_instruction_type = {
     name: 'Change Boxes',
     es_name: 'Caja de Cambio',
     zh_name: '换箱',
-    value: 'change_boxes',
+    value: 'change boxes',
     position: 3,
   },
   count_boxes: {
     name: 'Count Boxes',
     es_name: 'Casilla de Verificacion',
     zh_name: '清点货箱',
-    value: 'count_boxes',
+    value: 'count boxes',
     position: 4,
   },
   count_sku: {
     name: 'Count SKUs',
     es_name: 'Consultar SKU',
     zh_name: '清点SKU',
-    value: 'change_boxes',
+    value: 'change boxes',
     position: 5,
   },
   repair: {
