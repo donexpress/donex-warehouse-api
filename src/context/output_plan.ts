@@ -38,9 +38,10 @@ export const listOutputPlan = async (
     if (el.state) {
       return { ...el, user, warehouse, state: states.output_plan[el.state] };
     }
-    let operation_instructions = oper_inst.map((oi) => {
+    let operation_instructions = [];
+    oper_inst.map((oi) => {
       if (oi.output_plan_id === el.id) {
-        return oi;
+        return operation_instructions.push(oi);
       }
     });
 
