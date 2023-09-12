@@ -38,7 +38,7 @@ export const listOutputPlan = async (
     if (el.state) {
       return { ...el, user, warehouse, state: states.output_plan[el.state] };
     }
-    let operation_instructions = oper_inst.find((oi) => (oi.output_plan_id === el.id));
+    let operation_instructions = oper_inst.forEach((oi) => (oi.output_plan_id === el.id));
     
     return { ...el, user, warehouse, operation_instructions };
   });
