@@ -42,6 +42,8 @@ export const listOutputPlan = async (
     oper_inst.map((oi) => {
       if (oi.output_plan_id === el.id) {
         return operation_instructions.push(oi);
+      } else {
+        operation_instructions;
       }
     });
 
