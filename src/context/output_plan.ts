@@ -7,6 +7,7 @@ import { Warehouse } from '../models/warehouse.model';
 import states from '../config/states';
 import { findStoragePlanByOrderNumber } from './storage_plan';
 import { getPackingListByCaseNumber } from './packing_list';
+import { OperationInstruction } from '../models/instruction_operation.model';
 
 export const listOutputPlan = async (
   current_page: number,
@@ -23,6 +24,7 @@ export const listOutputPlan = async (
   });
   const users = await AppDataSource.manager.find(User);
   const warehouses = await AppDataSource.manager.find(Warehouse);
+  const oper_inst = await AppDataSource.manager.find(OperationInstruction);
   return result.map((el) => {
     let user = null;
     if (el.user_id) {
@@ -36,7 +38,9 @@ export const listOutputPlan = async (
     if (el.state) {
       return { ...el, user, warehouse, state: states.output_plan[el.state] };
     }
-    return { ...el, user, warehouse };
+    let operation_instructions = oper_inst.find((oi) => (oi.output_plan_id === el.id));
+    
+    return { ...el, user, warehouse, operation_instructions };
   });
 };
 
