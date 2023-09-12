@@ -1,4 +1,4 @@
-import { Not } from 'typeorm';
+import { FindOptionsWhere, Not } from 'typeorm';
 import { AppDataSource } from '../config/ormconfig';
 import states from '../config/states';
 import { object_state_warehouse } from '../helpers/states';
@@ -8,24 +8,29 @@ import { WarehouseState } from '../models/warehouse_state.model';
 
 export const listWarehouse = async (
   current_page: number,
-  number_of_rows: number
+  number_of_rows: number,
+  state: string = ''
 ) => {
   const skip = (current_page - 1) * number_of_rows | 0;
   const take = number_of_rows | 10;
   const not_deleted = Not("deleted");
+
+  let where: FindOptionsWhere<Warehouse> | FindOptionsWhere<Warehouse>[] = {
+    state: not_deleted
+  }
+
+  if(state !== '') {
+    where = {state}
+  }
   
   const warehouses = await AppDataSource.manager.find(Warehouse, {
     take: take,
     skip: skip,
-    where: {
-      state: not_deleted
-    },
+    where,
     order: {
       id: 'DESC',
     },
-    // relations: ['states'],
   });
-  //const states = await AppDataSource.manager.find(WarehouseState);
   const mod_warehouses = warehouses.map((warehouse) => {
     if (warehouse.state) {
       return {

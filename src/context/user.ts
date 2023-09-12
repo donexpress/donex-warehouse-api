@@ -2,7 +2,7 @@ import { AppDataSource } from '../config/ormconfig';
 import { User } from '../models/user.model';
 import { Warehouse } from '../models/warehouse.model';
 import bcrypt from 'bcryptjs';
-import { ILike, In, IsNull, Not } from 'typeorm';
+import { FindOptionsWhere, ILike, In, IsNull, Not } from 'typeorm';
 import { validate } from 'class-validator';
 import { UserState } from '../models/user_state.model';
 import { Staff } from '../models/staff.model';
@@ -10,51 +10,32 @@ import { PaymentMethod } from '../models/payment_method.model';
 import { UserLevel } from '../models/user_level.model';
 import { object_state_user } from '../helpers/states';
 
-// const user_relations = [
-//   'warehouses',
-//   'warehouses.states',
-//   'regional_divisions',
-//   'subsidiaries',
-//   'finantial_representatives',
-//   'finantial_representatives.states',
-//   'finantial_representatives.organizations',
-//   'finantial_representatives.warehouses',
-//   'client_service_representatives',
-//   'client_service_representatives.states',
-//   'client_service_representatives.organizations',
-//   'client_service_representatives.warehouses',
-//   'sales_representatives',
-//   'sales_representatives.states',
-//   'sales_representatives.organizations',
-//   'sales_representatives.warehouses',
-//   'sales_sources',
-//   'sales_sources.states',
-//   'sales_sources.organizations',
-//   'sales_sources.warehouses',
-//   'payment_methods',
-//   'user_level',
-// ];
-
 export const listUser = async (
   current_page: number,
   number_of_rows: number,
-  query: string
+  query: string,
+  state: string =  ''
 ) => {
   const skip = (current_page - 1) * number_of_rows | 0;
   const take = number_of_rows | 10;
   const not_deleted = Not("deleted");
 
+  let where: FindOptionsWhere<User> | FindOptionsWhere<User>[] = [
+    { username: ILike(`%${query}%`), state: not_deleted },
+    { nickname: ILike(`%${query}%`), state: not_deleted }
+  ]
+
+  if(state !== '') {
+    where = {state}
+  }
+
   const users = await AppDataSource.manager.find(User, {
     take: take,
     skip: skip,
-    where: [
-      { username: ILike(`%${query}%`), state: not_deleted },
-      { nickname: ILike(`%${query}%`), state: not_deleted }
-    ],
+    where,
     order: {
       id: 'DESC',
     },
-    // relations: user_relations,
   });
   const staffs = await AppDataSource.manager.find(Staff);
   const payment_methods = await AppDataSource.manager.find(PaymentMethod);

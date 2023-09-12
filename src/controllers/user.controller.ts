@@ -18,10 +18,12 @@ export const index = async (req: Request, res: Response) => {
       ? Number(req.query.number_of_rows)
       : await countUser();
     const query = req.query.query;
+    const state = req.query.state;
     const users = await listUser(
       current_page,
       number_of_rows,
-      query == undefined ? '' : String(query)
+      query == undefined ? '' : String(query),
+      state == undefined ? '' : String(state)
     );
     res.json(users);
   } catch (e) {
