@@ -29,6 +29,11 @@ router.put(
   verifyTokenPresent,
   OperationInstructionController.update
 );
+router.patch(
+  '/api/v1/operation_instruction/:operationInstructionId/status_change',
+  verifyTokenPresent,
+  OperationInstructionController.changeStatus
+);
 router.delete(
   '/api/v1/operation_instruction/:id',
   verifyTokenPresent,
