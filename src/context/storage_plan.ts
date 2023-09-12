@@ -1,4 +1,4 @@
-import { ILike } from 'typeorm';
+import { FindOptionsWhere, ILike } from 'typeorm';
 import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { StoragePlan } from '../models/storage_plan.model';
@@ -12,15 +12,22 @@ import { getPackingListByStoragePlanId } from './packing_list';
 export const listStoragePlan = async (
   current_page: number,
   number_of_rows: number,
-  query: string
+  query: string,
+  state: number = -1
 ) => {
+
+  let where: FindOptionsWhere<StoragePlan> | FindOptionsWhere<StoragePlan>[] = [
+    { customer_order_number: ILike(`%${query}%`) },
+    { order_number: ILike(`%${query}%`) },
+  ]
+
+  if(state !== -1)  {
+    where = {state}
+  }
   const storage_plans = await AppDataSource.manager.find(StoragePlan, {
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
-    where: [
-      { customer_order_number: ILike(`%${query}%`) },
-      { order_number: ILike(`%${query}%`) },
-    ],
+    where,
     order: {
       id: 'DESC',
     },
@@ -70,35 +77,6 @@ export const findStoragePlanByOrderNumber = async (order_number:string) => {
   }
   return { ...storage_plan, packing_list, warehouse, user };
 }
-
-export const filterByState = async (
-  current_page: number,
-  number_of_rows: number,
-  state: number
-) => {
-  const storage_plans = await AppDataSource.manager.find(StoragePlan, {
-    take: number_of_rows,
-    skip: (current_page - 1) * number_of_rows,
-    where: { state },
-    order: {
-      id: 'DESC',
-    },
-  });
-  const warehouses = await AppDataSource.manager.find(AOSWarehouse);
-  const users = await AppDataSource.manager.find(User);
-
-  return storage_plans.map((storage_plan) => {
-    let warehouse = null;
-    if (storage_plan.warehouse_id) {
-      warehouse = warehouses.find((w) => w.id === storage_plan.warehouse_id);
-    }
-    let user = null;
-    if (storage_plan.user_id) {
-      user = users.find((u) => u.id === storage_plan.user_id);
-    }
-    return { ...storage_plan, warehouse, user };
-  });
-};
 
 export const countStoragePlan = async () => {
   return AppDataSource.manager.count(StoragePlan);
