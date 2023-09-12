@@ -119,7 +119,7 @@ export const listUser = async (
 };
 
 export const countUser = async () => {
-  return AppDataSource.manager.count(User);
+  return await AppDataSource.getRepository(User).count({ where: { state: Not("deleted") } });
 };
 
 export const showUser = async (id: number) => {

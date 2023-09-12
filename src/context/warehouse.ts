@@ -40,7 +40,7 @@ export const listWarehouse = async (
 };
 
 export const countWarehouse = async () => {
-  return AppDataSource.manager.count(Warehouse);
+  return await AppDataSource.getRepository(Warehouse).count({ where: { state: Not("deleted") } });
 };
 
 export const showWarehouse = async (id: number) => {
