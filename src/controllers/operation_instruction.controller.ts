@@ -20,7 +20,7 @@ export const index = async (req: Request, res: Response) => {
       ? Number(req.query.number_of_rows)
       : await countOI();
 
-    const state = req.query.query;
+    const state = req.query.state;
     const operation_instruction = await listOI(
       current_page,
       number_of_rows,
@@ -42,7 +42,7 @@ export const indexByOutputPlan = async (req: Request, res: Response) => {
       ? Number(req.query.number_of_rows)
       : await countOI();
 
-    const state = req.query.query;
+    const state = req.query.state;
     const output_plan_id = req.params.outputPlanId;
     const operation_instruction = await listOIByOutputPlanId(
       current_page,

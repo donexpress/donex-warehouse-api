@@ -9,7 +9,7 @@ router.get(
   OperationInstruction.index
 );
 router.get(
-  '/api/v1/operation_instruction/:output_plan_id',
+  '/api/v1/operation_instruction/:outputPlanId',
   verifyTokenPresent,
   OperationInstruction.indexByOutputPlan
 );
