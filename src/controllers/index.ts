@@ -20,11 +20,12 @@ import * as ShelfTypeController from './shelf_type.controller';
 import * as ShelfController from './shelf.controller';
 import * as PackingListController from './packing_list.controller';
 import * as StoragePlanController from './storage_plan.controller';
-import * as LineClassificationController from './line_classification.controller'
-import * as OutputPlanController from './output_plan.controller'
-import * as FileController from './file.controller'
-import * as StoragePlanStateController from './storage_plan_type.controller'
-import * as ShelfPackageController from './shelf_package.controller'
+import * as LineClassificationController from './line_classification.controller';
+import * as OutputPlanController from './output_plan.controller';
+import * as FileController from './file.controller';
+import * as StoragePlanStateController from './storage_plan_type.controller';
+import * as ShelfPackageController from './shelf_package.controller';
+import * as OperationInstruction from './operation_instruction.controller'
 
 export {
   DepartmentController,
@@ -53,5 +54,6 @@ export {
   OutputPlanController,
   FileController,
   StoragePlanStateController,
-  ShelfPackageController
+  ShelfPackageController,
+  OperationInstruction
 };
