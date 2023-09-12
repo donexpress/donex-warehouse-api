@@ -4,10 +4,6 @@ import { verifyTokenPresent } from '../middlewares';
 const router = express.Router();
 
 router.get(
-  '/api/v1/operation_instruction/type',
-  OperationInstruction.listOperationInstructionType
-);
-router.get(
   '/api/v1/operation_instruction',
   verifyTokenPresent,
   OperationInstruction.index
@@ -33,6 +29,10 @@ router.delete(
   '/api/v1/operation_instruction/:id',
   verifyTokenPresent,
   OperationInstruction.remove
+);
+router.get(
+  '/api/v1/operation_instruction/type',
+  OperationInstruction.listOperationInstructionType
 );
 
 export default router;
