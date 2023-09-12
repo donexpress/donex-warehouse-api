@@ -2,7 +2,7 @@ import { AppDataSource } from '../config/ormconfig';
 import { Staff } from '../models/staff.model';
 import { Warehouse } from '../models/warehouse.model';
 import bcrypt from 'bcryptjs';
-import { ILike, In, Not } from 'typeorm';
+import { FindOptionsWhere, ILike, In, Not } from 'typeorm';
 import { validate } from 'class-validator';
 import { StaffState } from '../models/staff_state.model';
 import { Role } from '../models/role.model';
@@ -13,19 +13,26 @@ import { object_state_user } from '../helpers/states';
 export const listStaff = async (
   current_page: number,
   number_of_rows: number,
-  query: string
+  query: string,
+  state: string = ''
 ) => {
   const skip = ((current_page - 1) * number_of_rows) | 0;
   const take = number_of_rows | 10;
   const not_deleted = Not('deleted');
 
+  let where: FindOptionsWhere<Staff> | FindOptionsWhere<Staff>[] = [
+    { english_name: ILike(`%${query}%`), state: not_deleted },
+    { chinesse_name: ILike(`%${query}%`), state: not_deleted },
+  ]
+
+  if(state !== '') {
+    where = { state: state }
+  }
+
   const users = await AppDataSource.manager.find(Staff, {
     take: take,
     skip: skip,
-    where: [
-      { english_name: ILike(`%${query}%`), state: not_deleted },
-      { chinesse_name: ILike(`%${query}%`), state: not_deleted },
-    ],
+    where,
     order: {
       id: 'DESC',
     },
@@ -42,60 +49,6 @@ export const listStaff = async (
     if (user.state) {
       state = object_state_user(user.state);
     }
-    let role = null;
-    if (user.role_id) {
-      role = roles.find((el) => el.id === user.role_id);
-    }
-    let organization = null;
-    if (user.organization_id) {
-      organization = organizations.find((el) => el.id === user.organization_id);
-    }
-    const ref = await AppDataSource.getRepository(StaffWarehouse);
-    const warehouse_ids = await ref.find({ where: { staff_id: user.id } });
-    const warehouses = [];
-    for (let j = 0; j < warehouse_ids.length; j++) {
-      const element = warehouse_ids[j];
-      warehouses.push(warehouse.find((el) => el.id === element.warehouse_id));
-    }
-    mod_staff.push({
-      ...user,
-      state,
-      role,
-      organization,
-      ...{ warehouses: warehouses.filter((el) => el) },
-    });
-  }
-
-  return mod_staff;
-};
-
-export const getStaffByState = async (
-  current_page: number,
-  number_of_rows: number,
-  state: string
-) => {
-  const skip = ((current_page - 1) * number_of_rows) | 0;
-  const take = number_of_rows | 10;
-
-  const users = await AppDataSource.manager.find(Staff, {
-    take: take,
-    skip: skip,
-    where: { state },
-    order: {
-      id: 'DESC',
-    },
-  });
-  const roles = await AppDataSource.manager.find(Role);
-  const organizations = await AppDataSource.manager.find(Organization);
-  const warehouse = await AppDataSource.manager.find(Warehouse);
-  const mod_staff = [];
-  for (let i = 0; i < users.length; i++) {
-    const user = users[i];
-    delete user.password;
-    // let state = null;
-    // if (user.state) {
-    //   state = object_state_user(user.state);
-    // }
     let role = null;
     if (user.role_id) {
       role = roles.find((el) => el.id === user.role_id);
