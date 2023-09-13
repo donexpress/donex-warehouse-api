@@ -1,5 +1,5 @@
 import { IsEmail, IsOptional } from "class-validator";
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Index(["id", "user_id"])
 @Entity({ name: "appendages" })
@@ -19,7 +19,14 @@ export class Appendix {
     nullable: true,
   })
   @IsOptional()
-  user_id: string;
+  user_id: number;
+  
+  @Column({
+    type: "integer",
+    nullable: true,
+  })
+  @IsOptional()
+  output_plan_id
 
   @Column({
     type: "varchar",
@@ -36,23 +43,23 @@ export class Appendix {
   url: string;
 
   @Column({
+    type: "boolean",
+    nullable: true,
+    default: false
+  })
+
+  deleted: boolean;
+
+  @Column({
     type: 'json',
     nullable: true,
     default: [],
   })
   meta: object[];
 
-  @Column({
-    type: 'varchar',
-    nullable: true,
-    default: new Date().toISOString(),
-  })
+  @CreateDateColumn()
   created_at: string;
 
-  @Column({
-    type: 'varchar',
-    nullable: true,
-    default: new Date().toISOString(),
-  })
+  @UpdateDateColumn()
   updated_at: string;
 }

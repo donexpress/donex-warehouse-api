@@ -8,6 +8,7 @@ import states from '../config/states';
 import { findStoragePlanByOrderNumber } from './storage_plan';
 import { getPackingListByCaseNumber } from './packing_list';
 import { OperationInstruction } from '../models/instruction_operation.model';
+import { getAppendagesByOutputPlan } from './appendix';
 
 export const listOutputPlan = async (
   current_page: number,
@@ -137,7 +138,8 @@ export const showOutputPlan = async (id: number) => {
     const element = result.case_numbers[i];
     packing_lists.push(await getPackingListByCaseNumber(element));
   }
-  return { ...result, user, warehouse, packing_lists };
+  const appendages = await getAppendagesByOutputPlan(id)
+  return { ...result, user, warehouse, packing_lists, appendages };
 };
 
 export const createOutputPlan = async (data: any) => {
