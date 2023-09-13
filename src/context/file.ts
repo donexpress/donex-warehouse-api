@@ -41,7 +41,8 @@ export const uploadFileToStore = async (
     await store.putBucketACL(bucket, 'public-read')
   }
   const result = await store.put(filename, buffer)
-  return {url: result.url, name: result.name}
+  const url = result.url.replace('http://', 'https://')
+  return {url, name: result.name}
 //   const result = await store.initMultipartUpload(bucket);
   // return result.url;
 };
