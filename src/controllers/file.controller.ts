@@ -52,7 +52,7 @@ export const remove_file = async (req: Request, res: Response) => {
     const arr = url.split('/')
     const filename =  arr[arr.length-1]
     await removeFile(filename)
-    res.status(200)
+    res.status(200).send(url)
     } catch (e) {
         console.log(e)
         res.status(500).json(e)

@@ -96,7 +96,7 @@ const output_plan = {
     name: 'Chooze',
     es_name: 'Elegido',
     zh_name: '选一个',
-    value: "collecting",
+    value: "chooze",
     position: 4,
   },
   exhausted: {

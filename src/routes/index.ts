@@ -26,6 +26,7 @@ import fileRoute from './file.route';
 import storagePlanStateRoute from './storage_plan_state.route';
 import shelfPackageRoute from './shelf_package.route';
 import operationInstruction from './operation_instruction.route'
+import appendixRoute from './appendix.route'
 
 export default (app) => {
   app.use('/', organizationRouter);
@@ -56,5 +57,6 @@ export default (app) => {
   app.use('/', storagePlanStateRoute);
   app.use('/', shelfPackageRoute);
   app.use('/', operationInstruction);
+  app.use('/', appendixRoute);
   app.get('/api/v1', (req, res) => res.sendStatus(200));
 };
