@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import {
+  countAllOutputPlan,
   countOutputPlan,
   createOutputPlan,
   getOutputPlanByState,
@@ -55,7 +56,7 @@ export const show = async (req: Request, res: Response) => {
 
 export const count = async (req: Request, res: Response) => {
   try {
-    const count = await countOutputPlan();
+    const count = await countAllOutputPlan();
     res.json({ count });
   } catch (e) {
     console.log(e);
