@@ -9,6 +9,7 @@ import { findStoragePlanByOrderNumber } from './storage_plan';
 import { getPackingListByCaseNumber } from './packing_list';
 import { OperationInstruction } from '../models/instruction_operation.model';
 import { getAppendagesByOutputPlan } from './appendix';
+import { getCountByState } from '../helpers/states';
 
 export const listOutputPlan = async (
   current_page: number,
@@ -117,15 +118,32 @@ export const countOutputPlan = async (): Promise<number> => {
 };
 
 export const countAllOutputPlan = async (): Promise<Object> => {
+  const repository = AppDataSource.getRepository(OutputPlan);
   const all = await countOutputPlan();
-  const pending = await getCountByState(states.output_plan.pending.value);
+  const pending = await getCountByState(
+    repository,
+    states.output_plan.pending.value
+  );
   const to_be_chosen = await getCountByState(
+    repository,
     states.output_plan.to_be_chosen.value
   );
-  const chooze = await getCountByState(states.output_plan.chooze.value);
-  const exhausted = await getCountByState(states.output_plan.exhausted.value);
-  const cancelled = await getCountByState(states.output_plan.cancelled.value);
-  const collecting = await getCountByState(states.output_plan.collecting.value);
+  const chooze = await getCountByState(
+    repository,
+    states.output_plan.chooze.value
+  );
+  const exhausted = await getCountByState(
+    repository,
+    states.output_plan.exhausted.value
+  );
+  const cancelled = await getCountByState(
+    repository,
+    states.output_plan.cancelled.value
+  );
+  const collecting = await getCountByState(
+    repository,
+    states.output_plan.collecting.value
+  );
 
   const result = {
     all,
@@ -198,14 +216,4 @@ export const removeOutputPlan = async (id: number) => {
   const repository = await AppDataSource.getRepository(OutputPlan);
   const result = await repository.delete({ id });
   return result;
-};
-
-export const getCountByState = async (state_value: string): Promise<number> => {
-  const output_plan = await AppDataSource.getRepository(OutputPlan).find({
-    where: {
-      state: state_value,
-    },
-  });
-
-  return output_plan ? output_plan.length : 0;
 };

@@ -1,3 +1,4 @@
+import { EntityMetadata, Repository } from 'typeorm';
 import states from '../config/states';
 
 export const object_state_warehouse = (value) => {
@@ -54,4 +55,14 @@ export const getStates = (states) => {
     states_array.push(value);
   }
   return states_array;
+};
+
+export const getCountByState = async (repository, state_value): Promise<number> => {
+  const state_count = await repository.find({
+    where: {
+      state: state_value,
+    },
+  });
+
+  return state_count ? state_count.length : 0;
 };
