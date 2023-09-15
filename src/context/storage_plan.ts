@@ -57,8 +57,7 @@ export const listStoragePlan = async (
       ...storage_plan,
       warehouse,
       user,
-      packing_list,
-      state: states.entry_plan[storage_plan.state],
+      packing_list
     });
   }
   return data;
