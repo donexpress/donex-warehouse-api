@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import {
+  countAllStoragePlan,
   countStoragePlan,
   createStoragePlan,
   listStoragePlan,
@@ -51,8 +52,8 @@ export const show = async (req: Request, res: Response) => {
 
 export const count = async (req: Request, res: Response) => {
   try {
-    const count = await countStoragePlan();
-    res.json({ count });
+    const count = await countAllStoragePlan();
+    res.json(count);
   } catch (e) {
     console.log(e);
     res.status(500).send(e);

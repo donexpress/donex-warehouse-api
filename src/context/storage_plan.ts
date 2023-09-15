@@ -9,7 +9,7 @@ import { AOSWarehouse } from '../models/aos_warehouse.model';
 import { showAOSWarehouse } from './aos_warehouse';
 import { getPackingListByStoragePlanId } from './packing_list';
 import states from '../config/states';
-import { getStates } from '../helpers/states';
+import { getCountByState, getStates } from '../helpers/states';
 
 export const listStoragePlan = async (
   current_page: number,
@@ -93,6 +93,46 @@ export const findStoragePlanByOrderNumber = async (order_number: string) => {
 
 export const countStoragePlan = async () => {
   return AppDataSource.manager.count(StoragePlan);
+};
+
+export const countAllStoragePlan = async (): Promise<Object> => {
+  const repository = AppDataSource.getRepository(StoragePlan);
+  const total = await countStoragePlan();
+  const pending = await getCountByState(
+    repository,
+    states.output_plan.pending.value
+  );
+  const to_be_processed = await getCountByState(
+    repository,
+    states.output_plan.to_be_processed.value
+  );
+  const processing = await getCountByState(
+    repository,
+    states.output_plan.processing.value
+  );
+  const dispatched = await getCountByState(
+    repository,
+    states.output_plan.dispatched.value
+  );
+  const cancelled = await getCountByState(
+    repository,
+    states.output_plan.cancelled.value
+  );
+  const collecting = await getCountByState(
+    repository,
+    states.output_plan.collecting.value
+  );
+
+  const result = {
+    total,
+    pending,
+    to_be_processed,
+    processing,
+    dispatched,
+    cancelled,
+    collecting,
+  };
+  return result;
 };
 
 export const showStoragePlan = async (id: number) => {
