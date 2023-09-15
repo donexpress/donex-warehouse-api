@@ -9,6 +9,8 @@ import {
 } from '../context/storage_plan';
 import { StoragePlan } from '../models/storage_plan.model';
 import { getCurrentUser } from '../middlewares';
+import states from '../config/states';
+import { getStates } from '../helpers/states';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -95,4 +97,8 @@ export const remove = async (req: Request, res: Response) => {
     console.log(e);
     res.status(500).send(e);
   }
+};
+
+export const listStates = (req: Request, res: Response) => {
+  res.send({ states: getStates(states.entry_plan) });
 };
