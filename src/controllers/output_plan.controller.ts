@@ -11,6 +11,8 @@ import {
   updateOutputPlan,
 } from '../context/output_plan';
 import { OutputPlan } from '../models/output_plan.model';
+import { getStates } from '../helpers/states';
+import states from '../config/states';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -101,6 +103,6 @@ export const remove = async (req: Request, res: Response) => {
   }
 };
 
-export const states = (req: Request, res: Response) => {
-  res.send({states: getOutputPlanStates()})
+export const listStates = (req: Request, res: Response) => {
+  res.send({states: getStates(states.output_plan)})
 }
