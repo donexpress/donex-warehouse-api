@@ -9,6 +9,7 @@ import { AOSWarehouse } from '../models/aos_warehouse.model';
 import { showAOSWarehouse } from './aos_warehouse';
 import { getPackingListByStoragePlanId } from './packing_list';
 import states from '../config/states';
+import { getStates } from '../helpers/states';
 
 export const listStoragePlan = async (
   current_page: number,
@@ -53,11 +54,17 @@ export const listStoragePlan = async (
     if (!packing_list) {
       packing_list = [];
     }
+    let storage_state = null;
+    if (storage_plan.state) {
+      const array_states = getStates(states.entry_plan);
+      storage_state = array_states.find((s) => s.value === storage_plan.state)
+    }
     data.push({
       ...storage_plan,
       warehouse,
       user,
-      packing_list
+      packing_list,
+      storage_state
     });
   }
   return data;
