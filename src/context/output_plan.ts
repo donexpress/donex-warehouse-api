@@ -117,9 +117,11 @@ export const countOutputPlan = async (): Promise<number> => {
 };
 
 export const countAllOutputPlan = async (): Promise<Object> => {
-  const all = countOutputPlan();
+  const all = await countOutputPlan();
   const pending = await getCountByState(states.output_plan.pending.value);
-  const to_be_chosen = await getCountByState(states.output_plan.to_be_chosen.value);
+  const to_be_chosen = await getCountByState(
+    states.output_plan.to_be_chosen.value
+  );
   const chooze = await getCountByState(states.output_plan.chooze.value);
   const exhausted = await getCountByState(states.output_plan.exhausted.value);
   const cancelled = await getCountByState(states.output_plan.cancelled.value);
@@ -132,10 +134,10 @@ export const countAllOutputPlan = async (): Promise<Object> => {
     chooze,
     exhausted,
     cancelled,
-    collecting
-  }
-   return result;
-}
+    collecting,
+  };
+  return result;
+};
 
 export const showOutputPlan = async (id: number) => {
   const result = await AppDataSource.manager.findOne(OutputPlan, {

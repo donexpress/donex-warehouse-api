@@ -57,7 +57,7 @@ export const show = async (req: Request, res: Response) => {
 export const count = async (req: Request, res: Response) => {
   try {
     const count = await countAllOutputPlan();
-    res.json({ count });
+    res.json(count);
   } catch (e) {
     console.log(e);
     res.status(500).send(e);
