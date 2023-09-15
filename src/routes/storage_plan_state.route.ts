@@ -8,7 +8,7 @@ router.get(
   verifyTokenPresent,
   StoragePlanStateController.index
 );
-router.get(
+/* router.get(
   '/api/v1/storage_plan_state/count',
   StoragePlanStateController.count
 );
@@ -28,6 +28,6 @@ router.delete(
   '/api/v1/storage_plan_state/:id',
   verifyTokenPresent,
   StoragePlanStateController.remove
-);
+); */
 
 export default router;
