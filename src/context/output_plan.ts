@@ -91,7 +91,7 @@ export const countOutputPlan = async () => {
 
 export const countAllOutputPlan = async (): Promise<Object> => {
   const repository = AppDataSource.getRepository(OutputPlan);
-  const all = await countOutputPlan();
+  const total = await countOutputPlan();
   const pending = await getCountByState(
     repository,
     states.output_plan.pending.value
@@ -118,7 +118,7 @@ export const countAllOutputPlan = async (): Promise<Object> => {
   );
 
   const result = {
-    all,
+    total,
     pending,
     to_be_processed,
     processing,
