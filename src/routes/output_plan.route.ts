@@ -10,6 +10,7 @@ router.get(
 );
 router.get('/api/v1/output_plan/count', OutputPlanController.count);
 router.get('/api/v1/output_plan/states', OutputPlanController.listStates);
+router.get('/api/v1/output_plan/destinations', verifyTokenPresent, OutputPlanController.destinations);
 router.get('/api/v1/output_plan/:id', OutputPlanController.show);
 router.post(
   '/api/v1/output_plan',

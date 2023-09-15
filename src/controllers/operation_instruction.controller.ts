@@ -8,6 +8,7 @@ import {
   updateOI,
   changeStatusOI,
   listOIByOutputPlanId,
+  getOperationInstructionStates,
 } from '../context/operation_instruction';
 import { OperationInstruction } from '../models/instruction_operation.model';
 import types from '../config/types';
@@ -146,3 +147,7 @@ export const changeStatus = async (req: Request, res: Response) => {
     return res.sendStatus(204);
   }
 };
+
+export const states = (req: Request, res: Response) => {
+  res.send({states: getOperationInstructionStates()})
+}
