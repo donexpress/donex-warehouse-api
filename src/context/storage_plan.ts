@@ -98,39 +98,39 @@ export const countStoragePlan = async () => {
 export const countAllStoragePlan = async (): Promise<Object> => {
   const repository = AppDataSource.getRepository(StoragePlan);
   const total = await countStoragePlan();
-  const pending = await getCountByState(
+  const to_be_storage = await getCountByState(
     repository,
-    states.output_plan.pending.value
+    states.entry_plan.to_be_storage.value
   );
-  const to_be_processed = await getCountByState(
+  const into_warehouse = await getCountByState(
     repository,
-    states.output_plan.to_be_processed.value
-  );
-  const processing = await getCountByState(
-    repository,
-    states.output_plan.processing.value
-  );
-  const dispatched = await getCountByState(
-    repository,
-    states.output_plan.dispatched.value
+    states.entry_plan.into_warehouse.value
   );
   const cancelled = await getCountByState(
     repository,
-    states.output_plan.cancelled.value
+    states.entry_plan.cancelled.value
   );
-  const collecting = await getCountByState(
+  const refused = await getCountByState(
     repository,
-    states.output_plan.collecting.value
+    states.entry_plan.refused.value
+  );
+  const returns = await getCountByState(
+    repository,
+    states.entry_plan.returns.value
+  );
+  const stocked = await getCountByState(
+    repository,
+    states.entry_plan.stocked.value
   );
 
   const result = {
     total,
-    pending,
-    to_be_processed,
-    processing,
-    dispatched,
+    to_be_storage,
+    into_warehouse,
     cancelled,
-    collecting,
+    refused,
+    returns,
+    stocked,
   };
   return result;
 };
