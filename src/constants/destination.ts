@@ -3,7 +3,7 @@ export const destinations = {
     name: 'Amazon',
     es_name: 'Amazon',
     zh_name: 'Amazon',
-    value: 'Amazon',
+    value: 'amazon',
     position: 1,
   },
   meli: {

@@ -17,6 +17,11 @@ router.post(
   verifyTokenPresent,
   OutputPlanController.create
 );
+router.post(
+  '/api/v1/output_plan/filter',
+  verifyTokenPresent,
+  OutputPlanController.getByFilter
+);
 router.put(
   '/api/v1/output_plan/:id',
   verifyTokenPresent,
