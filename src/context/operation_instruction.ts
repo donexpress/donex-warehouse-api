@@ -3,6 +3,7 @@ import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { OperationInstruction } from '../models/instruction_operation.model';
 import { ValidationError } from 'class-validator';
+import states from '../config/states';
 
 export const listOI = async (
   current_page: number,
@@ -81,4 +82,12 @@ export const changeStatusOI = async (
 ): Promise<UpdateResult> => {
   const repository = await AppDataSource.getRepository(OperationInstruction);
   return await repository.update({ id }, state);
+};
+
+export const getOperationInstructionStates = () => {
+  const operation_instruction_states = [];
+  for (const [key, value] of Object.entries(states.operation_instruction)) {
+    operation_instruction_states.push(value);
+  }
+  return operation_instruction_states;
 };
