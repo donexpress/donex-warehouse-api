@@ -194,3 +194,11 @@ export const removeOutputPlan = async (id: number) => {
   const result = await repository.delete({ id });
   return result;
 };
+
+export const getDestinations = () => {
+  const dest = [];
+  for (const [key, value] of Object.entries(destinations)) {
+    dest.push(value);
+  }
+  return dest;
+}
