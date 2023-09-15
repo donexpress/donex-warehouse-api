@@ -13,12 +13,23 @@ router.get(
   OperationInstructionController.index
 );
 router.get(
+  '/api/v1/operation_instruction/states',
+  verifyTokenPresent,
+  OperationInstructionController.states
+);
+router.get(
   '/api/v1/operation_instruction/output_plan/:outputPlanId',
   verifyTokenPresent,
   OperationInstructionController.indexByOutputPlan
 );
-router.get('/api/v1/operation_instruction/count', OperationInstructionController.count);
-router.get('/api/v1/operation_instruction/:id', OperationInstructionController.show);
+router.get(
+  '/api/v1/operation_instruction/count',
+  OperationInstructionController.count
+);
+router.get(
+  '/api/v1/operation_instruction/:id',
+  OperationInstructionController.show
+);
 router.post(
   '/api/v1/operation_instruction',
   verifyTokenPresent,

@@ -132,6 +132,12 @@ export class OutputPlan {
   state: string;
 
   @Column({
+    type: 'varchar',
+    nullable: true,
+  })
+  destination: string;
+
+  @Column({
     type: 'json',
     nullable: true,
     default: [],

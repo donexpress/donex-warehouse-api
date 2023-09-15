@@ -8,9 +8,10 @@ router.get(
   verifyTokenPresent,
   OutputPlanController.index
 );
-router.get('/api/v1/output_plan/count', OutputPlanController.count);
-router.get('/api/v1/output_plan/states', OutputPlanController.states);
-router.get('/api/v1/output_plan/:id', OutputPlanController.show);
+router.get('/api/v1/output_plan/count', verifyTokenPresent, OutputPlanController.count);
+router.get('/api/v1/output_plan/states', verifyTokenPresent, OutputPlanController.states);
+router.get('/api/v1/output_plan/destinations', verifyTokenPresent, OutputPlanController.destinations);
+router.get('/api/v1/output_plan/:id', verifyTokenPresent, OutputPlanController.show);
 router.post(
   '/api/v1/output_plan',
   verifyTokenPresent,

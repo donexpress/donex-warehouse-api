@@ -78,11 +78,11 @@ const output_plan = {
     value: "pending",
     position: 1,
   },
-  to_be_chosen: {
-    name: 'To be chosen',
-    es_name: 'Para ser elegido',
-    zh_name: '待选',
-    value: "to_be_chosen",
+  to_be_processed: {
+    name: 'To be processed',
+    es_name: 'Para ser procesado',
+    zh_name: '待处理',
+    value: "to_be_processed",
     position: 2,
   },
   collecting: {
@@ -92,18 +92,18 @@ const output_plan = {
     value: "collecting",
     position: 3,
   },
-  chooze: {
-    name: 'Chooze',
-    es_name: 'Elegido',
+  processing: {
+    name: 'Processing',
+    es_name: 'Procesando',
     zh_name: '选一个',
-    value: "chooze",
+    value: "processing",
     position: 4,
   },
-  exhausted: {
-    name: 'Exhausted',
-    es_name: 'Agotado',
-    zh_name: '筋疲力尽的',
-    value: "exhausted",
+  dispatched: {
+    name: 'Dispatched',
+    es_name: 'Despachado',
+    zh_name: '已派遣',
+    value: "dispatched",
     position: 5,
   },
   cancelled: {
@@ -122,6 +122,51 @@ const output_plan = {
   },
 };
 
-const states = { staff, user, warehouse, output_plan };
+const operation_instruction = {
+  pending: {
+    name: 'Pending',
+    es_name: 'Pendiente',
+    zh_name: '耳环',
+    value: "pending",
+    position: 1,
+  },
+  processing: {
+    name: 'Processing',
+    es_name: 'Procesando',
+    zh_name: '加工',
+    value: "processing",
+    position: 2,
+  },
+  processed: {
+    name: 'Processed',
+    es_name: 'Procesado',
+    zh_name: '处理',
+    value: "processed",
+    position: 3,
+  },
+  audited: {
+    name: 'Audited',
+    es_name: 'Auditado',
+    zh_name: '已审核',
+    value: "audited",
+    position: 4,
+  },
+  cancelled: {
+    name: 'Cancelled',
+    es_name: 'Cancelado',
+    zh_name: '取消',
+    value: "cancelled",
+    position: 5,
+  },
+  all: {
+    name: 'All',
+    es_name: 'Todos',
+    zh_name: '全部',
+    value: "all",
+    position: 6,
+  },
+};
+
+const states = { staff, user, warehouse, output_plan, operation_instruction };
 
 export default states;

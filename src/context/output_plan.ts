@@ -3,12 +3,12 @@ import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { OutputPlan } from '../models/output_plan.model';
 import { User } from '../models/user.model';
-import { Warehouse } from '../models/warehouse.model';
 import states from '../config/states';
-import { findStoragePlanByOrderNumber } from './storage_plan';
 import { getPackingListByCaseNumber } from './packing_list';
 import { OperationInstruction } from '../models/instruction_operation.model';
 import { getAppendagesByOutputPlan } from './appendix';
+import { AOSWarehouse } from '../models/aos_warehouse.model';
+import { destinations } from '../constants/destination';
 
 export const listOutputPlan = async (
   current_page: number,
@@ -24,7 +24,7 @@ export const listOutputPlan = async (
     },
   });
   const users = await AppDataSource.manager.find(User);
-  const warehouses = await AppDataSource.manager.find(Warehouse);
+  const warehouses = await AppDataSource.manager.find(AOSWarehouse);
   const oper_inst = await AppDataSource.manager.find(OperationInstruction);
   return result.map((el) => {
     let user = null;
@@ -34,7 +34,7 @@ export const listOutputPlan = async (
     }
     let warehouse = null;
     if (el.warehouse_id) {
-      warehouse = warehouses.find((t) => (t.id = el.warehouse_id));
+      warehouse = warehouses.find((t) => (t.id === el.warehouse_id));
     }
     if (el.state) {
       return { ...el, user, warehouse, state: states.output_plan[el.state] };
@@ -66,7 +66,7 @@ export const getOutputPlanByState = async (
     },
   });
   const users = await AppDataSource.manager.find(User);
-  const warehouses = await AppDataSource.manager.find(Warehouse);
+  const warehouses = await AppDataSource.manager.find(AOSWarehouse);
   return result.map((el) => {
     let user = null;
     if (el.user_id) {
@@ -75,38 +75,10 @@ export const getOutputPlanByState = async (
     }
     let warehouse = null;
     if (el.warehouse_id) {
-      warehouse = warehouses.find((t) => (t.id = el.warehouse_id));
+      warehouse = warehouses.find((t) => (t.id === el.warehouse_id));
     }
     if (el.state) {
       return { ...el, user, warehouse, state: states.output_plan[el.state] };
-    }
-    return { ...el, user, warehouse };
-  });
-};
-
-export const listOutputPlanByState = async (
-  current_page: number,
-  number_of_rows: number,
-  query: string
-) => {
-  const result = await AppDataSource.manager.find(OutputPlan, {
-    take: number_of_rows,
-    skip: (current_page - 1) * number_of_rows,
-    where: [{ output_number: ILike(`%${query}%`) }],
-    order: {
-      id: 'ASC',
-    },
-  });
-  const users = await AppDataSource.manager.find(User);
-  const warehouses = await AppDataSource.manager.find(Warehouse);
-  return result.map((el) => {
-    let user = null;
-    if (el.user_id) {
-      user = users.find((t) => t.id === el.user_id);
-    }
-    let warehouse = null;
-    if (el.warehouse_id) {
-      warehouse = warehouses.find((t) => (t.id = el.warehouse_id));
     }
     return { ...el, user, warehouse };
   });
@@ -129,7 +101,7 @@ export const showOutputPlan = async (id: number) => {
   }
   let warehouse = null;
   if (result.warehouse_id) {
-    warehouse = await AppDataSource.manager.findOne(Warehouse, {
+    warehouse = await AppDataSource.manager.findOne(AOSWarehouse, {
       where: { id: result.warehouse_id },
     });
   }
@@ -166,6 +138,11 @@ export const createOutputPlan = async (data: any) => {
 
 export const updateOutputPlan = async (id: number, data) => {
   const repository = await AppDataSource.getRepository(OutputPlan);
+  const box_amount = data.case_numbers.length
+  if(box_amount > 0) {
+    data.output_boxes = box_amount
+    data.box_amount = box_amount
+  }
   data.updated_at = new Date().toISOString();
   const result = await repository.update({ id }, data);
   return result;
@@ -184,3 +161,11 @@ export const getOutputPlanStates = () => {
   }
   return output_plan_states;
 };
+
+export const getDestinations = () => {
+  const dest = [];
+  for (const [key, value] of Object.entries(destinations)) {
+    dest.push(value);
+  }
+  return dest;
+}

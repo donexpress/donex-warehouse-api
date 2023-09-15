@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import {
   countOutputPlan,
   createOutputPlan,
+  getDestinations,
   getOutputPlanByState,
   getOutputPlanStates,
   listOutputPlan,
@@ -102,4 +103,8 @@ export const remove = async (req: Request, res: Response) => {
 
 export const states = (req: Request, res: Response) => {
   res.send({states: getOutputPlanStates()})
+}
+
+export const destinations = (req: Request, res: Response) => {
+  res.send({destinations: getDestinations()})
 }
