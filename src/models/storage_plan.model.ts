@@ -49,7 +49,7 @@ export class StoragePlan {
   @Column({
     nullable: true,
   })
-  state: number;
+  state: string;
 
   @Column({
     nullable: true,

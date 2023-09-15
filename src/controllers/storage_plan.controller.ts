@@ -26,7 +26,7 @@ export const index = async (req: Request, res: Response) => {
       current_page,
       number_of_rows,
       query == undefined ? '' : String(query),
-      state == undefined ? -1 : Number(state)
+      state == undefined ? '' : String(state)
     );
     res.json(storage_plans);
   } catch (e) {

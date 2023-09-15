@@ -8,21 +8,21 @@ import { showUser } from './user';
 import { AOSWarehouse } from '../models/aos_warehouse.model';
 import { showAOSWarehouse } from './aos_warehouse';
 import { getPackingListByStoragePlanId } from './packing_list';
+import states from '../config/states';
 
 export const listStoragePlan = async (
   current_page: number,
   number_of_rows: number,
   query: string,
-  state: number = -1
+  state: string
 ) => {
-
   let where: FindOptionsWhere<StoragePlan> | FindOptionsWhere<StoragePlan>[] = [
     { customer_order_number: ILike(`%${query}%`) },
     { order_number: ILike(`%${query}%`) },
-  ]
+  ];
 
-  if(state !== -1)  {
-    where = {state}
+  if (state.trim().length !== 0) {
+    where = { state: ILike(`%${state}%`) };
   }
   const storage_plans = await AppDataSource.manager.find(StoragePlan, {
     take: number_of_rows,
@@ -34,10 +34,10 @@ export const listStoragePlan = async (
   });
   const warehouses = await AppDataSource.manager.find(AOSWarehouse);
   const users = await AppDataSource.manager.find(User);
-  const data = []
+  const data = [];
   for (let i = 0; i < storage_plans.length; i++) {
     const storage_plan = storage_plans[i];
-    
+
     let warehouse = null;
     if (storage_plan.warehouse_id) {
       warehouse = warehouses.find((w) => w.id === storage_plan.warehouse_id);
@@ -45,22 +45,29 @@ export const listStoragePlan = async (
     let user = null;
     if (storage_plan.user_id) {
       user = users.find((u) => u.id === storage_plan.user_id);
-      if(user) {
-        delete user.password
+      if (user) {
+        delete user.password;
       }
     }
     let packing_list = await getPackingListByStoragePlanId(storage_plan.id);
-    if(!packing_list) {
-      packing_list = []
+    if (!packing_list) {
+      packing_list = [];
     }
-
-    data.push({ ...storage_plan, warehouse, user, packing_list });
+    data.push({
+      ...storage_plan,
+      warehouse,
+      user,
+      packing_list,
+      state: states.entry_plan[storage_plan.state],
+    });
   }
-  return data
+  return data;
 };
 
-export const findStoragePlanByOrderNumber = async (order_number:string) => {
-  const storage_plan =  await AppDataSource.manager.findOne(StoragePlan, {where: {order_number}})
+export const findStoragePlanByOrderNumber = async (order_number: string) => {
+  const storage_plan = await AppDataSource.manager.findOne(StoragePlan, {
+    where: { order_number },
+  });
   let packing_list = null;
   if (storage_plan) {
     packing_list = await AppDataSource.manager.find(PackingList, {
@@ -76,7 +83,7 @@ export const findStoragePlanByOrderNumber = async (order_number:string) => {
     user = await showUser(storage_plan.user_id);
   }
   return { ...storage_plan, packing_list, warehouse, user };
-}
+};
 
 export const countStoragePlan = async () => {
   return AppDataSource.manager.count(StoragePlan);
@@ -88,7 +95,7 @@ export const showStoragePlan = async (id: number) => {
   });
   let packing_list = null;
   if (storage_plan) {
-    packing_list = await getPackingListByStoragePlanId(storage_plan.id)
+    packing_list = await getPackingListByStoragePlanId(storage_plan.id);
   }
   let warehouse = null;
   if (storage_plan.warehouse_id) {
@@ -146,7 +153,10 @@ export const updateStoragePlan = async (id: number, data) => {
   if (!history_data.history) {
     history_data.history = [];
   }
-  history_data.history.push({ type: 'storage_plan', data: {...old_data, updated_at: new Date().toISOString()} });
+  history_data.history.push({
+    type: 'storage_plan',
+    data: { ...old_data, updated_at: new Date().toISOString() },
+  });
   await repository.update({ id }, history_data);
 
   return result;

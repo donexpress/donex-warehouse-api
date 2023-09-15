@@ -57,7 +57,7 @@ export class CreateStoragePlanTable1692803012317 implements MigrationInterface {
                 },
                 {
                     name: 'state',
-                    type: 'integer',
+                    type: 'integer', // change type to varchar and other migration
                     isNullable: true
                 },
                 {
