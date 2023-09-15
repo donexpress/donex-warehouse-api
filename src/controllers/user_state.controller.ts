@@ -14,7 +14,7 @@ export const index = async (req: Request, res: Response) => {
   res.json(states.user);
 };
 
-export const show = async (req: Request, res: Response) => {
+/* export const show = async (req: Request, res: Response) => {
   try {
     const role = await showUserState(Number(req.params.id));
     res.json(role);
@@ -61,4 +61,4 @@ export const remove = async (req: Request, res: Response) => {
     console.log(e);
     res.status(500).send(e);
   }
-};
+}; */

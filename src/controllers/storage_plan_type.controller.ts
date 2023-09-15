@@ -2,29 +2,13 @@ import { Request, Response } from 'express';
 import { countStoragePlanState, createStoragePlanState, listStoragePlanState, removeStoragePlan, showStoragePlanState, updateStoragePlan } from '../context/storage_plan_state';
 import { StoragePlan } from '../models/storage_plan.model';
 import { getCurrentUser } from '../middlewares';
+import states from '../config/states';
 
 export const index = async (req: Request, res: Response) => {
-  try {
-    const current_page = req.query.current_page
-      ? Number(req.query.current_page)
-      : 1;
-    const number_of_rows = req.query.number_of_rows
-      ? Number(req.query.number_of_rows)
-      : await countStoragePlanState();
-    const query = req.query.query;
-    const organization = await listStoragePlanState(
-      current_page,
-      number_of_rows,
-      query == undefined ? '' : String(query)
-    );
-    res.json(organization);
-  } catch (e) {
-    console.log(e);
-    res.status(500).send(e);
-  }
+  res.json(states.entry_plan)
 };
 
-export const show = async (req: Request, res: Response) => {
+/* export const show = async (req: Request, res: Response) => {
   try {
     const result = await showStoragePlanState(Number(req.params.id));
     if (!result) {
@@ -86,4 +70,4 @@ export const remove = async (req: Request, res: Response) => {
     console.log(e);
     res.status(500).send(e);
   }
-};
+}; */
