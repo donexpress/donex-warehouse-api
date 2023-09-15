@@ -3,21 +3,21 @@ const staff = {
     name: 'Normal',
     es_name: 'Normal',
     zh_name: '普通的',
-    value: "normal",
+    value: 'normal',
     position: 1,
   },
   frezze: {
     name: 'Frezze',
     es_name: 'Congelar',
     zh_name: '冻结',
-    value: "frezze",
+    value: 'frezze',
     position: 2,
   },
   resign: {
     name: 'Resign',
     es_name: 'Renunciar',
     zh_name: '放弃',
-    value: "resign",
+    value: 'resign',
     position: 3,
   },
 };
@@ -27,21 +27,21 @@ const user = {
     name: 'Normal',
     es_name: 'Normal',
     zh_name: '普通的',
-    value: "normal",
+    value: 'normal',
     position: 1,
   },
   frezze: {
     name: 'Frezze',
     es_name: 'Congelar',
     zh_name: '冻结',
-    value: "frezze",
+    value: 'frezze',
     position: 2,
   },
   pending_payment: {
     name: 'Pending payment',
     es_name: 'Pendiente de pago',
     zh_name: '杰出的',
-    value: "pending payment",
+    value: 'pending payment',
     position: 3,
   },
 };
@@ -51,21 +51,21 @@ const warehouse = {
     name: 'Normal',
     es_name: 'Normal',
     zh_name: '普通的',
-    value: "normal",
+    value: 'normal',
     position: 1,
   },
   frezze: {
     name: 'Frezze',
     es_name: 'Congelar',
     zh_name: '冻结',
-    value: "frezze",
+    value: 'frezze',
     position: 2,
   },
   close: {
     name: 'Close',
     es_name: 'Cerrar',
     zh_name: '关闭',
-    value: "close",
+    value: 'close',
     position: 3,
   },
 };
@@ -75,7 +75,7 @@ const output_plan = {
     name: 'Pending',
     es_name: 'Pendiente',
     zh_name: '耳环',
-    value: "pending",
+    value: 'pending',
     position: 1,
   },
   to_be_processed: {
@@ -89,7 +89,7 @@ const output_plan = {
     name: 'Collecting',
     es_name: 'Recogiendo',
     zh_name: '收藏',
-    value: "collecting",
+    value: 'collecting',
     position: 3,
   },
   processing: {
@@ -110,14 +110,14 @@ const output_plan = {
     name: 'Cancelled',
     es_name: 'Cancelado',
     zh_name: '取消',
-    value: "cancelled",
+    value: 'cancelled',
     position: 6,
   },
   all: {
     name: 'All',
     es_name: 'Todos',
     zh_name: '全部',
-    value: "all",
+    value: 'all',
     position: 7,
   },
 };
@@ -166,7 +166,50 @@ const operation_instruction = {
     position: 6,
   },
 };
+const entry_plan = {
+  to_be_storage: {
+    name: 'To be storage',
+    es_name: 'Para ser almacenado',
+    zh_name: '待存储',
+    value: 'to be storage',
+    position: 1,
+  },
+  into_warehouse: {
+    name: 'Entry into warehouse',
+    es_name: 'Entrada en almacén',
+    zh_name: '进入仓库',
+    value: 'into warehouse',
+    position: 2,
+  },
+  stocked: {
+    name: 'Stocked',
+    es_name: 'Abastecido',
+    zh_name: '库存充足',
+    value: 'stocked',
+    position: 3,
+  },
+  cancelled: {
+    name: 'Cancelled',
+    es_name: 'Cancelado',
+    zh_name: '取消',
+    value: "cancelled",
+    position: 4,
+  },
+  returns: {
+    name: 'Returns',
+    es_name: 'Devoluciones',
+    zh_name: '退货',
+    value: 'returns',
+    position: 5,
+  },
+  refused: {
+    name: 'Refused',
+    es_name: 'Rechazadas',
+    zh_name: '拒绝',
+    value: 'refused',
+    position: 6,
+  },
+};
 
-const states = { staff, user, warehouse, output_plan, operation_instruction };
-
+const states = { staff, user, warehouse, output_plan, operation_instruction, entry_plan };
 export default states;

@@ -8,7 +8,7 @@ router.get(
   verifyTokenPresent,
   StaffStateController.index
 );
-router.get('/api/v1/staff_state/count', StaffStateController.count);
+/* router.get('/api/v1/staff_state/count', StaffStateController.count);
 router.get('/api/v1/staff_state/:id', StaffStateController.show);
 router.post(
   '/api/v1/staff_state',
@@ -24,6 +24,6 @@ router.delete(
   '/api/v1/staff_state/:id',
   verifyTokenPresent,
   StaffStateController.remove
-);
+); */
 
 export default router;

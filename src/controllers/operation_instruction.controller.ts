@@ -134,7 +134,7 @@ export const remove = async (req: Request, res: Response) => {
 };
 
 export const changeStatus = async (req: Request, res: Response) => {
-  const state = req.params.state;
+  const state = req.body.state;
   const operation_instruction_id = req.params.operationInstructionId;
 
   const result = await changeStatusOI(parseInt(operation_instruction_id), {

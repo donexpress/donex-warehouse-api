@@ -47,3 +47,11 @@ export const object_state_user = (value) => {
       return false;
   }
 };
+
+export const getStates = (states) => {
+  const states_array = [];
+  for (const [key, value] of Object.entries(states)) {
+    states_array.push(value);
+  }
+  return states_array;
+};

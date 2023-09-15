@@ -8,7 +8,7 @@ router.get(
   verifyTokenPresent,
   WarehouseStateController.index
 );
-router.get('/api/v1/cargo_station_state/count', WarehouseStateController.count);
+/* router.get('/api/v1/cargo_station_state/count', WarehouseStateController.count);
 router.get('/api/v1/cargo_station_state/:id', WarehouseStateController.show);
 router.post(
   '/api/v1/cargo_station_state',
@@ -24,6 +24,6 @@ router.delete(
   '/api/v1/cargo_station_state/:id',
   verifyTokenPresent,
   WarehouseStateController.remove
-);
+); */
 
 export default router;

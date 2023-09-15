@@ -88,6 +88,29 @@ export const countOutputPlan = async () => {
   return AppDataSource.manager.count(OutputPlan);
 };
 
+export const countAllOutputPlan = async (): Promise<Object> => {
+  const all = await countOutputPlan();
+  const pending = await getCountByState(states.output_plan.pending.value);
+  const to_be_processed = await getCountByState(
+    states.output_plan.to_be_processed.value
+  );
+  const processing = await getCountByState(states.output_plan.processing.value);
+  const dispatched = await getCountByState(states.output_plan.dispatched.value);
+  const cancelled = await getCountByState(states.output_plan.cancelled.value);
+  const collecting = await getCountByState(states.output_plan.collecting.value);
+
+  const result = {
+    all,
+    pending,
+    to_be_processed,
+    processing,
+    dispatched,
+    cancelled,
+    collecting,
+  };
+  return result;
+};
+
 export const showOutputPlan = async (id: number) => {
   const result = await AppDataSource.manager.findOne(OutputPlan, {
     where: { id },
@@ -110,7 +133,7 @@ export const showOutputPlan = async (id: number) => {
     const element = result.case_numbers[i];
     packing_lists.push(await getPackingListByCaseNumber(element));
   }
-  const appendages = await getAppendagesByOutputPlan(id)
+  const appendages = await getAppendagesByOutputPlan(id);
   return { ...result, user, warehouse, packing_lists, appendages };
 };
 
@@ -154,12 +177,14 @@ export const removeOutputPlan = async (id: number) => {
   return result;
 };
 
-export const getOutputPlanStates = () => {
-  const output_plan_states = [];
-  for (const [key, value] of Object.entries(states.output_plan)) {
-    output_plan_states.push(value);
-  }
-  return output_plan_states;
+export const getCountByState = async (state_value: string): Promise<number> => {
+  const output_plan = await AppDataSource.getRepository(OutputPlan).find({
+    where: {
+      state: state_value,
+    },
+  });
+
+  return output_plan ? output_plan.length : 0;
 };
 
 export const getDestinations = () => {

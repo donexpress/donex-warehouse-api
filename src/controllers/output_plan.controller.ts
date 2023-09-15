@@ -1,16 +1,18 @@
 import { Request, Response } from 'express';
 import {
+  countAllOutputPlan,
   countOutputPlan,
   createOutputPlan,
   getDestinations,
   getOutputPlanByState,
-  getOutputPlanStates,
   listOutputPlan,
   removeOutputPlan,
   showOutputPlan,
   updateOutputPlan,
 } from '../context/output_plan';
 import { OutputPlan } from '../models/output_plan.model';
+import { getStates } from '../helpers/states';
+import states from '../config/states';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -56,8 +58,8 @@ export const show = async (req: Request, res: Response) => {
 
 export const count = async (req: Request, res: Response) => {
   try {
-    const count = await countOutputPlan();
-    res.json({ count });
+    const count = await countAllOutputPlan();
+    res.json(count);
   } catch (e) {
     console.log(e);
     res.status(500).send(e);
@@ -101,8 +103,8 @@ export const remove = async (req: Request, res: Response) => {
   }
 };
 
-export const states = (req: Request, res: Response) => {
-  res.send({states: getOutputPlanStates()})
+export const listStates = (req: Request, res: Response) => {
+  res.send({states: getStates(states.output_plan)})
 }
 
 export const destinations = (req: Request, res: Response) => {
