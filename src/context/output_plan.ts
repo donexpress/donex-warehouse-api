@@ -200,14 +200,6 @@ export const removeOutputPlan = async (id: number) => {
   return result;
 };
 
-export const getOutputPlanStates = () => {
-  const output_plan_states = [];
-  for (const [key, value] of Object.entries(states.output_plan)) {
-    output_plan_states.push(value);
-  }
-  return output_plan_states;
-};
-
 export const getCountByState = async (state_value: string): Promise<number> => {
   const output_plan = await AppDataSource.getRepository(OutputPlan).find({
     where: {
