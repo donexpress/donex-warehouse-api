@@ -1,4 +1,4 @@
-import { ILike } from 'typeorm';
+import { FindOneOptions, FindOptionsWhere, ILike } from 'typeorm';
 import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { OutputPlan } from '../models/output_plan.model';
@@ -10,6 +10,7 @@ import { getAppendagesByOutputPlan } from './appendix';
 import { getCountByState } from '../helpers/states';
 import { AOSWarehouse } from '../models/aos_warehouse.model';
 import { destinations } from '../constants/destination';
+import { OutputPlanFilter } from '../types/OutputPlanFilter';
 
 export const listOutputPlan = async (
   current_page: number,
@@ -35,10 +36,17 @@ export const listOutputPlan = async (
     }
     let warehouse = null;
     if (el.warehouse_id) {
-      warehouse = warehouses.find((t) => (t.id === el.warehouse_id));
+      warehouse = warehouses.find((t) => t.id === el.warehouse_id);
     }
+    let destination = destinations[el.destination];
     if (el.state) {
-      return { ...el, user, warehouse, state: states.output_plan[el.state] };
+      return {
+        ...el,
+        user,
+        warehouse,
+        state: states.output_plan[el.state],
+        destination_ref: destination,
+      };
     }
     let operation_instructions = [];
     oper_inst.map((oi) => {
@@ -49,7 +57,13 @@ export const listOutputPlan = async (
       }
     });
 
-    return { ...el, user, warehouse, operation_instructions };
+    return {
+      ...el,
+      user,
+      warehouse,
+      operation_instructions,
+      destination_ref: destination,
+    };
   });
 };
 
@@ -75,13 +89,20 @@ export const getOutputPlanByState = async (
       delete user.password;
     }
     let warehouse = null;
+    let destination = destinations[el.destination];
     if (el.warehouse_id) {
-      warehouse = warehouses.find((t) => (t.id === el.warehouse_id));
+      warehouse = warehouses.find((t) => t.id === el.warehouse_id);
     }
     if (el.state) {
-      return { ...el, user, warehouse, state: states.output_plan[el.state] };
+      return {
+        ...el,
+        user,
+        warehouse,
+        state: states.output_plan[el.state],
+        destination_ref: destination,
+      };
     }
-    return { ...el, user, warehouse };
+    return { ...el, user, warehouse, destination_ref: destination };
   });
 };
 
@@ -179,10 +200,12 @@ export const createOutputPlan = async (data: any) => {
 
 export const updateOutputPlan = async (id: number, data) => {
   const repository = await AppDataSource.getRepository(OutputPlan);
-  const box_amount = data.case_numbers.length
-  if(box_amount > 0) {
-    data.output_boxes = box_amount
-    data.box_amount = box_amount
+  if(data.case_numbers) {
+    const box_amount = data.case_numbers.length;
+    if (box_amount > 0) {
+      data.output_boxes = box_amount;
+      data.box_amount = box_amount;
+    }
   }
   data.updated_at = new Date().toISOString();
   const result = await repository.update({ id }, data);
@@ -201,4 +224,46 @@ export const getDestinations = () => {
     dest.push(value);
   }
   return dest;
-}
+};
+
+export const getOutputPlanByFilter = async (filter: OutputPlanFilter) => {
+  const where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] =
+    {};
+  if (filter.date) {
+    where.delivered_time = filter.date;
+  }
+  if (filter.location) {
+    for (const [key, value] of Object.entries(destinations)) {
+      if(value.es_name.toLowerCase() === filter.location.toLowerCase() || value.name.toLowerCase() === filter.location.toLowerCase() || value.zh_name.toLowerCase() === filter.location.toLowerCase()) {
+        where.destination = value.value;
+      }
+    }
+  }
+  const result = await AppDataSource.manager.find(OutputPlan, {
+    where,
+  });
+  const users = await AppDataSource.manager.find(User);
+  const warehouses = await AppDataSource.manager.find(AOSWarehouse);
+  return result.map((el) => {
+  let user = null;
+    if (el.user_id) {
+      user = users.find((t) => t.id === el.user_id);
+      delete user.password;
+    }
+    let warehouse = null;
+    let destination = destinations[el.destination];
+    if (el.warehouse_id) {
+      warehouse = warehouses.find((t) => t.id === el.warehouse_id);
+    }
+    if (el.state) {
+      return {
+        ...el,
+        user,
+        warehouse,
+        state: states.output_plan[el.state],
+        destination_ref: destination,
+      };
+    }
+    return { ...el, user, warehouse, destination_ref: destination };
+  });
+};
