@@ -82,7 +82,7 @@ const output_plan = {
     name: 'To be processed',
     es_name: 'Para ser procesado',
     zh_name: '待处理',
-    value: "to_be_processed",
+    value: 'to_be_processed',
     position: 2,
   },
   collecting: {
@@ -96,14 +96,14 @@ const output_plan = {
     name: 'Processing',
     es_name: 'Procesando',
     zh_name: '选一个',
-    value: "processing",
+    value: 'processing',
     position: 4,
   },
   dispatched: {
     name: 'Dispatched',
     es_name: 'Despachado',
     zh_name: '已派遣',
-    value: "dispatched",
+    value: 'dispatched',
     position: 5,
   },
   cancelled: {
@@ -127,42 +127,42 @@ const operation_instruction = {
     name: 'Pending',
     es_name: 'Pendiente',
     zh_name: '耳环',
-    value: "pending",
+    value: 'pending',
     position: 1,
   },
   processing: {
     name: 'Processing',
     es_name: 'Procesando',
     zh_name: '加工',
-    value: "processing",
+    value: 'processing',
     position: 2,
   },
   processed: {
     name: 'Processed',
     es_name: 'Procesado',
     zh_name: '处理',
-    value: "processed",
+    value: 'processed',
     position: 3,
   },
   audited: {
     name: 'Audited',
     es_name: 'Auditado',
     zh_name: '已审核',
-    value: "audited",
+    value: 'audited',
     position: 4,
   },
   cancelled: {
     name: 'Cancelled',
     es_name: 'Cancelado',
     zh_name: '取消',
-    value: "cancelled",
+    value: 'cancelled',
     position: 5,
   },
   all: {
     name: 'All',
     es_name: 'Todos',
     zh_name: '全部',
-    value: "all",
+    value: 'all',
     position: 6,
   },
 };
@@ -192,7 +192,7 @@ const entry_plan = {
     name: 'Cancelled',
     es_name: 'Cancelado',
     zh_name: '取消',
-    value: "cancelled",
+    value: 'cancelled',
     position: 4,
   },
   returns: {
@@ -211,5 +211,30 @@ const entry_plan = {
   },
 };
 
-const states = { staff, user, warehouse, output_plan, operation_instruction, entry_plan };
+const regional_division = {
+  reception_area: {
+    name: 'Reception area',
+    es_name: 'Área de recepción',
+    zh_name: '接待区',
+    value: 'reception_area',
+    position: 1,
+  },
+  delivery_area: {
+    name: 'Delivery area',
+    es_name: 'Zona de entrega',
+    zh_name: '送货范围',
+    value: 'delivery_area',
+    position: 2,
+  },
+};
+
+const states = {
+  staff,
+  user,
+  warehouse,
+  output_plan,
+  operation_instruction,
+  entry_plan,
+  regional_division,
+};
 export default states;

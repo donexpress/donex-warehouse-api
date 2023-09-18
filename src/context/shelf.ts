@@ -25,7 +25,7 @@ export const showShelf = async (id: number) => {
   const shelf = await AppDataSource.manager.findOne(Shelf, {
     where: { id },
   });
-  const package_shelf = await AppDataSource.manager.find(ShelfPackages, {where: {shelf_id: id}})
+  const package_shelf = await getDataByShelfId(shelf.id)
   return {...shelf, packages: package_shelf}
 };
 
