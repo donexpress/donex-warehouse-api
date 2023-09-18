@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import {
   countSubsidiary,
   createSubsidiary,
+  getSubsidiaryStates,
   listSubsidiary,
   removeSubsidiary,
   showSubsidiary,
@@ -72,3 +73,7 @@ export const remove = async (req: Request, res: Response) => {
     res.status(500).send(e);
   }
 };
+
+export const states = (req: Request, res: Response) => {
+  res.send({states: getSubsidiaryStates()})
+}

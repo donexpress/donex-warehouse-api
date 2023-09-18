@@ -1,4 +1,5 @@
 import { AppDataSource } from '../config/ormconfig';
+import states from '../config/states';
 import { validateContext } from '../helpers/validate';
 import { Subsidiary } from '../models/subsidiary.model';
 
@@ -41,4 +42,12 @@ export const removeSubsidiary = async (id: number) => {
   const repository = await AppDataSource.getRepository(Subsidiary);
   const result = await repository.delete({ id });
   return result;
+};
+
+export const getSubsidiaryStates = () => {
+  const dest = [];
+  for (const [key, value] of Object.entries(states.regional_division)) {
+    dest.push(value);
+  }
+  return dest;
 };

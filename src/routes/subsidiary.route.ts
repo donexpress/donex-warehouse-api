@@ -9,6 +9,7 @@ router.get(
   SubsidiaryController.index
 );
 router.get('/api/v1/subsidiary/count', SubsidiaryController.count);
+router.get('/api/v1/subsidiary/states', SubsidiaryController.states);
 router.get('/api/v1/subsidiary/:id', SubsidiaryController.show);
 router.post(
   '/api/v1/subsidiary',
