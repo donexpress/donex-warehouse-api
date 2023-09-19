@@ -14,19 +14,19 @@ export const listUser = async (
   current_page: number,
   number_of_rows: number,
   query: string,
-  state: string =  ''
+  state: string = ''
 ) => {
-  const skip = (current_page - 1) * number_of_rows | 0;
+  const skip = ((current_page - 1) * number_of_rows) | 0;
   const take = number_of_rows | 10;
-  const not_deleted = Not("deleted");
+  const not_deleted = Not('deleted');
 
   let where: FindOptionsWhere<User> | FindOptionsWhere<User>[] = [
     { username: ILike(`%${query}%`), state: not_deleted },
-    { nickname: ILike(`%${query}%`), state: not_deleted }
-  ]
+    { nickname: ILike(`%${query}%`), state: not_deleted },
+  ];
 
-  if(state !== '') {
-    where = {state}
+  if (state !== '') {
+    where = { state };
   }
 
   const users = await AppDataSource.manager.find(User, {
@@ -40,6 +40,7 @@ export const listUser = async (
   const staffs = await AppDataSource.manager.find(Staff);
   const payment_methods = await AppDataSource.manager.find(PaymentMethod);
   const user_levels = await AppDataSource.manager.find(UserLevel);
+  const warehouses = await AppDataSource.manager.find(Warehouse);
   const users_mod = users.map((user) => {
     delete user.password;
     let user_state = null;
@@ -85,6 +86,10 @@ export const listUser = async (
     if (user.user_level_id) {
       user_level = user_levels.find((el) => el.id === user.user_level_id);
     }
+    let warehouse = null;
+    if (user.warehouse_id) {
+      warehouse = warehouses.find((el) => el.id === user.warehouse_id);
+    }
     return {
       ...user,
       user_state,
@@ -94,13 +99,16 @@ export const listUser = async (
       sale_sources,
       payment_method,
       user_level,
+      warehouse
     };
   });
   return users_mod;
 };
 
 export const countUser = async () => {
-  return await AppDataSource.getRepository(User).count({ where: { state: Not("deleted") } });
+  return await AppDataSource.getRepository(User).count({
+    where: { state: Not('deleted') },
+  });
 };
 
 export const showUser = async (id: number) => {
