@@ -31,7 +31,11 @@ export const listAOSWarehouse = async (
       shelfs[shelfs.length - 1] &&
       shelfs[shelfs.length - 1].partition_table
     ) {
-      patition_amount = shelfs[shelfs.length - 1].partition_table;
+      shelfs.forEach((shelf) => {
+        if (shelf.partition_table > patition_amount) {
+          patition_amount = shelf.partition_table;
+        }
+      });
     }
     mod_aos_warehouses.push({ ...warehouse, shelfs, patition_amount });
   });
@@ -49,7 +53,11 @@ export const showAOSWarehouse = async (id: number) => {
   const shelfs = await findShelfByWarehouseId(id);
   let patition_amount = 0;
   if (shelfs[shelfs.length - 1] && shelfs[shelfs.length - 1].partition_table) {
-    patition_amount = shelfs[shelfs.length - 1].partition_table;
+    shelfs.forEach((shelf) => {
+      if (shelf.partition_table > patition_amount) {
+        patition_amount = shelf.partition_table;
+      }
+    });
   }
   return { ...aos_warehouse, shelfs, patition_amount };
 };
