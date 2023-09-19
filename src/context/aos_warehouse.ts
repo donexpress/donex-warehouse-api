@@ -1,4 +1,4 @@
-import { ILike } from 'typeorm';
+import { ILike, Not } from 'typeorm';
 import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { AOSWarehouse } from '../models/aos_warehouse.model';
@@ -67,12 +67,24 @@ export const createAOSWarehouse = async (aos_warehouse_data: any) => {
     aos_warehouse_data.email = null;
   }
   const repository = await AppDataSource.getRepository(AOSWarehouse);
+  const name_count = await repository.count({
+    where: { name: aos_warehouse_data.name },
+  });
+  if (name_count > 0) {
+    return { message: 'name already exists' };
+  }
   const aos_warehouse = repository.create(aos_warehouse_data);
   return await validateContext(AppDataSource, aos_warehouse);
 };
 
 export const updateAOSWarehouse = async (id: number, aos_warehouse_data) => {
   const repository = await AppDataSource.getRepository(AOSWarehouse);
+  const name_count = await repository.count({
+    where: { name: aos_warehouse_data.name, id: Not(id) },
+  });
+  if (name_count > 0) {
+    return { message: 'name already exists' };
+  }
   const result = await repository.update({ id }, aos_warehouse_data);
   return result;
 };

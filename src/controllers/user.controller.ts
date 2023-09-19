@@ -8,6 +8,7 @@ import {
   updateUser,
 } from '../context/user';
 import { User } from '../models/user.model';
+import { UpdateResult } from 'typeorm';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -35,7 +36,7 @@ export const index = async (req: Request, res: Response) => {
 export const show = async (req: Request, res: Response) => {
   try {
     const user = await showUser(Number(req.params.id));
-    if(!user) {
+    if (!user) {
       res.status(404).send(null);
     } else {
       res.json(user);
@@ -62,9 +63,9 @@ export const create = async (req: Request, res: Response) => {
   console.log(user);
   if (user instanceof User) {
     res.status(201).json(user);
-  //@ts-ignore
-  } else if(user.message) {
-    res.status(409).json(user)
+    //@ts-ignore
+  } else if (user.message) {
+    res.status(409).json(user);
   } else {
     return res.status(422).json(user);
   }
@@ -73,10 +74,14 @@ export const create = async (req: Request, res: Response) => {
 export const update = async (req: Request, res: Response) => {
   try {
     const result = await updateUser(Number(req.params.id), req.body);
-    if(result.affected === 0) {
-      res.status(404).json(result);
+    if (result instanceof UpdateResult) {
+      if (result.affected === 0) {
+        res.status(404).json(result);
+      } else {
+        res.status(200).json(result);
+      }
     } else {
-      res.status(200).json(result);
+      res.status(409).json(result);
     }
   } catch (e) {
     console.log(e);
@@ -87,7 +92,7 @@ export const update = async (req: Request, res: Response) => {
 export const remove = async (req: Request, res: Response) => {
   try {
     const result = await removeUser(Number(req.params.id));
-    if(result.affected === 0) {
+    if (result.affected === 0) {
       res.status(404).json(result);
     } else {
       res.status(200).json(result);

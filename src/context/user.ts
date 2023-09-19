@@ -99,7 +99,7 @@ export const listUser = async (
       sale_sources,
       payment_method,
       user_level,
-      warehouse
+      warehouse,
     };
   });
   return users_mod;
@@ -238,6 +238,20 @@ export const updateUser = async (id: number, user_data) => {
   const repository = await AppDataSource.getRepository(User);
   if (user_data.password) {
     delete user_data.password;
+  }
+  const username_count = await repository.count({
+    where: { username: user_data.username, id: Not(id) },
+  });
+  if (username_count > 0) {
+    return { message: 'username already exists' };
+  }
+  if (user_data.email) {
+    const email_count = await repository.count({
+      where: { email: user_data.email, id: Not(id) },
+    });
+    if (email_count > 0) {
+      return { message: 'email already exists' };
+    }
   }
   const result = await repository.update({ id }, user_data);
   return result;

@@ -11,18 +11,18 @@ export const listWarehouse = async (
   number_of_rows: number,
   state: string = ''
 ) => {
-  const skip = (current_page - 1) * number_of_rows | 0;
+  const skip = ((current_page - 1) * number_of_rows) | 0;
   const take = number_of_rows | 10;
-  const not_deleted = Not("deleted");
+  const not_deleted = Not('deleted');
 
   let where: FindOptionsWhere<Warehouse> | FindOptionsWhere<Warehouse>[] = {
-    state: not_deleted
+    state: not_deleted,
+  };
+
+  if (state !== '') {
+    where = { state };
   }
 
-  if(state !== '') {
-    where = {state}
-  }
-  
   const warehouses = await AppDataSource.manager.find(Warehouse, {
     take: take,
     skip: skip,
@@ -45,7 +45,9 @@ export const listWarehouse = async (
 };
 
 export const countWarehouse = async () => {
-  return await AppDataSource.getRepository(Warehouse).count({ where: { state: Not("deleted") } });
+  return await AppDataSource.getRepository(Warehouse).count({
+    where: { state: Not('deleted') },
+  });
 };
 
 export const showWarehouse = async (id: number) => {
@@ -87,6 +89,20 @@ export const createWarehouse = async (warehouse_data) => {
 
 export const updateWarehouse = async (id: number, warehouse_data) => {
   const repository = await AppDataSource.getRepository(Warehouse);
+  const name_count = await repository.count({
+    where: { name: warehouse_data.name, id: Not(id) },
+  });
+  if (name_count > 0) {
+    return { message: 'name already exists' };
+  }
+  if (warehouse_data.english_name) {
+    const english_name_count = await repository.count({
+      where: { english_name: warehouse_data.english_name, id: Not(id) },
+    });
+    if (english_name_count > 0) {
+      return { message: 'english name already exists' };
+    }
+  }
   const result = await repository.update({ id }, warehouse_data);
   return result;
 };
