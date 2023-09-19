@@ -1,4 +1,4 @@
-import { FindOneOptions, FindOptionsWhere, ILike } from 'typeorm';
+import { Between, FindOneOptions, FindOptionsWhere, ILike } from 'typeorm';
 import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { OutputPlan } from '../models/output_plan.model';
@@ -230,7 +230,10 @@ export const getOutputPlanByFilter = async (filter: OutputPlanFilter) => {
   const where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] =
     {};
   if (filter.date) {
-    where.delivered_time = filter.date;
+    const date = new Date(filter.date)
+    const new_date = new Date(filter.date)
+    new_date.setDate(new_date.getDate()+1)
+    where.delivered_time = Between(date.toISOString(), new_date.toISOString());
   }
   if (filter.location) {
     for (const [key, value] of Object.entries(destinations)) {

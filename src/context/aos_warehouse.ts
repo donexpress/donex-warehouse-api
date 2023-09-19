@@ -85,6 +85,12 @@ export const updateAOSWarehouse = async (id: number, aos_warehouse_data) => {
   if (name_count > 0) {
     return { message: 'name already exists' };
   }
+  if(aos_warehouse_data.code) {
+    const code_count = await repository.count({where: {code: aos_warehouse_data.code, id: Not(id)}})
+    if(code_count > 0) {
+      return { message: 'name already exists' };
+  }
+  }
   const result = await repository.update({ id }, aos_warehouse_data);
   return result;
 };
