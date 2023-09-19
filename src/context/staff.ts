@@ -23,10 +23,10 @@ export const listStaff = async (
   let where: FindOptionsWhere<Staff> | FindOptionsWhere<Staff>[] = [
     { english_name: ILike(`%${query}%`), state: not_deleted },
     { chinesse_name: ILike(`%${query}%`), state: not_deleted },
-  ]
+  ];
 
-  if(state !== '') {
-    where = { state: state }
+  if (state !== '') {
+    where = { state: state };
   }
 
   const users = await AppDataSource.manager.find(Staff, {
@@ -42,6 +42,7 @@ export const listStaff = async (
   const organizations = await AppDataSource.manager.find(Organization);
   const warehouse = await AppDataSource.manager.find(Warehouse);
   const mod_staff = [];
+  console.log("Lenght: ", users.length)
   for (let i = 0; i < users.length; i++) {
     const user = users[i];
     delete user.password;
@@ -77,7 +78,9 @@ export const listStaff = async (
 };
 
 export const countStaff = async () => {
-  return await AppDataSource.getRepository(Staff).count({ where: { state: Not("deleted") } });
+  return await AppDataSource.getRepository(Staff).count({
+    where: { state: Not('deleted') },
+  });
 };
 
 export const showStaff = async (id: number) => {
@@ -171,6 +174,21 @@ export const updateStaff = async (id: number, user_data) => {
   if (user_data.password) {
     delete user_data.password;
   }
+  const username_count = await repository.count({
+    where: { username: user_data.username, id: Not(id) },
+  });
+  if (username_count > 0) {
+    return { message: 'username already exists' };
+  }
+  if (user_data.email) {
+    const email_count = await repository.count({
+      where: { email: user_data.email, id: Not(id) },
+    });
+    if (email_count > 0) {
+      return { message: 'email already exists' };
+    }
+  }
+
   if (user_data.affiliations) {
     const ref = await AppDataSource.getRepository(StaffWarehouse);
     await ref.delete({ staff_id: id });
