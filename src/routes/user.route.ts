@@ -6,7 +6,6 @@ const router = express.Router();
 router.get(
   '/api/v1/user',
   verifyTokenPresent,
-  verifyTokenPresent,
   UserController.index
 );
 router.get('/api/v1/user/count', UserController.count);
