@@ -23,9 +23,10 @@ export const login = async (req: Request, res: Response) => {
     where: { username: req.body.username },
   });
   // Not login if you take this values
-  if (["resign", "frezze"].includes(user.state)) {
+  if (['resign', 'frezze'].includes(user.state)) {
     res.status(401).json({
-      message: 'We have a problem with this user. Please contact an administrator for a solution.',
+      message:
+        'We have a problem with this user. Please contact an administrator for a solution.',
     });
   }
 
@@ -52,12 +53,16 @@ export const self = async (req: Request, res: Response) => {
   //@ts-ignore
   const user = req.assigns.currentUser;
 
-  const role = await AppDataSource.getRepository(Role).findOne({
-    where: {
-      id: user.role_id,
-    },
-  });
-  delete user.password;
+  if (user.role_id) {
+    const role = await AppDataSource.getRepository(Role).findOne({
+      where: {
+        id: user.role_id,
+      },
+    });
+    delete user.password;
 
-  res.send({ ...user, role });
+    res.send({ ...user, role });
+  } else {
+    res.send(user);
+  }
 };
