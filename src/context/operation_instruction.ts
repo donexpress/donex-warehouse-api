@@ -63,29 +63,22 @@ export const createOI = async (
   params
 ): Promise<OperationInstruction | ValidationError[]> => {
   const repository = await AppDataSource.getRepository(OperationInstruction);
-  const operation_instruction_types = params.operation_instruction_type;
-  let instruction_type = [];
-  if (operation_instruction_types) {
-    const config_operation_types = getOperationInstructionTypes();
-    operation_instruction_types.map((operation_type) => {
-      config_operation_types.map((config_type) => {
-        if (operation_type === config_type.value) {
-          instruction_type.push(config_type);
-        }
-      });
-    });
-  }
-  const operation_instruction_type = { instruction_type };
   const result = repository.create({
     ...params,
-    operation_instruction_type,
+    operation_instruction_type: getParamsInstructionOperation(params),
   });
   return await validateContext(AppDataSource, result);
 };
 
 export const updateOI = async (id: number, params): Promise<UpdateResult> => {
   const repository = await AppDataSource.getRepository(OperationInstruction);
-  return await repository.update({ id }, params);
+  return await repository.update(
+    { id },
+    {
+      ...params,
+      operation_instruction_type: getParamsInstructionOperation(params),
+    }
+  );
 };
 
 export const removeOI = async (id: number) => {
@@ -117,4 +110,19 @@ export const getOperationInstructionTypes = () => {
     operation_instruction_types.push(value);
   }
   return operation_instruction_types;
+};
+
+const getParamsInstructionOperation = (params) => {
+  const operation_instruction_types = params.operation_instruction_type;
+  let instruction_type = [];
+  const config_operation_types = getOperationInstructionTypes();
+  operation_instruction_types.map((operation_type) => {
+    config_operation_types.map((config_type) => {
+      if (operation_type === config_type.value) {
+        instruction_type.push(config_type);
+      }
+    });
+  });
+  //const operation_instruction_type = { instruction_type };
+  return { instruction_type };
 };
