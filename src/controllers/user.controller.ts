@@ -60,7 +60,6 @@ export const count = async (req: Request, res: Response) => {
 export const create = async (req: Request, res: Response) => {
   const body = req.body;
   const user = await createUser(body);
-  console.log(user);
   if (user instanceof User) {
     res.status(201).json(user);
     //@ts-ignore
