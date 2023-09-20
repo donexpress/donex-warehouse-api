@@ -4,6 +4,7 @@ import { validateContext } from '../helpers/validate';
 import { OperationInstruction } from '../models/instruction_operation.model';
 import { ValidationError } from 'class-validator';
 import states from '../config/states';
+import warehouse_type from '../config/types';
 
 export const listOI = async (
   current_page: number,
@@ -90,4 +91,12 @@ export const getOperationInstructionStates = () => {
     operation_instruction_states.push(value);
   }
   return operation_instruction_states;
+};
+
+export const getOperationInstructionTypes = () => {
+  const operation_instruction_types = [];
+  for (const [key, value] of Object.entries(warehouse_type.operation_instruction_type)) {
+    operation_instruction_types.push(value);
+  }
+  return operation_instruction_types;
 };

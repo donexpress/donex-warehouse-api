@@ -9,6 +9,7 @@ import {
   changeStatusOI,
   listOIByOutputPlanId,
   getOperationInstructionStates,
+  getOperationInstructionTypes,
 } from '../context/operation_instruction';
 import { OperationInstruction } from '../models/instruction_operation.model';
 import types from '../config/types';
@@ -18,8 +19,7 @@ export const listOperationInstructionType = async (
   req: Request,
   res: Response
 ) => {
-  const types = warehouse_type.operation_instruction_type;
-  res.json(types);
+  res.send(getOperationInstructionTypes());
 };
 
 export const index = async (req: Request, res: Response) => {
