@@ -1,4 +1,4 @@
-import { ILike } from 'typeorm';
+import { ILike, Not } from 'typeorm';
 import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { AOSWarehouse } from '../models/aos_warehouse.model';
@@ -31,7 +31,11 @@ export const listAOSWarehouse = async (
       shelfs[shelfs.length - 1] &&
       shelfs[shelfs.length - 1].partition_table
     ) {
-      patition_amount = shelfs[shelfs.length - 1].partition_table;
+      shelfs.forEach((shelf) => {
+        if (shelf.partition_table > patition_amount) {
+          patition_amount = shelf.partition_table;
+        }
+      });
     }
     mod_aos_warehouses.push({ ...warehouse, shelfs, patition_amount });
   });
@@ -49,7 +53,11 @@ export const showAOSWarehouse = async (id: number) => {
   const shelfs = await findShelfByWarehouseId(id);
   let patition_amount = 0;
   if (shelfs[shelfs.length - 1] && shelfs[shelfs.length - 1].partition_table) {
-    patition_amount = shelfs[shelfs.length - 1].partition_table;
+    shelfs.forEach((shelf) => {
+      if (shelf.partition_table > patition_amount) {
+        patition_amount = shelf.partition_table;
+      }
+    });
   }
   return { ...aos_warehouse, shelfs, patition_amount };
 };
@@ -59,12 +67,30 @@ export const createAOSWarehouse = async (aos_warehouse_data: any) => {
     aos_warehouse_data.email = null;
   }
   const repository = await AppDataSource.getRepository(AOSWarehouse);
+  const name_count = await repository.count({
+    where: { name: aos_warehouse_data.name },
+  });
+  if (name_count > 0) {
+    return { message: 'name already exists' };
+  }
   const aos_warehouse = repository.create(aos_warehouse_data);
   return await validateContext(AppDataSource, aos_warehouse);
 };
 
 export const updateAOSWarehouse = async (id: number, aos_warehouse_data) => {
   const repository = await AppDataSource.getRepository(AOSWarehouse);
+  const name_count = await repository.count({
+    where: { name: aos_warehouse_data.name, id: Not(id) },
+  });
+  if (name_count > 0) {
+    return { message: 'name already exists' };
+  }
+  if(aos_warehouse_data.code) {
+    const code_count = await repository.count({where: {code: aos_warehouse_data.code, id: Not(id)}})
+    if(code_count > 0) {
+      return { message: 'name already exists' };
+  }
+  }
   const result = await repository.update({ id }, aos_warehouse_data);
   return result;
 };

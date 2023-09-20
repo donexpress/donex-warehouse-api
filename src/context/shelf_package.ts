@@ -3,6 +3,8 @@ import { validateContext } from '../helpers/validate';
 import { PackingList } from '../models/packing_list.model';
 import { Shelf } from '../models/shelf.model';
 import { ShelfPackages } from '../models/shelf_package.model';
+import { StoragePlan } from '../models/storage_plan.model';
+import { showShelf } from './shelf';
 
 export const listShelfPackages = async (
   current_page: number,
@@ -74,6 +76,15 @@ export const createShelfPackages = async (data) => {
 
 export const updateShelfPackages = async (id: number, data) => {
   const repository = await AppDataSource.getRepository(ShelfPackages);
+  const old_data = await showShelfPackage(id)
+  const packing_list = await AppDataSource.manager.findOne(PackingList, {where: {id: old_data.package_id}})
+  const storage_plan_repository = await AppDataSource.getRepository(StoragePlan);
+  const storage_plan = await storage_plan_repository.findOne({where: {id: packing_list.storage_plan_id}})
+  storage_plan.history.push({
+    type: 'shelf_package',
+    data: { ...old_data, updated_at: new Date().toISOString() },
+  });
+  await storage_plan_repository.update({ id: storage_plan.id }, storage_plan);
   const result = await repository.update({ id }, data);
   return result;
 };

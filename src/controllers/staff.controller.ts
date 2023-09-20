@@ -8,6 +8,7 @@ import {
   updateStaff,
 } from '../context/staff';
 import { Staff } from '../models/staff.model';
+import { UpdateResult } from 'typeorm';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -72,10 +73,14 @@ export const create = async (req: Request, res: Response) => {
 export const update = async (req: Request, res: Response) => {
   try {
     const result = await updateStaff(Number(req.params.id), req.body);
-    if (result.affected === 0) {
-      res.status(404).json(result);
+    if (result instanceof UpdateResult) {
+      if (result.affected === 0) {
+        res.status(404).json(result);
+      } else {
+        res.status(200).json(result);
+      }
     } else {
-      res.status(200).json(result);
+      res.status(409).json(result)
     }
   } catch (e) {
     console.log(e);
