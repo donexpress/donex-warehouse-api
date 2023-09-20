@@ -69,7 +69,7 @@ export const createOI = async (
     const config_operation_types = getOperationInstructionTypes();
     operation_instruction_types.map((operation_type) => {
       config_operation_types.map((config_type) => {
-        if (operation_type.value === config_type.value) {
+        if (operation_type === config_type.value) {
           instruction_type.push(config_type);
         }
       });
