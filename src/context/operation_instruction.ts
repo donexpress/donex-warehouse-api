@@ -75,9 +75,10 @@ export const createOI = async (
       });
     });
   }
+  const operation_instruction_type = { instruction_type };
   const result = repository.create({
     ...params,
-    operation_instruction_type: instruction_type,
+    operation_instruction_type,
   });
   return await validateContext(AppDataSource, result);
 };
