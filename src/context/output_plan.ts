@@ -9,7 +9,7 @@ import { OperationInstruction } from '../models/instruction_operation.model';
 import { getAppendagesByOutputPlan } from './appendix';
 import { getCountByState } from '../helpers/states';
 import { AOSWarehouse } from '../models/aos_warehouse.model';
-import { destinations } from '../constants/destination';
+import { destinations } from '../config/destination';
 import { OutputPlanFilter } from '../types/OutputPlanFilter';
 
 export const listOutputPlan = async (
