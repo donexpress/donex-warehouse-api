@@ -200,7 +200,7 @@ export const createOutputPlan = async (data: any) => {
 
 export const updateOutputPlan = async (id: number, data) => {
   const repository = await AppDataSource.getRepository(OutputPlan);
-  if(data.case_numbers) {
+  if (data.case_numbers) {
     const box_amount = data.case_numbers.length;
     if (box_amount > 0) {
       data.output_boxes = box_amount;
@@ -230,14 +230,18 @@ export const getOutputPlanByFilter = async (filter: OutputPlanFilter) => {
   const where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] =
     {};
   if (filter.date) {
-    const date = new Date(filter.date)
-    const new_date = new Date(filter.date)
-    new_date.setDate(new_date.getDate()+1)
+    const date = new Date(filter.date);
+    const new_date = new Date(filter.date);
+    new_date.setDate(new_date.getDate() + 1);
     where.delivered_time = Between(date.toISOString(), new_date.toISOString());
   }
   if (filter.location) {
     for (const [key, value] of Object.entries(destinations)) {
-      if(value.es_name.toLowerCase() === filter.location.toLowerCase() || value.name.toLowerCase() === filter.location.toLowerCase() || value.zh_name.toLowerCase() === filter.location.toLowerCase()) {
+      if (
+        value.value.toLowerCase() === filter.location.toLowerCase() ||
+        value.value.toLowerCase() === filter.location.toLowerCase() ||
+        value.value.toLowerCase() === filter.location.toLowerCase()
+      ) {
         where.destination = value.value;
       }
     }
@@ -248,7 +252,7 @@ export const getOutputPlanByFilter = async (filter: OutputPlanFilter) => {
   const users = await AppDataSource.manager.find(User);
   const warehouses = await AppDataSource.manager.find(AOSWarehouse);
   return result.map((el) => {
-  let user = null;
+    let user = null;
     if (el.user_id) {
       user = users.find((t) => t.id === el.user_id);
       delete user.password;
