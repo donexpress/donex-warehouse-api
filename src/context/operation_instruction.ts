@@ -63,7 +63,22 @@ export const createOI = async (
   params
 ): Promise<OperationInstruction | ValidationError[]> => {
   const repository = await AppDataSource.getRepository(OperationInstruction);
-  const result = repository.create(params);
+  const operation_instruction_types = params.operation_instruction_type;
+  let instruction_type = [];
+  if (operation_instruction_types) {
+    const config_operation_types = getOperationInstructionTypes();
+    operation_instruction_types.map((operation_type) => {
+      config_operation_types.map((config_type) => {
+        if (operation_type.value === config_type.value) {
+          instruction_type.push(config_type);
+        }
+      });
+    });
+  }
+  const result = repository.create({
+    ...params,
+    operation_instruction_type: instruction_type,
+  });
   return await validateContext(AppDataSource, result);
 };
 
@@ -95,7 +110,9 @@ export const getOperationInstructionStates = () => {
 
 export const getOperationInstructionTypes = () => {
   const operation_instruction_types = [];
-  for (const [key, value] of Object.entries(warehouse_type.operation_instruction_type)) {
+  for (const [key, value] of Object.entries(
+    warehouse_type.operation_instruction_type
+  )) {
     operation_instruction_types.push(value);
   }
   return operation_instruction_types;

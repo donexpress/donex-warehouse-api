@@ -11,7 +11,7 @@ export class OperationInstruction {
     type: 'varchar',
     nullable: false,
   })
-  operation_instruction_type: string;
+  operation_instruction_type: object[];
 
   @Column({
     type: 'integer',
