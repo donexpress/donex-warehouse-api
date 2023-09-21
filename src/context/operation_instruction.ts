@@ -5,6 +5,9 @@ import { OperationInstruction } from '../models/instruction_operation.model';
 import { ValidationError } from 'class-validator';
 import states from '../config/states';
 import warehouse_type from '../config/types';
+import { showAOSWarehouse } from './aos_warehouse';
+import { showUser } from './user';
+import { showOutputPlan } from './output_plan';
 
 export const listOI = async (
   current_page: number,
@@ -29,14 +32,26 @@ export const listOIByOutputPlanId = async (
 ): Promise<OperationInstruction[] | null> => {
   const where_query =
     state == '' ? { output_plan_id } : { state, output_plan_id };
-  return AppDataSource.manager.find(OperationInstruction, {
-    take: number_of_rows,
-    skip: (current_page - 1) * number_of_rows,
-    where: where_query,
-    order: {
-      created_at: 'DESC',
-    },
-  });
+  const operation_instructions = await AppDataSource.manager.find(
+    OperationInstruction,
+    {
+      take: number_of_rows,
+      skip: (current_page - 1) * number_of_rows,
+      where: where_query,
+      order: {
+        created_at: 'DESC',
+      },
+    }
+  );
+  const mod_operation_instructions = []
+  for (let i = 0; i < operation_instructions.length; i++) {
+    const element = operation_instructions[i];
+    const warehouse = await showAOSWarehouse(element.warehouse_id)    
+    const user = await showUser(element.user_id)
+    const output_plan = await showOutputPlan(element.output_plan_id)
+    mod_operation_instructions.push({...element, user, warehouse, output_plan})    
+  }
+  return mod_operation_instructions
 };
 
 export const countOI = async () => {
