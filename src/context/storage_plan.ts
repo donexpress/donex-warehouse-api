@@ -57,14 +57,14 @@ export const listStoragePlan = async (
     let storage_state = null;
     if (storage_plan.state) {
       const array_states = getStates(states.entry_plan);
-      storage_state = array_states.find((s) => s.value === storage_plan.state)
+      storage_state = array_states.find((s) => s.value === storage_plan.state);
     }
     data.push({
       ...storage_plan,
       warehouse,
       user,
       packing_list,
-      storage_state
+      storage_state,
     });
   }
   return data;
@@ -110,14 +110,6 @@ export const countAllStoragePlan = async (): Promise<Object> => {
     repository,
     states.entry_plan.cancelled.value
   );
-  const refused = await getCountByState(
-    repository,
-    states.entry_plan.refused.value
-  );
-  const returns = await getCountByState(
-    repository,
-    states.entry_plan.returns.value
-  );
   const stocked = await getCountByState(
     repository,
     states.entry_plan.stocked.value
@@ -128,8 +120,6 @@ export const countAllStoragePlan = async (): Promise<Object> => {
     to_be_storage,
     into_warehouse,
     cancelled,
-    refused,
-    returns,
     stocked,
   };
   return result;
