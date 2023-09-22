@@ -29,6 +29,13 @@ export class Appendix {
   output_plan_id
 
   @Column({
+    type: "integer",
+    nullable: true,
+  })
+  @IsOptional()
+  operation_instruction_id
+
+  @Column({
     type: "varchar",
     nullable: true,
   })

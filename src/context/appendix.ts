@@ -64,3 +64,15 @@ export const getAppendagesByOutputPlan = async(id: number) => {
   }
   return mod_appendages
 }
+
+
+export const getAppendagesByOperationInstruction = async(id: number) => {
+  const appendages = await AppDataSource.manager.find(Appendix, {where: {operation_instruction_id: id, deleted: false}})
+  const mod_appendages = []
+  for (let i = 0; i < appendages.length; i++) {
+    const appendix = appendages[i];
+    const user = await showUser(appendix.id)
+    mod_appendages.push({...appendix, user})    
+  }
+  return mod_appendages
+}
