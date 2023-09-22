@@ -12,6 +12,7 @@ import { countAOSWarehouse } from '../context/aos_warehouse';
 import { countStoragePlan } from '../context/storage_plan';
 import { countOutputPlan } from '../context/output_plan';
 import { countLineClassification } from '../context/line_classification';
+import { countRegionalDivision } from '../context/regional_division';
 
 export const country = async (req: Request, res: Response) => {
   const countryCodes = Object.keys(countries.countries);
@@ -33,6 +34,7 @@ export const counts = async (req: Request, res: Response) => {
   const output_plan_count = await countOutputPlan();
   const cargo_station_count = await countWarehouse();
   const line_clasification_count = await countLineClassification();
+  const regional_division_count = await countRegionalDivision();
 
   res.json({
     user_count,
@@ -48,5 +50,6 @@ export const counts = async (req: Request, res: Response) => {
     output_plan_count,
     cargo_station_count,
     line_clasification_count,
+    regional_division_count
   });
 };

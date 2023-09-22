@@ -170,6 +170,9 @@ export const createStoragePlan = async (data, user_id: number) => {
   if (!data.user_id) {
     data.user_id = user_id;
   }
+  if (data.images) {
+    data.is_images = true;
+  }
   const result = repository.create(data);
   return await validateContext(AppDataSource, result);
 };

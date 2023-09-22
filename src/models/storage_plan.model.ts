@@ -127,6 +127,19 @@ export class StoragePlan {
   meta: object[];
 
   @Column({
+    type: 'json',
+    nullable: true,
+    default: [],
+  })
+  images: object[];
+
+  @Column({
+    default: false,
+    type: 'boolean'
+  })
+  is_images: boolean
+
+  @Column({
     type: 'varchar',
     nullable: true,
     default: (new Date()).toISOString()
