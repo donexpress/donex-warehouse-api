@@ -108,6 +108,18 @@ export class StoragePlan {
   return: boolean
 
   @Column({
+    nullable: true,
+    type: 'varchar'
+  })
+  reference_number: string;
+
+  @Column({
+    nullable: true,
+    type: 'varchar'
+  })
+  pr_number: string;
+
+  @Column({
     type: 'json',
     nullable: true,
     default: [],
