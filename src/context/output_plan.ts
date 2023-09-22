@@ -82,6 +82,7 @@ export const getOutputPlanByState = async (
   });
   const users = await AppDataSource.manager.find(User);
   const warehouses = await AppDataSource.manager.find(AOSWarehouse);
+  const operation_instruction = await  AppDataSource.manager.find(OperationInstruction)
   return result.map((el) => {
     let user = null;
     if (el.user_id) {
@@ -93,6 +94,7 @@ export const getOutputPlanByState = async (
     if (el.warehouse_id) {
       warehouse = warehouses.find((t) => t.id === el.warehouse_id);
     }
+    const operation_instructions = operation_instruction.filter(op => op.output_plan_id === el.id)
     if (el.state) {
       return {
         ...el,
@@ -100,9 +102,10 @@ export const getOutputPlanByState = async (
         warehouse,
         state: states.output_plan[el.state],
         destination_ref: destination,
+        operation_instructions
       };
     }
-    return { ...el, user, warehouse, destination_ref: destination };
+    return { ...el, user, warehouse, destination_ref: destination, operation_instructions };
   });
 };
 

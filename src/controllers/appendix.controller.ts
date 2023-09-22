@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { countAppendix, createAppendix, getAppendagesByOutputPlan, listAppendix, removeAppendix, showAppendix, updateAppendix } from '../context/appendix';
+import { countAppendix, createAppendix, getAppendagesByOperationInstruction, getAppendagesByOutputPlan, listAppendix, removeAppendix, showAppendix, updateAppendix } from '../context/appendix';
 import { Appendix } from '../models/appendix.model';
 
 export const index = async (req: Request, res: Response) => {
@@ -94,4 +94,15 @@ export const byExitPLan = async(req: Request, res: Response) => {
         console.log(e)
         res.status(500).send(e)
     }
+}
+
+export const byOperationInstruction = async(req: Request, res: Response) => {
+  try {
+      const id =  req.params.id ? Number(req.params.id) : -1
+      const result = await getAppendagesByOperationInstruction(id)
+      res.status(200).json(result)
+  } catch(e) {
+      console.log(e)
+      res.status(500).send(e)
+  }
 }
