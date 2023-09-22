@@ -168,22 +168,22 @@ const operation_instruction = {
 };
 const entry_plan = {
   to_be_storage: {
-    name: 'To be storage',
-    es_name: 'Para ser almacenado',
+    name: 'Pending',
+    es_name: 'Pendientes',
     zh_name: '待存储',
     value: 'to be storage',
     position: 1,
   },
   into_warehouse: {
     name: 'Entry into warehouse',
-    es_name: 'Entrada en almacén',
+    es_name: 'Procesando entrada',
     zh_name: '进入仓库',
     value: 'into warehouse',
     position: 2,
   },
   stocked: {
     name: 'Stocked',
-    es_name: 'Abastecido',
+    es_name: 'Almacenado',
     zh_name: '库存充足',
     value: 'stocked',
     position: 3,
@@ -194,20 +194,6 @@ const entry_plan = {
     zh_name: '取消',
     value: 'cancelled',
     position: 4,
-  },
-  returns: {
-    name: 'Returns',
-    es_name: 'Devoluciones',
-    zh_name: '退货',
-    value: 'returns',
-    position: 5,
-  },
-  refused: {
-    name: 'Refused',
-    es_name: 'Rechazadas',
-    zh_name: '拒绝',
-    value: 'refused',
-    position: 6,
   },
 };
 
