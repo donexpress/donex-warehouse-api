@@ -9,6 +9,8 @@ import {
 } from '../context/staff';
 import { Staff } from '../models/staff.model';
 import { UpdateResult } from 'typeorm';
+import { getStates } from '../helpers/states';
+import states from '../config/states';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -100,4 +102,8 @@ export const remove = async (req: Request, res: Response) => {
     console.log(e);
     res.status(500).send(e);
   }
+};
+
+export const listStates = (req: Request, res: Response) => {
+  res.send({ states: getStates(states.staff) });
 };

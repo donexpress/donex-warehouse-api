@@ -4,7 +4,6 @@ import { Warehouse } from '../models/warehouse.model';
 import bcrypt from 'bcryptjs';
 import { FindOptionsWhere, ILike, In, Not } from 'typeorm';
 import { validate } from 'class-validator';
-import { StaffState } from '../models/staff_state.model';
 import { Role } from '../models/role.model';
 import { Organization } from '../models/organization.model';
 import { StaffWarehouse } from '../models/staff_warehouse.model';

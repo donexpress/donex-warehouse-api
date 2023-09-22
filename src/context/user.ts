@@ -4,7 +4,6 @@ import { Warehouse } from '../models/warehouse.model';
 import bcrypt from 'bcryptjs';
 import { FindOptionsWhere, ILike, In, IsNull, Not } from 'typeorm';
 import { validate } from 'class-validator';
-import { UserState } from '../models/user_state.model';
 import { Staff } from '../models/staff.model';
 import { PaymentMethod } from '../models/payment_method.model';
 import { UserLevel } from '../models/user_level.model';

@@ -4,7 +4,6 @@ import states from '../config/states';
 import { object_state_warehouse } from '../helpers/states';
 import { validateContext } from '../helpers/validate';
 import { Warehouse } from '../models/warehouse.model';
-import { WarehouseState } from '../models/warehouse_state.model';
 
 export const listWarehouse = async (
   current_page: number,

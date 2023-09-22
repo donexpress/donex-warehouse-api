@@ -23,7 +23,6 @@ import * as StoragePlanController from './storage_plan.controller';
 import * as LineClassificationController from './line_classification.controller';
 import * as OutputPlanController from './output_plan.controller';
 import * as FileController from './file.controller';
-import * as StoragePlanStateController from './storage_plan_type.controller';
 import * as ShelfPackageController from './shelf_package.controller';
 import * as OperationInstructionController from './operation_instruction.controller'
 import * as AppendixController from './appendix.controller'
@@ -54,7 +53,6 @@ export {
   LineClassificationController,
   OutputPlanController,
   FileController,
-  StoragePlanStateController,
   ShelfPackageController,
   OperationInstructionController,
   AppendixController

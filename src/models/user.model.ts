@@ -6,7 +6,6 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { UserState } from './user_state.model';
 import { Staff } from './staff.model';
 import { Subsidiary } from './subsidiary.model';
 import { RegionalDivision } from './regional_division.model';

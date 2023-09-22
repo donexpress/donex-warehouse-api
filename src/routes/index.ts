@@ -23,7 +23,6 @@ import storagePlan from './storage_plan.route';
 import lineClassification from './line_classification.route';
 import outputPlan from './output_plan.route';
 import fileRoute from './file.route';
-import storagePlanStateRoute from './storage_plan_state.route';
 import shelfPackageRoute from './shelf_package.route';
 import operationInstruction from './operation_instruction.route'
 import appendixRoute from './appendix.route'
@@ -54,7 +53,6 @@ export default (app) => {
   app.use('/', lineClassification);
   app.use('/', outputPlan);
   app.use('/', fileRoute);
-  app.use('/', storagePlanStateRoute);
   app.use('/', shelfPackageRoute);
   app.use('/', operationInstruction);
   app.use('/', appendixRoute);

@@ -5,6 +5,7 @@ const router = express.Router();
 
 router.get('/api/v1/staff', verifyTokenPresent, StaffController.index);
 router.get('/api/v1/staff/count', StaffController.count);
+router.get('/api/v1/staff/states', StaffController.listStates);
 router.get('/api/v1/staff/:id', StaffController.show);
 router.post('/api/v1/staff', verifyTokenPresent, StaffController.create);
 router.put('/api/v1/staff/:id', verifyTokenPresent, StaffController.update);
