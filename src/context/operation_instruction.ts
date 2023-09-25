@@ -15,7 +15,7 @@ export const listOI = async (
   number_of_rows: number,
   state: string | ''
 ): Promise<OperationInstruction[] | null> => {
-  return AppDataSource.manager.find(OperationInstruction, {
+  const operation_instructions = await AppDataSource.manager.find(OperationInstruction, {
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
     where: { state },
@@ -23,6 +23,20 @@ export const listOI = async (
       created_at: 'DESC',
     },
   });
+  const mod_operation_instructions = [];
+  for (let i = 0; i < operation_instructions.length; i++) {
+    const element = operation_instructions[i];
+    const warehouse = await showAOSWarehouse(element.warehouse_id);
+    const user = await showUser(element.user_id);
+    const output_plan = await showOutputPlan(element.output_plan_id);
+    mod_operation_instructions.push({
+      ...element,
+      user,
+      warehouse,
+      output_plan,
+    });
+  }
+  return mod_operation_instructions;
 };
 
 export const listOIByOutputPlanId = async (
@@ -84,9 +98,15 @@ export const countAllOI = async (output_id: number): Promise<Object> => {
   );
   const processing = await getCountByStateAndOutputId(
     repository,
-    states.operation_instruction.processing,
+    states.operation_instruction.processing.value,
     output_id
   );
+
+  const cancelled = await getCountByStateAndOutputId(
+    repository,
+    states.operation_instruction.cancelled.value,
+    output_id
+  )
 
   const result = {
     total,
@@ -94,6 +114,7 @@ export const countAllOI = async (output_id: number): Promise<Object> => {
     pending,
     processed,
     processing,
+    cancelled
   };
   return result;
 };
