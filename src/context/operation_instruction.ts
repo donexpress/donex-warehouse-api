@@ -15,6 +15,7 @@ export const listOI = async (
   number_of_rows: number,
   state: string | ''
 ): Promise<OperationInstruction[] | null> => {
+  console.log(state);
   let query = {};
   if (state) {
     query = {
