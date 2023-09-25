@@ -10,6 +10,7 @@ import {
   listOIByOutputPlanId,
   getOperationInstructionStates,
   getOperationInstructionTypes,
+  countAllOI,
 } from '../context/operation_instruction';
 import { OperationInstruction } from '../models/instruction_operation.model';
 import types from '../config/types';
@@ -83,8 +84,8 @@ export const show = async (req: Request, res: Response) => {
 
 export const count = async (req: Request, res: Response) => {
   try {
-    const count = await countOI();
-    res.json({ count });
+    const count = await countAllOI();
+    res.json(count);
   } catch (e) {
     console.log(e);
     res.status(500).send(e);
@@ -149,5 +150,5 @@ export const changeStatus = async (req: Request, res: Response) => {
 };
 
 export const states = (req: Request, res: Response) => {
-  res.send({states: getOperationInstructionStates()})
-}
+  res.send({ states: getOperationInstructionStates() });
+};

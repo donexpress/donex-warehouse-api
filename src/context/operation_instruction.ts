@@ -8,6 +8,7 @@ import warehouse_type from '../config/types';
 import { showAOSWarehouse } from './aos_warehouse';
 import { showUser } from './user';
 import { showOutputPlan } from './output_plan';
+import { getCountByState } from '../helpers/states';
 
 export const listOI = async (
   current_page: number,
@@ -43,19 +44,54 @@ export const listOIByOutputPlanId = async (
       },
     }
   );
-  const mod_operation_instructions = []
+  const mod_operation_instructions = [];
   for (let i = 0; i < operation_instructions.length; i++) {
     const element = operation_instructions[i];
-    const warehouse = await showAOSWarehouse(element.warehouse_id)    
-    const user = await showUser(element.user_id)
-    const output_plan = await showOutputPlan(element.output_plan_id)
-    mod_operation_instructions.push({...element, user, warehouse, output_plan})    
+    const warehouse = await showAOSWarehouse(element.warehouse_id);
+    const user = await showUser(element.user_id);
+    const output_plan = await showOutputPlan(element.output_plan_id);
+    mod_operation_instructions.push({
+      ...element,
+      user,
+      warehouse,
+      output_plan,
+    });
   }
-  return mod_operation_instructions
+  return mod_operation_instructions;
 };
 
 export const countOI = async () => {
   return AppDataSource.manager.count(OperationInstruction);
+};
+
+export const countAllOI = async (): Promise<Object> => {
+  const repository = AppDataSource.getRepository(OperationInstruction);
+  const total = await countOI();
+  const audited = await getCountByState(
+    repository,
+    states.operation_instruction.audited.value
+  );
+  const pending = await getCountByState(
+    repository,
+    states.operation_instruction.pending.value
+  );
+  const processed = await getCountByState(
+    repository,
+    states.operation_instruction.processed.value
+  );
+  const processing = await getCountByState(
+    repository,
+    states.operation_instruction.processing
+  );
+
+  const result = {
+    total,
+    audited,
+    pending,
+    processed,
+    processing,
+  };
+  return result;
 };
 
 export const showOI = async (
