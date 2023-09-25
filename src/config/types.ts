@@ -31,7 +31,7 @@ const operation_instruction_type = {
     name: 'Count SKUs',
     es_name: 'Consultar SKU',
     zh_name: '清点SKU',
-    value: 'change boxes',
+    value: 'count sku',
     position: 5,
   },
   repair: {
