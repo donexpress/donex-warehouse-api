@@ -64,24 +64,28 @@ export const countOI = async () => {
   return AppDataSource.manager.count(OperationInstruction);
 };
 
-export const countAllOI = async (): Promise<Object> => {
+export const countAllOI = async (output_id: number): Promise<Object> => {
   const repository = AppDataSource.getRepository(OperationInstruction);
   const total = await countOI();
-  const audited = await getCountByState(
+  const audited = await getCountByStateAndOutputId(
     repository,
-    states.operation_instruction.audited.value
+    states.operation_instruction.audited.value,
+    output_id
   );
-  const pending = await getCountByState(
+  const pending = await getCountByStateAndOutputId(
     repository,
-    states.operation_instruction.pending.value
+    states.operation_instruction.pending.value,
+    output_id
   );
-  const processed = await getCountByState(
+  const processed = await getCountByStateAndOutputId(
     repository,
-    states.operation_instruction.processed.value
+    states.operation_instruction.processed.value,
+    output_id
   );
-  const processing = await getCountByState(
+  const processing = await getCountByStateAndOutputId(
     repository,
-    states.operation_instruction.processing
+    states.operation_instruction.processing,
+    output_id
   );
 
   const result = {
@@ -176,4 +180,24 @@ const getParamsInstructionOperation = (params) => {
   });
   //const operation_instruction_type = { instruction_type };
   return { instruction_type };
+};
+
+const getCountByStateAndOutputId = async (
+  repository,
+  state_value,
+  output_plan_id
+): Promise<number> => {
+  let where:
+    | FindOptionsWhere<OperationInstruction>
+    | FindOptionsWhere<OperationInstruction>[] = {};
+  if (output_plan_id) {
+    where = { state: state_value, output_plan_id: output_plan_id };
+  } else {
+    where = { state: state_value };
+  }
+  const state_count = await repository.find({
+    where,
+  });
+
+  return state_count ? state_count.length : 0;
 };
