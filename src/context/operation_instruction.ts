@@ -17,11 +17,10 @@ export const listOI = async (
 ): Promise<OperationInstruction[] | null> => {
   console.log(state);
   let query = {};
-  if (state !== undefined) {
+  if (state === "undefined") {
     query = {
       take: number_of_rows,
       skip: (current_page - 1) * number_of_rows,
-      where: { state },
       order: {
         created_at: 'DESC',
       },
@@ -30,11 +29,13 @@ export const listOI = async (
     query = {
       take: number_of_rows,
       skip: (current_page - 1) * number_of_rows,
+      where: { state },
       order: {
         created_at: 'DESC',
       },
     };
   }
+  console.log(query);
   const operation_instructions = await AppDataSource.manager.find(
     OperationInstruction,
     query
