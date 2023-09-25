@@ -84,9 +84,7 @@ export const show = async (req: Request, res: Response) => {
 
 export const count = async (req: Request, res: Response) => {
   try {
-    console.log(req.params);
-    console.log(req.query);
-    const output_id = req.params.output_plan_id;
+    const output_id = req.query.output_plan_id;
     const count = await countAllOI(Number(output_id));
     res.json(count);
   } catch (e) {
