@@ -17,7 +17,7 @@ export const listOI = async (
 ): Promise<OperationInstruction[] | null> => {
   console.log(state);
   let query = {};
-  if (state) {
+  if (state !== undefined) {
     query = {
       take: number_of_rows,
       skip: (current_page - 1) * number_of_rows,
