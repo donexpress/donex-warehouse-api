@@ -15,12 +15,17 @@ import { OutputPlanFilter } from '../types/OutputPlanFilter';
 export const listOutputPlan = async (
   current_page: number,
   number_of_rows: number,
-  query: string
+  query: string,
+  current_user: any
 ) => {
+  const where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] = { output_number: ILike(`%${query}%`) }
+  if(current_user.customer_number) {
+    where.user_id = current_user.id
+  }
   const result = await AppDataSource.manager.find(OutputPlan, {
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
-    where: [{ output_number: ILike(`%${query}%`) }],
+    where,
     order: {
       id: 'DESC',
     },
@@ -70,12 +75,17 @@ export const listOutputPlan = async (
 export const getOutputPlanByState = async (
   current_page: number,
   number_of_rows: number,
-  state: string
+  state: string,
+  current_user: any
 ) => {
+  const where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] = { state: ILike(`%${state}%`) }
+  if(current_user.customer_number) {
+    where.user_id = current_user.id
+  }
   const result = await AppDataSource.manager.find(OutputPlan, {
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
-    where: [{ state: ILike(`%${state}%`) }],
+    where,
     order: {
       id: 'DESC',
     },
@@ -109,32 +119,41 @@ export const getOutputPlanByState = async (
   });
 };
 
-export const countOutputPlan = async () => {
-  return AppDataSource.manager.count(OutputPlan);
+export const countOutputPlan = async (current_user?) => {
+  const where: any = {}
+  if(current_user && current_user.customer_number) {
+    where.user_id = current_user.id
+  }
+  return AppDataSource.manager.count(OutputPlan, {where});
 };
 
-export const countAllOutputPlan = async (): Promise<Object> => {
+export const countAllOutputPlan = async (current_user: any): Promise<Object> => {
   const repository = AppDataSource.getRepository(OutputPlan);
-  const total = await countOutputPlan();
+  const total = await countOutputPlan(current_user);
   const pending = await getCountByState(
     repository,
-    states.output_plan.pending.value
+    states.output_plan.pending.value,
+    current_user
   );
   const to_be_processed = await getCountByState(
     repository,
-    states.output_plan.to_be_processed.value
+    states.output_plan.to_be_processed.value,
+    current_user
   );
   const processing = await getCountByState(
     repository,
-    states.output_plan.processing.value
+    states.output_plan.processing.value,
+    current_user
   );
   const dispatched = await getCountByState(
     repository,
-    states.output_plan.dispatched.value
+    states.output_plan.dispatched.value,
+    current_user
   );
   const cancelled = await getCountByState(
     repository,
-    states.output_plan.cancelled.value
+    states.output_plan.cancelled.value,
+    current_user
   );
   /* const collecting = await getCountByState(
     repository,

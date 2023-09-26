@@ -13,23 +13,32 @@ import { getCountByState } from '../helpers/states';
 export const listOI = async (
   current_page: number,
   number_of_rows: number,
-  state: string | ''
+  state: string | '',
+  current_user: any
 ): Promise<OperationInstruction[] | null> => {
-  console.log(state);
   let query = {};
   if (state === "all") {
+    const where: any =  {}
+    if(current_user.customer_number) {
+      where.user_id = current_user.id
+    }
     query = {
       take: number_of_rows,
       skip: (current_page - 1) * number_of_rows,
+      where,
       order: {
         created_at: 'DESC',
       },
     };
   } else {
+    const where: any =  {state}
+    if(current_user.customer_number) {
+      where.user_id = current_user.id
+    }
     query = {
       take: number_of_rows,
       skip: (current_page - 1) * number_of_rows,
-      where: { state },
+      where,
       order: {
         created_at: 'DESC',
       },
@@ -90,11 +99,15 @@ export const listOIByOutputPlanId = async (
   return mod_operation_instructions;
 };
 
-export const countOI = async () => {
-  return AppDataSource.manager.count(OperationInstruction);
+export const countOI = async (current_user?: any) => {
+  let where: any = {}
+  if(current_user && current_user.customer_number) {
+    where.user_id = current_user.id
+  }
+  return AppDataSource.manager.count(OperationInstruction, {where});
 };
 
-export const countAllOI = async (output_id: number): Promise<Object> => {
+export const countAllOI = async (output_id: number, current_user: any): Promise<Object> => {
   const repository = AppDataSource.getRepository(OperationInstruction);
   const total = await countOI();
   /* const audited = await getCountByStateAndOutputId(
@@ -105,23 +118,27 @@ export const countAllOI = async (output_id: number): Promise<Object> => {
   const pending = await getCountByStateAndOutputId(
     repository,
     states.operation_instruction.pending.value,
-    output_id
+    output_id,
+    current_user
   );
   const processed = await getCountByStateAndOutputId(
     repository,
     states.operation_instruction.processed.value,
-    output_id
+    output_id,
+    current_user
   );
   const processing = await getCountByStateAndOutputId(
     repository,
     states.operation_instruction.processing.value,
-    output_id
+    output_id,
+    current_user
   );
 
   const cancelled = await getCountByStateAndOutputId(
     repository,
     states.operation_instruction.cancelled.value,
-    output_id
+    output_id,
+    current_user
   );
 
   const result = {
@@ -222,7 +239,8 @@ const getParamsInstructionOperation = (params) => {
 const getCountByStateAndOutputId = async (
   repository,
   state_value,
-  output_plan_id
+  output_plan_id,
+  current_user
 ): Promise<number> => {
   let where:
     | FindOptionsWhere<OperationInstruction>
@@ -231,6 +249,9 @@ const getCountByStateAndOutputId = async (
     where = { state: state_value, output_plan_id: output_plan_id };
   } else {
     where = { state: state_value };
+  }
+  if(current_user.customer_number) {
+    where.user_id = current_user.id
   }
   const state_count = await repository.find({
     where,

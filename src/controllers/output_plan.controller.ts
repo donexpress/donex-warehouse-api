@@ -14,6 +14,7 @@ import {
 import { OutputPlan } from '../models/output_plan.model';
 import { getStates } from '../helpers/states';
 import states from '../config/states';
+import { getCurrentUser } from '../middlewares';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -27,13 +28,15 @@ export const index = async (req: Request, res: Response) => {
     const query = req.query.query;
     const state = req.query.state;
     let outpu_plans = []
+    const current_user = getCurrentUser(req)
     if(state && state !== 'all') {
-      outpu_plans = await getOutputPlanByState(current_page, number_of_rows, String(state))
+      outpu_plans = await getOutputPlanByState(current_page, number_of_rows, String(state), current_user)
     } else {
       outpu_plans = await listOutputPlan(
         current_page,
         number_of_rows,
-        query == undefined ? '' : String(query)
+        query == undefined ? '' : String(query),
+        current_user
       );
     }
     res.json(outpu_plans);
@@ -59,7 +62,9 @@ export const show = async (req: Request, res: Response) => {
 
 export const count = async (req: Request, res: Response) => {
   try {
-    const count = await countAllOutputPlan();
+    const current_user = getCurrentUser(req)
+    console.log('Current User: ', current_user)
+    const count = await countAllOutputPlan(current_user);
     res.json(count);
   } catch (e) {
     console.log(e);

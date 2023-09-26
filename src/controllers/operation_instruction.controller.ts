@@ -15,6 +15,7 @@ import {
 import { OperationInstruction } from '../models/instruction_operation.model';
 import types from '../config/types';
 import warehouse_type from '../config/types';
+import { getCurrentUser } from '../middlewares';
 
 export const listOperationInstructionType = async (
   req: Request,
@@ -33,10 +34,12 @@ export const index = async (req: Request, res: Response) => {
       : await countOI();
 
     const state = req.query.state;
+    const current_user = getCurrentUser(req)
     const operation_instruction = await listOI(
       current_page,
       number_of_rows,
-      String(state)
+      String(state),
+      current_user
     );
     res.json(operation_instruction);
   } catch (e) {
@@ -85,7 +88,8 @@ export const show = async (req: Request, res: Response) => {
 export const count = async (req: Request, res: Response) => {
   try {
     const output_id = req.query.output_plan_id;
-    const count = await countAllOI(Number(output_id));
+    const current_user = getCurrentUser(req)
+    const count = await countAllOI(Number(output_id), current_user);
     res.json(count);
   } catch (e) {
     console.log(e);
