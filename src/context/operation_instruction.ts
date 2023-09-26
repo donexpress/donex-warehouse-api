@@ -35,7 +35,6 @@ export const listOI = async (
       },
     };
   }
-  console.log(query);
   const operation_instructions = await AppDataSource.manager.find(
     OperationInstruction,
     query
@@ -53,6 +52,13 @@ export const listOI = async (
       output_plan,
     });
   }
+  const userIdNull = await AppDataSource.manager.find(
+    OperationInstruction,
+    {
+      where: {user_id: null}
+    }
+  );
+  console.log(userIdNull);
   return mod_operation_instructions;
 };
 
