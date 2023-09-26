@@ -52,7 +52,8 @@ export const show = async (req: Request, res: Response) => {
 
 export const count = async (req: Request, res: Response) => {
   try {
-    const count = await countAllStoragePlan();
+    const current_user = getCurrentUser(req)
+    const count = await countAllStoragePlan(current_user);
     res.json(count);
   } catch (e) {
     console.log(e);

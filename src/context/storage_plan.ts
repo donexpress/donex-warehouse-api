@@ -95,24 +95,28 @@ export const countStoragePlan = async () => {
   return AppDataSource.manager.count(StoragePlan);
 };
 
-export const countAllStoragePlan = async (): Promise<Object> => {
+export const countAllStoragePlan = async (current_user: any): Promise<Object> => {
   const repository = AppDataSource.getRepository(StoragePlan);
   const total = await countStoragePlan();
   const to_be_storage = await getCountByState(
     repository,
-    states.entry_plan.to_be_storage.value
+    states.entry_plan.to_be_storage.value,
+    current_user
   );
   const into_warehouse = await getCountByState(
     repository,
-    states.entry_plan.into_warehouse.value
+    states.entry_plan.into_warehouse.value,
+    current_user
   );
   const cancelled = await getCountByState(
     repository,
-    states.entry_plan.cancelled.value
+    states.entry_plan.cancelled.value,
+    current_user
   );
   const stocked = await getCountByState(
     repository,
-    states.entry_plan.stocked.value
+    states.entry_plan.stocked.value,
+    current_user
   );
 
   const result = {

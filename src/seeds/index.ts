@@ -5,7 +5,8 @@ import { User } from '../models/user.model';
 import { AppDataSource } from '../config/ormconfig';
 import { createWarehouse } from '../context/warehouse';
 import { createStaff } from '../context/staff';
-
+const args = process.argv
+const isProd = args.find(el => el === "prod=true")
 const amount = 10;
 const Seed = async () => {
   await AppDataSource.initialize();
@@ -69,4 +70,27 @@ const Seed = async () => {
   }
 };
 
-Seed();
+
+const ProdSeed = async () => {
+  await AppDataSource.initialize();
+  const staff = await createStaff({
+    username: 'donexadmin',
+    chinesse_name: 'Donexpress',
+    english_name: 'Donexpress',
+    password: 'qwertydonexwarehouse.*',
+    email: null,
+    phone: null,
+    state_id: null,
+    organization_id: null,
+    affiliations: [],
+    role_id: 1,
+    observations: null,
+  });
+}
+
+if(isProd) {
+  ProdSeed()
+} else {
+  Seed();
+}
+

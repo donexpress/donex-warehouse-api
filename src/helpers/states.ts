@@ -1,5 +1,6 @@
-import { EntityMetadata, Repository } from 'typeorm';
+import { EntityMetadata, FindOptionsWhere, Repository } from 'typeorm';
 import states from '../config/states';
+import { OutputPlan } from '../models/output_plan.model';
 
 export const object_state_warehouse = (value) => {
   switch (value) {
@@ -57,11 +58,13 @@ export const getStates = (states) => {
   return states_array;
 };
 
-export const getCountByState = async (repository, state_value): Promise<number> => {
+export const getCountByState = async (repository, state_value, current_user): Promise<number> => {
+  const where: any = {state: state_value}
+  if(current_user.customer_number) {
+    where.user_id = current_user.id
+  }
   const state_count = await repository.find({
-    where: {
-      state: state_value,
-    },
+    where
   });
 
   return state_count ? state_count.length : 0;
