@@ -97,11 +97,11 @@ export const countOI = async () => {
 export const countAllOI = async (output_id: number): Promise<Object> => {
   const repository = AppDataSource.getRepository(OperationInstruction);
   const total = await countOI();
-  const audited = await getCountByStateAndOutputId(
+  /* const audited = await getCountByStateAndOutputId(
     repository,
     states.operation_instruction.audited.value,
     output_id
-  );
+  ); */
   const pending = await getCountByStateAndOutputId(
     repository,
     states.operation_instruction.pending.value,
@@ -126,7 +126,7 @@ export const countAllOI = async (output_id: number): Promise<Object> => {
 
   const result = {
     total,
-    audited,
+    //audited,
     pending,
     processed,
     processing,
