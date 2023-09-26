@@ -85,13 +85,13 @@ const output_plan = {
     value: 'to_be_processed',
     position: 2,
   },
-  collecting: {
+  /* collecting: {
     name: 'Collecting',
     es_name: 'Recogiendo',
     zh_name: '收藏',
     value: 'collecting',
     position: 3,
-  },
+  }, */
   processing: {
     name: 'Processing',
     es_name: 'Procesando',
