@@ -155,11 +155,10 @@ export const countAllOutputPlan = async (current_user: any): Promise<Object> => 
     states.output_plan.cancelled.value,
     current_user
   );
-  const collecting = await getCountByState(
+  /* const collecting = await getCountByState(
     repository,
-    states.output_plan.collecting.value,
-    current_user
-  );
+    states.output_plan.collecting.value
+  ); */
 
   const result = {
     total,
@@ -168,7 +167,7 @@ export const countAllOutputPlan = async (current_user: any): Promise<Object> => 
     processing,
     dispatched,
     cancelled,
-    collecting,
+    //collecting,
   };
   return result;
 };

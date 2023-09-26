@@ -85,13 +85,13 @@ const output_plan = {
     value: 'to_be_processed',
     position: 2,
   },
-  collecting: {
+  /* collecting: {
     name: 'Collecting',
     es_name: 'Recogiendo',
     zh_name: '收藏',
     value: 'collecting',
     position: 3,
-  },
+  }, */
   processing: {
     name: 'Processing',
     es_name: 'Procesando',
@@ -144,13 +144,13 @@ const operation_instruction = {
     value: 'processed',
     position: 3,
   },
-  audited: {
+  /* audited: {
     name: 'Audited',
     es_name: 'Auditado',
     zh_name: '已审核',
     value: 'audited',
     position: 4,
-  },
+  }, */
   cancelled: {
     name: 'Cancelled',
     es_name: 'Cancelado',
