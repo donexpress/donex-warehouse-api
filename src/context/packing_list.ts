@@ -113,7 +113,11 @@ export const getPackingListByCaseNumber = async (case_number: string) => {
   const packing_list = await AppDataSource.manager.findOne(PackingList, {
     where: { case_number },
   });
-  const package_shelf = await getDataByPackageId(packing_list.id);
+
+  let package_shelf = null;
+  if(packing_list) {
+    package_shelf = await getDataByPackageId(packing_list.id);
+  }
   return { ...packing_list, package_shelf };
 };
 

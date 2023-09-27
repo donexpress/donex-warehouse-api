@@ -192,7 +192,10 @@ export const showOutputPlan = async (id: number) => {
   const packing_lists = [];
   for (let i = 0; i < result.case_numbers.length; i++) {
     const element = result.case_numbers[i];
-    packing_lists.push(await getPackingListByCaseNumber(element));
+    const res = await getPackingListByCaseNumber(element)
+    if(res) {
+      packing_lists.push(res);
+    }
   }
   const appendages = await getAppendagesByOutputPlan(id);
   return { ...result, user, warehouse, packing_lists, appendages };

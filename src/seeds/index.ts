@@ -5,6 +5,7 @@ import { User } from '../models/user.model';
 import { AppDataSource } from '../config/ormconfig';
 import { createWarehouse } from '../context/warehouse';
 import { createStaff } from '../context/staff';
+import { createRole } from '../context/role';
 const args = process.argv
 const isProd = args.find(el => el === "prod=true")
 const amount = 10;
@@ -86,6 +87,33 @@ const ProdSeed = async () => {
     role_id: 1,
     observations: null,
   });
+  const roles  = [{
+    name: 'Administrador',
+    type: 'ADMIN',
+    scope: null
+  },{
+    name: 'Operador de almacenes',
+    type: 'OPERATION',
+    scope: null
+  },{
+    name: 'Servicio al Cliente',
+    type: 'CUSTOMER_SERVICE',
+    scope: null
+  },{
+    name: 'Ventas',
+    type: 'SALE',
+    scope: null
+  },{
+    name: 'Finanzas',
+    type: 'FINANCE',
+    scope: null
+  }]
+  console.log(staff)
+  for (let i = 0; i < roles.length; i++) {
+    const element = roles[i];
+    const role = await createRole(element)
+    console.log(role)   
+  }
 }
 
 if(isProd) {
