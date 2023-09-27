@@ -21,3 +21,45 @@ export const destinations = {
     position: 3,
   },
 };
+
+export const addresses = {
+  amazon: [
+    {
+      name: 'Amazon MEX 2 (MEX 2)',
+      es_name: 'Amazon MEX 2 (MEX 2)',
+      zh_name: 'Amazon MEX 2 (MEX 2)',
+      value: 'mex2',
+      position: 1,
+    },
+    {
+      name: 'Amazon MEX 3 (MEX 3)',
+      es_name: 'Amazon MEX 3 (MEX 3)',
+      zh_name: 'Amazon MEX 3 (MEX 3)',
+      value: 'mex3',
+      position: 2,
+    },
+    {
+      name: 'Amazon MEX 6 (MEX 6)',
+      es_name: 'Amazon MEX 6 (MEX 6)',
+      zh_name: 'Amazon MEX 6 (MEX 6)',
+      value: 'mex6',
+      position: 3,
+    },
+  ],
+  meli: [
+    {
+      name: 'CPA Logistic Center V (MXCD05)',
+      es_name: 'CPA Logistic Center V (MXCD05)',
+      zh_name: 'CPA Logistic Center V (MXCD05)',
+      value: 'mxcd05',
+      position: 1,
+    },
+    {
+      name: 'MEGA PARK 2 (MXRC02)',
+      es_name: 'MEGA PARK 2 (MXRC02)',
+      zh_name: 'MEGA PARK 2 (MXRC02)',
+      value: 'mxrc02',
+      position: 2,
+    },
+  ],
+};
