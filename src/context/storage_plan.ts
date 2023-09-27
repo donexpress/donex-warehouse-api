@@ -162,9 +162,9 @@ export const createStoragePlan = async (data, user_id: number) => {
   }
   if (data.customer_order_number) {
     const customer_order_number_count = await repository.count({
-      where: { customer_order_number: data.customer_order_number, rejected_boxes: false },
+      where: { customer_order_number: data.customer_order_number },
     });
-    if (customer_order_number_count > 0) {
+    if (customer_order_number_count > 0 && data.rejected_boxes !== true) {
       return { message: 'customer order number already exists' };
     }
   }
