@@ -9,7 +9,7 @@ import { OperationInstruction } from '../models/instruction_operation.model';
 import { getAppendagesByOutputPlan } from './appendix';
 import { getCountByState } from '../helpers/states';
 import { AOSWarehouse } from '../models/aos_warehouse.model';
-import { destinations } from '../config/destination';
+import { addresses, destinations } from '../config/destination';
 import { OutputPlanFilter } from '../types/OutputPlanFilter';
 
 export const listOutputPlan = async (
@@ -250,6 +250,14 @@ export const getDestinations = () => {
   }
   return dest;
 };
+
+export const getAddresses = () => {
+  // const addrss = [];
+  // for (const [key, value] of Object.entries(addresses)) {
+  //   addrss.push(value);
+  // }
+  return addresses;
+}
 
 export const getOutputPlanByFilter = async (filter: OutputPlanFilter) => {
   const where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] =

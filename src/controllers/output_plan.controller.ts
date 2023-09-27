@@ -3,6 +3,7 @@ import {
   countAllOutputPlan,
   countOutputPlan,
   createOutputPlan,
+  getAddresses,
   getDestinations,
   getOutputPlanByFilter,
   getOutputPlanByState,
@@ -115,6 +116,11 @@ export const listStates = (req: Request, res: Response) => {
 export const destinations = (req: Request, res: Response) => {
   res.send({destinations: getDestinations()})
 }
+
+export const addresses = (req: Request, res: Response) => {
+  res.send({addresses: getAddresses()})
+}
+
 
 export const getByFilter = async (req: Request, res: Response) => {
   res.send(await getOutputPlanByFilter(req.body))
