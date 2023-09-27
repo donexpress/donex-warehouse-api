@@ -102,7 +102,7 @@ export const create = async (req: Request, res: Response) => {
   if (body.operation_instruction_type.length < 1) {
     res
       .status(422)
-      .send('At least one type of instruction operation is required.');
+      .send('At least one type of instruction operation is required');
   }
 
   const new_operation_instruction = await createOI({
