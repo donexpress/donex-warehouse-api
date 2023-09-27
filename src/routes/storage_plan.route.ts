@@ -17,6 +17,12 @@ router.post(
   verifyTokenPresent,
   StoragePlanController.create
 );
+router.post(
+  '/api/v1/storage_plan/multi',
+  verifyTokenPresent,
+  verifyTokenPresent,
+  StoragePlanController.createMulti
+);
 router.put(
   '/api/v1/storage_plan/:id',
   verifyTokenPresent,

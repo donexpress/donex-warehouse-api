@@ -12,6 +12,7 @@ import { StoragePlan } from '../models/storage_plan.model';
 import { getCurrentUser } from '../middlewares';
 import states from '../config/states';
 import { getStates } from '../helpers/states';
+import { getFormatExcel } from '../helpers/excel';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -73,6 +74,20 @@ export const create = async (req: Request, res: Response) => {
     console.log(result);
     res.status(422).json(result);
   }
+};
+
+export const createMulti = async (req: Request, res: Response) => {
+  const user = getCurrentUser(req);
+  console.log(req);
+  //await getFormatExcel(req)
+  //@ts-ignore
+  /* const result = await createStoragePlan(req.body, parseInt(user.id));
+  if (result instanceof StoragePlan) {
+    res.status(201).json(result);
+  } else {
+    console.log(result);
+    res.status(422).json(result);
+  } */
 };
 
 export const update = async (req: Request, res: Response) => {
