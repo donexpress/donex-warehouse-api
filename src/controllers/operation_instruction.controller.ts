@@ -34,7 +34,7 @@ export const index = async (req: Request, res: Response) => {
       : await countOI();
 
     const state = req.query.state;
-    const current_user = getCurrentUser(req)
+    const current_user = getCurrentUser(req);
     const operation_instruction = await listOI(
       current_page,
       number_of_rows,
@@ -88,7 +88,7 @@ export const show = async (req: Request, res: Response) => {
 export const count = async (req: Request, res: Response) => {
   try {
     const output_id = req.query.output_plan_id;
-    const current_user = getCurrentUser(req)
+    const current_user = getCurrentUser(req);
     const count = await countAllOI(Number(output_id), current_user);
     res.json(count);
   } catch (e) {
@@ -99,6 +99,11 @@ export const count = async (req: Request, res: Response) => {
 
 export const create = async (req: Request, res: Response) => {
   const body = req.body;
+  if (body.operation_instruction_type.length < 1) {
+    return res
+      .status(422)
+      .send('At least one type of instruction operation is required');
+  }
 
   const new_operation_instruction = await createOI({
     ...body,

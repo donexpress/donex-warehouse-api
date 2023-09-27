@@ -64,7 +64,6 @@ export const show = async (req: Request, res: Response) => {
 export const count = async (req: Request, res: Response) => {
   try {
     const current_user = getCurrentUser(req)
-    console.log('Current User: ', current_user)
     const count = await countAllOutputPlan(current_user);
     res.json(count);
   } catch (e) {
