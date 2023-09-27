@@ -15,7 +15,8 @@ export const listStoragePlan = async (
   current_page: number,
   number_of_rows: number,
   query: string,
-  state: string
+  state: string,
+  current_user
 ) => {
   let where: FindOptionsWhere<StoragePlan> | FindOptionsWhere<StoragePlan>[] = [
     { customer_order_number: ILike(`%${query}%`) },
@@ -24,6 +25,10 @@ export const listStoragePlan = async (
 
   if (state.trim().length !== 0) {
     where = { state: ILike(`%${state}%`) };
+  }
+
+  if (current_user.customer_number) {
+    where = { state: ILike(`%${state}%`), user_id: current_user.id };
   }
   const storage_plans = await AppDataSource.manager.find(StoragePlan, {
     take: number_of_rows,
@@ -95,7 +100,9 @@ export const countStoragePlan = async () => {
   return AppDataSource.manager.count(StoragePlan);
 };
 
-export const countAllStoragePlan = async (current_user: any): Promise<Object> => {
+export const countAllStoragePlan = async (
+  current_user: any
+): Promise<Object> => {
   const repository = AppDataSource.getRepository(StoragePlan);
   const total = await countStoragePlan();
   const to_be_storage = await getCountByState(

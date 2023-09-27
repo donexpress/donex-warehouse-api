@@ -23,11 +23,13 @@ export const index = async (req: Request, res: Response) => {
       : await countStoragePlan();
     const query = req.query.query;
     const state = req.query.state;
+    const current_user = getCurrentUser(req);
     const storage_plans = await listStoragePlan(
       current_page,
       number_of_rows,
       query == undefined ? '' : String(query),
-      state == undefined ? '' : String(state)
+      state == undefined ? '' : String(state),
+      current_user
     );
     res.json(storage_plans);
   } catch (e) {
