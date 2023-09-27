@@ -100,7 +100,7 @@ export const count = async (req: Request, res: Response) => {
 export const create = async (req: Request, res: Response) => {
   const body = req.body;
   if (body.operation_instruction_type.length < 1) {
-    res
+    return res
       .status(422)
       .send('At least one type of instruction operation is required');
   }
