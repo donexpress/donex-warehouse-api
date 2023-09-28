@@ -93,6 +93,7 @@ export const getOutputPlanByState = async (
   const users = await AppDataSource.manager.find(User);
   const warehouses = await AppDataSource.manager.find(AOSWarehouse);
   const operation_instruction = await  AppDataSource.manager.find(OperationInstruction)
+  const addrs = addresses;
   return result.map((el) => {
     let user = null;
     if (el.user_id) {
@@ -105,6 +106,10 @@ export const getOutputPlanByState = async (
       warehouse = warehouses.find((t) => t.id === el.warehouse_id);
     }
     const operation_instructions = operation_instruction.filter(op => op.output_plan_id === el.id)
+    let address_ref = null
+    if(el.destination && el.destination != 'private_address') {
+      address_ref = addrs[el.destination].find(dest => dest.value === el.address)
+    }
     if (el.state) {
       return {
         ...el,
@@ -112,10 +117,11 @@ export const getOutputPlanByState = async (
         warehouse,
         state: states.output_plan[el.state],
         destination_ref: destination,
-        operation_instructions
+        operation_instructions,
+        address_ref
       };
     }
-    return { ...el, user, warehouse, destination_ref: destination, operation_instructions };
+    return { ...el, user, warehouse, destination_ref: destination, operation_instructions, address_ref };
   });
 };
 
