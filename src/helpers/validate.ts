@@ -6,8 +6,8 @@ export const validateContext = async (obj, model) => {
   if (errors.length > 0) {
     return errors;
   } else {
-    return await obj.manager.transaction(async (transactionalEntityManager) => {
-      await transactionalEntityManager.save(model);
+    await obj.manager.transaction(async (transactionalEntityManager) => {
+      return await transactionalEntityManager.save(model);
     });
   }
 };
