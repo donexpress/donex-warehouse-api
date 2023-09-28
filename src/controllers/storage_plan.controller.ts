@@ -83,14 +83,15 @@ export const createMulti = async (req: Request, res: Response) => {
   const user_id = parseInt(user.id);
   const storage_plans = req.body;
   let storage_plan_save = [];
-  storage_plans.map(async (storage_plan_body) => {
+  for (let i = 0; i < storage_plans.length; i++) {
+    const storage_plan_body = storage_plans[i];
     storage_plan_body.state = states.entry_plan.to_be_storage.value;
     const storage_plan = await createStoragePlanMulti(
       storage_plan_body,
       user_id
     );
     storage_plan_save.push(storage_plan);
-  });
+  }
 
   if (storage_plan_save.length === storage_plans.length) {
     return res.sendStatus(201);
