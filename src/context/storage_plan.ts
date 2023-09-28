@@ -7,7 +7,10 @@ import { User } from '../models/user.model';
 import { showUser } from './user';
 import { AOSWarehouse } from '../models/aos_warehouse.model';
 import { showAOSWarehouse } from './aos_warehouse';
-import { getPackingListByStoragePlanId } from './packing_list';
+import {
+  createPackingList,
+  getPackingListByStoragePlanId,
+} from './packing_list';
 import states from '../config/states';
 import { getCountByState, getStates } from '../helpers/states';
 
@@ -216,4 +219,58 @@ export const removeStoragePlan = async (id: number) => {
   const repository = await AppDataSource.getRepository(StoragePlan);
   const result = await repository.delete({ id });
   return result;
+};
+
+export const createStoragePlanMulti = async (data, user_id: number) => {
+  const save_storage_plan = await createStoragePlan(data, user_id);
+
+  if (save_storage_plan instanceof StoragePlan) {
+    let package_list = [];
+    for (let i = 0; i < save_storage_plan.box_amount; i++) {
+      let position = i + 1;
+      let value = String(position).padStart(data.digits_box_number, '0');
+      const packing_list = {
+        storage_plan_id: save_storage_plan.id,
+        box_number: `${data.expansion_box_number}U${value}`,
+        case_number: '',
+        client_height: 0,
+        client_length: 0,
+        client_weight: 0,
+        client_width: 0,
+        amount: 0,
+        product_name: '',
+        english_product_name: '',
+        price: 0,
+        material: '',
+        customs_code: '',
+        fnscu: '',
+        order_transfer_number: '',
+        custome_picture: '',
+        operator_picture: '',
+      };
+      const result = await createPackingList(packing_list);
+
+      if (result instanceof PackingList) {
+        package_list.push(result);
+      } else {
+        return {
+          status: 1,
+          message: 'There was a problem saving the package list',
+        };
+      }
+    }
+    if (package_list.length === save_storage_plan.box_amount) {
+      return { status: 0, message: save_storage_plan };
+    } else {
+      return {
+        status: 1,
+        message: 'Unable to save all package lists',
+      };
+    }
+  } else {
+    return {
+      status: 1,
+      message: 'There was a problem saving the storage plan',
+    };
+  }
 };

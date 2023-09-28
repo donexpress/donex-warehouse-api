@@ -3,6 +3,7 @@ import {
   countAllStoragePlan,
   countStoragePlan,
   createStoragePlan,
+  createStoragePlanMulti,
   listStoragePlan,
   removeStoragePlan,
   showStoragePlan,
@@ -12,6 +13,7 @@ import { StoragePlan } from '../models/storage_plan.model';
 import { getCurrentUser } from '../middlewares';
 import states from '../config/states';
 import { getStates } from '../helpers/states';
+//import { getFormatExcel } from '../helpers/excel';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -54,7 +56,7 @@ export const show = async (req: Request, res: Response) => {
 
 export const count = async (req: Request, res: Response) => {
   try {
-    const current_user = getCurrentUser(req)
+    const current_user = getCurrentUser(req);
     const count = await countAllStoragePlan(current_user);
     res.json(count);
   } catch (e) {
@@ -72,6 +74,28 @@ export const create = async (req: Request, res: Response) => {
   } else {
     console.log(result);
     res.status(422).json(result);
+  }
+};
+
+export const createMulti = async (req: Request, res: Response) => {
+  const user = getCurrentUser(req);
+  //@ts-ignore
+  const user_id = parseInt(user.id);
+  const storage_plans = req.body;
+  let storage_plan_save = [];
+  storage_plans.map(async (storage_plan_body) => {
+    storage_plan_body.state = states.entry_plan.to_be_storage.value;
+    const storage_plan = await createStoragePlanMulti(
+      storage_plan_body,
+      user_id
+    );
+    storage_plan_save.push(storage_plan);
+  });
+
+  if (storage_plan_save.length === storage_plans.length) {
+    return res.sendStatus(201);
+  } else {
+    res.status(422).send('An unexpected error has happened. Please check it');
   }
 };
 
