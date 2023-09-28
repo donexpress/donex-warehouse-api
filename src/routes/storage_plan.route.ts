@@ -14,12 +14,10 @@ router.get('/api/v1/storage_plan/:id', StoragePlanController.show);
 router.post(
   '/api/v1/storage_plan',
   verifyTokenPresent,
-  verifyTokenPresent,
   StoragePlanController.create
 );
 router.post(
   '/api/v1/storage_plan/multi',
-  verifyTokenPresent,
   verifyTokenPresent,
   StoragePlanController.createMulti
 );
