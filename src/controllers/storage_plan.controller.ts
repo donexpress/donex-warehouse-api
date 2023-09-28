@@ -68,7 +68,6 @@ export const create = async (req: Request, res: Response) => {
   const user = getCurrentUser(req);
   //@ts-ignore
   const result = await createStoragePlan(req.body, parseInt(user.id));
-  console.log(result);
   if (result instanceof StoragePlan) {
     res.status(201).json(result);
   } else {
