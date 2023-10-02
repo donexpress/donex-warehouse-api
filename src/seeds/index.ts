@@ -86,6 +86,7 @@ const ProdSeed = async () => {
     affiliations: [],
     role_id: 1,
     observations: null,
+    state: 'normal',
   });
   const roles  = [{
     name: 'Administrador',
