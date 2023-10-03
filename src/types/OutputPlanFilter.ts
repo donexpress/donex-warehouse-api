@@ -1,4 +1,5 @@
 export interface OutputPlanFilter {
-    date: string,
-    location: string
+    initialDate: string,
+    finalDate: string,
+    location: string[]
 }
