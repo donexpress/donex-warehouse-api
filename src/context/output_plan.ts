@@ -1,4 +1,4 @@
-import { Between, FindOneOptions, FindOptionsWhere, ILike } from 'typeorm';
+import { Between, FindOneOptions, FindOptionsWhere, ILike, In } from 'typeorm';
 import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { OutputPlan } from '../models/output_plan.model';
@@ -73,7 +73,7 @@ export const listOutputPlan = async (
         warehouse,
         state: states.output_plan[el.state],
         destination_ref: destination,
-        packing_lists
+        packing_lists,
       });
     } else {
       mod_package_list.push({
@@ -82,11 +82,11 @@ export const listOutputPlan = async (
         warehouse,
         operation_instructions,
         destination_ref: destination,
-        packing_lists
+        packing_lists,
       });
     }
   }
-  return mod_package_list
+  return mod_package_list;
 };
 
 export const getOutputPlanByState = async (
@@ -315,24 +315,21 @@ export const getAddresses = () => {
 };
 
 export const getOutputPlanByFilter = async (filter: OutputPlanFilter) => {
-  const where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] =
-    {};
-  if (filter.date) {
-    const date = new Date(filter.date);
-    const new_date = new Date(filter.date);
-    new_date.setDate(new_date.getDate() + 1);
-    where.delivered_time = Between(date.toISOString(), new_date.toISOString());
+  let where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] = {};
+  if (filter.initialDate) {
+    const date = new Date(filter.initialDate);
+    let final_date = new Date(filter.initialDate);
+    if (filter.finalDate) {
+      final_date = new Date(filter.finalDate);
+    }
+    final_date.setDate(final_date.getDate() + 1);
+    where.delivered_time = Between(
+      date.toISOString(),
+      final_date.toISOString()
+    );
   }
   if (filter.location) {
-    for (const [key, value] of Object.entries(destinations)) {
-      if (
-        value.value.toLowerCase() === filter.location.toLowerCase() ||
-        value.value.toLowerCase() === filter.location.toLowerCase() ||
-        value.value.toLowerCase() === filter.location.toLowerCase()
-      ) {
-        where.destination = value.value;
-      }
-    }
+    where = { ...where, destination: In(filter.location) };
   }
   const result = await AppDataSource.manager.find(OutputPlan, {
     where,
