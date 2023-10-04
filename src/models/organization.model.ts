@@ -36,6 +36,22 @@ export class Organization {
   organization_type: string;
 
   @Column({
+    type: "integer",
+    array: true,
+    nullable: true,
+  })
+  @IsOptional()
+  head_of_department: number[];
+
+  @Column({
+    type: "integer",
+    array: true,
+    nullable: true,
+  })
+  @IsOptional()
+  principal_line: number[];
+
+  @Column({
     type: 'varchar',
     nullable: true,
     default: new Date().toISOString(),
