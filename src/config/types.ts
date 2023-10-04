@@ -15,7 +15,7 @@ const operation_instruction_type = {
   },
   change_boxes: {
     name: 'Change Boxes',
-    es_name: 'Caja de Cambio',
+    es_name: 'Cambio de Caja',
     zh_name: '换箱',
     value: 'change boxes',
     position: 3,
