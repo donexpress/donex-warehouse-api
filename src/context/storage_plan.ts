@@ -163,14 +163,14 @@ export const createStoragePlan = async (data, user_id: number) => {
   if (data.delivered_time === '') {
     data.delivered_time = null;
   }
-  /* if (data.customer_order_number) {
+  if (data.customer_order_number) {
     const customer_order_number_count = await repository.count({
       where: { customer_order_number: data.customer_order_number },
     });
     if (customer_order_number_count > 0 && data.rejected_boxes !== true) {
       return { message: 'customer order number already exists' };
     }
-  } */
+  }
   const date = new Date();
   const month = date.getMonth() > 9 ? date.getMonth() : `0${date.getMonth()}`;
   const count = await countStoragePlan();
