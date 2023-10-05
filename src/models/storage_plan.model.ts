@@ -8,6 +8,7 @@ export class StoragePlan {
 
   @Column({
     nullable: true,
+    unique: true
   })
   customer_order_number: string;
 
