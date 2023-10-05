@@ -171,9 +171,6 @@ export const createStoragePlan = async (data, user_id: number) => {
       return { message: 'customer order number already exists' };
     }
   } */
-  if (data.rejected_boxes !== true) {
-    return { message: 'customer order number already exists' };
-  }
   const date = new Date();
   const month = date.getMonth() > 9 ? date.getMonth() : `0${date.getMonth()}`;
   const count = await countStoragePlan();
