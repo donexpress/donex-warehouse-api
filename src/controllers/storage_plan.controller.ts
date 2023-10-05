@@ -13,6 +13,10 @@ import { StoragePlan } from '../models/storage_plan.model';
 import { getCurrentUser } from '../middlewares';
 import states from '../config/states';
 import { getStates } from '../helpers/states';
+import { getUserByUsername } from '../context/user';
+import { User } from '../models/user.model';
+import { getAosWarehouseByCode } from '../context/aos_warehouse';
+import { AOSWarehouse } from '../models/aos_warehouse.model';
 //import { getFormatExcel } from '../helpers/excel';
 
 export const index = async (req: Request, res: Response) => {
@@ -86,6 +90,13 @@ export const createMulti = async (req: Request, res: Response) => {
   for (let i = 0; i < storage_plans.length; i++) {
     const storage_plan_body = storage_plans[i];
     storage_plan_body.state = states.entry_plan.to_be_storage.value;
+    const user = await getUserByUsername(storage_plan_body.username);
+    const AOWarehouse = await getAosWarehouseByCode(
+      storage_plan_body.warehouse_code
+    );
+    storage_plan_body.user_id = user instanceof User ? user.id : null;
+    storage_plan_body.warehouse_id =
+      AOWarehouse instanceof AOSWarehouse ? AOWarehouse.id : null;
     const storage_plan = await createStoragePlanMulti(
       storage_plan_body,
       user_id

@@ -100,3 +100,11 @@ export const removeAOSWarehouse = async (id: number) => {
   const result = await repository.delete({ id });
   return result;
 };
+
+export const getAosWarehouseByCode = async (code: string): Promise<AOSWarehouse> => {
+  return await AppDataSource.manager.findOne(AOSWarehouse, {
+    where: {
+      code: code,
+    },
+  });
+};

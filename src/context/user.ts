@@ -110,6 +110,14 @@ export const countUser = async () => {
   });
 };
 
+export const getUserByUsername = async (username: string): Promise<User> => {
+  return await AppDataSource.manager.findOne(User, {
+    where: {
+      username: username,
+    },
+  });
+};
+
 export const showUser = async (id: number) => {
   let user = await AppDataSource.manager.findOne(User, {
     where: { id },
