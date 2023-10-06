@@ -7,7 +7,7 @@ export class StoragePlan {
   id: number;
 
   @Column({
-    nullable: true,
+    nullable: true
   })
   customer_order_number: string;
 
