@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import {
   countPackingList,
   createPackingList,
+  exist_expansion_number,
   getPackingListByCaseNumber,
   listPackingList,
   removePackingList,
@@ -57,6 +58,10 @@ export const count = async (req: Request, res: Response) => {
 
 export const create = async (req: Request, res: Response) => {
   const result = await createPackingList(req.body);
+  if(result == null) {
+    res.status(401).json(result)
+    return;
+  }
   if (result instanceof PackingList) {
     res.status(201).json(result);
   } else {
@@ -106,4 +111,9 @@ export const getByCaseNumber =async (req:Request, res: Response) => {
     console.log(e);
     res.status(500).send(e);
   }
+}
+
+export const existExpansionNumber =  async (req: Request, res: Response) => {
+  const data: {expansion_number: string, storage_plan_id: number} = req.body;
+  res.send(await exist_expansion_number(data.expansion_number, data.storage_plan_id))
 }

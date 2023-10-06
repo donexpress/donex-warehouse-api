@@ -1,4 +1,4 @@
-import { ILike } from 'typeorm';
+import { ILike, Like, Not } from 'typeorm';
 import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { PackingList } from '../models/packing_list.model';
@@ -71,8 +71,18 @@ export const createPackingList = async (data) => {
     data.client_height = 0;
   }
   const repository = await AppDataSource.getRepository(PackingList);
-  const result = await repository.create(data);
-  return await validateContext(AppDataSource, result);
+  const check_count = await repository.count({
+    where: {
+      box_number: Like(`%${data.box_number.split('U')[0]}%`),
+      storage_plan_id: Not(data.storage_plan_id),
+    },
+  });
+  if (check_count === 0) {
+    const result = await repository.create(data);
+    return await validateContext(AppDataSource, result);
+  } else {
+    return null
+  }
 };
 
 export const updatePackingList = async (id: number, data) => {
@@ -115,7 +125,7 @@ export const getPackingListByCaseNumber = async (case_number: string) => {
   });
 
   let package_shelf = null;
-  if(packing_list) {
+  if (packing_list) {
     package_shelf = await getDataByPackageId(packing_list.id);
   }
   return { ...packing_list, package_shelf };
@@ -135,3 +145,41 @@ export const getPackingListByStoragePlanId = async (
   }
   return mod_packing_list;
 };
+
+export const chgeckPackingListCaseNumberByUser = async (
+  case_number: string,
+  user_id: number
+): Promise<boolean> => {
+  const packing_list = await AppDataSource.manager.findOne(PackingList, {
+    where: { case_number },
+  });
+  if (!packing_list) {
+    return false;
+  }
+  const storage_plan = await AppDataSource.manager.findOne(StoragePlan, {
+    where: { id: packing_list.storage_plan_id },
+  });
+  return storage_plan.user_id === user_id;
+};
+
+export const exist_expansion_number = async (expansion_number: string, storage_plan_id: number): Promise<boolean> => {
+  const check_count = await AppDataSource.manager.count(PackingList, {
+    where: {
+      box_number: Like(`%${expansion_number}%`),
+      storage_plan_id: Not(storage_plan_id),
+    },
+  });
+
+  return check_count > 0
+}
+
+export const isStored = async(case_number: string): Promise<boolean> => {
+  const packing_list = await AppDataSource.manager.findOne(PackingList, {
+    where: { case_number },
+  });
+  if (packing_list) {
+    const package_shelf = await getDataByPackageId(packing_list.id);
+    return package_shelf.length > 0
+  }
+  return false
+} 
