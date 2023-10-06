@@ -4,7 +4,7 @@ import { validateContext } from '../helpers/validate';
 import { OutputPlan } from '../models/output_plan.model';
 import { User } from '../models/user.model';
 import states from '../config/states';
-import { getPackingListByCaseNumber } from './packing_list';
+import { chgeckPackingListCaseNumberByUser, getPackingListByCaseNumber, isStored } from './packing_list';
 import { OperationInstruction } from '../models/instruction_operation.model';
 import { getAppendagesByOutputPlan } from './appendix';
 import { getCountByState } from '../helpers/states';
@@ -280,15 +280,37 @@ export const createOutputPlan = async (data: any) => {
 
 export const updateOutputPlan = async (id: number, data) => {
   const repository = await AppDataSource.getRepository(OutputPlan);
+  const exitPlan = await repository.findOne({where: {id}})
+  const stored = [];
   if (data.case_numbers) {
-    const box_amount = data.case_numbers.length;
-    if (box_amount > 0) {
-      data.output_boxes = box_amount;
-      data.box_amount = box_amount;
+    let contiue = true;
+    for(let i = 0; i < data.case_numbers.length; i++) {
+      const isOwnByMe = await chgeckPackingListCaseNumberByUser(data.case_numbers[i], exitPlan.user_id)
+      if(!isOwnByMe) {
+        contiue = false
+      }
+      const is_stored = await isStored(data.case_numbers[i]);
+      if(is_stored) {
+        stored.push(data.case_numbers[i])
+      }
     }
+    if(contiue) {
+      data.case_numbers = stored;
+      const box_amount = data.case_numbers.length;
+      if (box_amount > 0) {
+        data.output_boxes = box_amount;
+        data.box_amount = box_amount;
+      }  
+    } else {
+      return {warning: "own"}
+    }
+    
   }
   data.updated_at = new Date().toISOString();
   const result = await repository.update({ id }, data);
+  if(exitPlan.case_numbers.length !== stored.length) {
+    return  {warining: "stored"}
+  }
   return result;
 };
 

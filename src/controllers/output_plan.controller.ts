@@ -16,6 +16,7 @@ import { OutputPlan } from '../models/output_plan.model';
 import { getStates } from '../helpers/states';
 import states from '../config/states';
 import { getCurrentUser } from '../middlewares';
+import { UpdateResult } from 'typeorm';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -84,7 +85,15 @@ export const create = async (req: Request, res: Response) => {
 export const update = async (req: Request, res: Response) => {
   try {
     const result = await updateOutputPlan(Number(req.params.id), req.body);
-    if (result.affected === 0) {
+    if(result['warning']) {
+      if(result['warning'] === 'own') {
+        res.status(401).json(result)
+      } else {
+        res.status(422).json(result)
+      }
+      return;
+    }
+    if (result instanceof UpdateResult && result.affected === 0) {
       res.status(404).json(result);
     } else {
       res.status(200).json(result);

@@ -138,6 +138,12 @@ export class OutputPlan {
   destination: string;
 
   @Column({
+    type: 'varchar',
+    nullable: true,
+  })
+  reference_number: string;
+
+  @Column({
     type: 'json',
     nullable: true,
     default: [],
