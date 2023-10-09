@@ -265,7 +265,7 @@ export const createOutputPlan = async (data: any) => {
   for (let i = 0; i < 6 - (count + 1).toString().length; i++) {
     number += '0';
   }
-  data.output_number = `DEWMXO${date.getFullYear()}${month}${date.getDate()}${number}${
+  data.output_number = `DEWMXO${date.getFullYear()}${month}${date.getDate() <= 9 ? `0${date.getDate()}` : date.getDate()}${number}${
     count + 1
   }`;
   data.state = states.output_plan.pending.value;
