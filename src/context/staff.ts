@@ -41,7 +41,6 @@ export const listStaff = async (
   const organizations = await AppDataSource.manager.find(Organization);
   const warehouse = await AppDataSource.manager.find(Warehouse);
   const mod_staff = [];
-  console.log("Lenght: ", users.length)
   for (let i = 0; i < users.length; i++) {
     const user = users[i];
     delete user.password;
