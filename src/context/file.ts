@@ -6,8 +6,14 @@ export const uploadFileToStore = async (
   extension: string
 ) => {
   const bucket = 'warehouse-sav01ok';
-  console.log(bucket, buffer, extension);
-  const filename = randomStr(32) + '.' + extension;
+  let tmp_extension: string = extension
+  if(extension === "vnd.openxmlformats-officedocument.wordprocessingml.document") {
+    tmp_extension = 'docx'
+  } else if(extension === "vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+    tmp_extension = 'xlsx'
+  }
+  console.log(bucket, buffer, tmp_extension);
+  const filename = randomStr(32) + '.' + tmp_extension;
   const store = new oss({
     region: 'oss-us-west-1',
     accessKeyId: process.env.ALIYUN_PUBLIC_KEY,
