@@ -77,7 +77,7 @@ export const createPackingList = async (data) => {
       storage_plan_id: Not(data.storage_plan_id),
     },
   });
-  if (check_count === 0) {
+  if (check_count === 0 || storage_plan.rejected_boxes) {
     const result = await repository.create(data);
     return await validateContext(AppDataSource, result);
   } else {
@@ -126,6 +126,19 @@ export const getPackingListByCaseNumber = async (case_number: string) => {
 
   let package_shelf = null;
   if (packing_list) {
+    package_shelf = await getDataByPackageId(packing_list.id);
+  }
+  return { ...packing_list, package_shelf };
+};
+
+export const getPackingListByBoxNumber = async (box_number: string) => {
+  const packing_list = await AppDataSource.manager.findOne(PackingList, {
+    where: { box_number },
+  });
+
+  let package_shelf = null;
+  if (packing_list) {
+    console.log(packing_list)
     package_shelf = await getDataByPackageId(packing_list.id);
   }
   return { ...packing_list, package_shelf };
