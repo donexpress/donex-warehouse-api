@@ -138,7 +138,6 @@ export const getPackingListByBoxNumber = async (box_number: string) => {
 
   let package_shelf = null;
   if (packing_list) {
-    console.log(packing_list)
     package_shelf = await getDataByPackageId(packing_list.id);
   }
   return { ...packing_list, package_shelf };
