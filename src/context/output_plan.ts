@@ -381,3 +381,9 @@ export const getOutputPlanByFilter = async (filter: OutputPlanFilter) => {
     return { ...el, user, warehouse, destination_ref: destination };
   });
 };
+
+export const changeOutputPlanState = async (id: number, state) => {
+  const repository = await AppDataSource.getRepository(OutputPlan);
+  const result = await repository.update({ id }, {state});
+  return result;
+};

@@ -28,6 +28,11 @@ router.put(
   verifyTokenPresent,
   OutputPlanController.update
 );
+router.patch(
+  '/api/v1/output_plan/:id/change_state',
+  verifyTokenPresent,
+  OutputPlanController.changeState
+);
 router.delete(
   '/api/v1/output_plan/:id',
   verifyTokenPresent,
