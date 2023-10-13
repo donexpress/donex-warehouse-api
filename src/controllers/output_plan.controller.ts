@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import {
+  changeOutputPlanState,
   countAllOutputPlan,
   countOutputPlan,
   createOutputPlan,
@@ -29,10 +30,15 @@ export const index = async (req: Request, res: Response) => {
 
     const query = req.query.query;
     const state = req.query.state;
-    let outpu_plans = []
-    const current_user = getCurrentUser(req)
-    if(state && state !== 'all') {
-      outpu_plans = await getOutputPlanByState(current_page, number_of_rows, String(state), current_user)
+    let outpu_plans = [];
+    const current_user = getCurrentUser(req);
+    if (state && state !== 'all') {
+      outpu_plans = await getOutputPlanByState(
+        current_page,
+        number_of_rows,
+        String(state),
+        current_user
+      );
     } else {
       outpu_plans = await listOutputPlan(
         current_page,
@@ -64,7 +70,7 @@ export const show = async (req: Request, res: Response) => {
 
 export const count = async (req: Request, res: Response) => {
   try {
-    const current_user = getCurrentUser(req)
+    const current_user = getCurrentUser(req);
     const count = await countAllOutputPlan(current_user);
     res.json(count);
   } catch (e) {
@@ -85,11 +91,11 @@ export const create = async (req: Request, res: Response) => {
 export const update = async (req: Request, res: Response) => {
   try {
     const result = await updateOutputPlan(Number(req.params.id), req.body);
-    if(result['warning']) {
-      if(result['warning'] === 'own') {
-        res.status(401).json(result)
+    if (result['warning']) {
+      if (result['warning'] === 'own') {
+        res.status(401).json(result);
       } else {
-        res.status(422).json(result)
+        res.status(422).json(result);
       }
       return;
     }
@@ -119,18 +125,30 @@ export const remove = async (req: Request, res: Response) => {
 };
 
 export const listStates = (req: Request, res: Response) => {
-  res.send({states: getStates(states.output_plan)})
-}
+  res.send({ states: getStates(states.output_plan) });
+};
 
 export const destinations = (req: Request, res: Response) => {
-  res.send({destinations: getDestinations()})
-}
+  res.send({ destinations: getDestinations() });
+};
 
 export const addresses = (req: Request, res: Response) => {
-  res.send({addresses: getAddresses()})
-}
-
+  res.send({ addresses: getAddresses() });
+};
 
 export const getByFilter = async (req: Request, res: Response) => {
-  res.send(await getOutputPlanByFilter(req.body))
-}
+  res.send(await getOutputPlanByFilter(req.body));
+};
+
+export const changeState = async (req: Request, res: Response) => {
+  try {
+    const result = await changeOutputPlanState(
+      Number(req.params.id),
+      req.body.state
+    );
+    res.status(200).json(result);
+  } catch (e) {
+    console.log(e);
+    res.status(500).send(e);
+  }
+};

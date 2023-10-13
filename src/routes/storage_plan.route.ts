@@ -26,6 +26,11 @@ router.put(
   verifyTokenPresent,
   StoragePlanController.update
 );
+router.patch(
+  '/api/v1/storage_plan/:id/change_state',
+  verifyTokenPresent,
+  StoragePlanController.changeState
+);
 router.delete(
   '/api/v1/storage_plan/:id',
   verifyTokenPresent,

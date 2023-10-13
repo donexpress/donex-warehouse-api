@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import {
+  changeStoragePlanState,
   countAllStoragePlan,
   countStoragePlan,
   createStoragePlan,
@@ -141,4 +142,18 @@ export const remove = async (req: Request, res: Response) => {
 
 export const listStates = (req: Request, res: Response) => {
   res.send({ states: getStates(states.entry_plan) });
+};
+
+export const changeState = async (req: Request, res: Response) => {
+  try {
+    const result = await changeStoragePlanState(Number(req.params.id), req.body.state);
+    if (!result || result.affected === 0) {
+      res.status(404).json(result);
+    } else {
+      res.status(200).json(result);
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(500).send(e);
+  }
 };

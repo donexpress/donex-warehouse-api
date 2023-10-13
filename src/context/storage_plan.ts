@@ -274,3 +274,27 @@ export const createStoragePlanMulti = async (data, user_id: number) => {
     };
   }
 };
+
+export const changeStoragePlanState = async (id: number, state) => {
+  const repository = await AppDataSource.getRepository(StoragePlan);
+  const old_data = await repository.findOne({ where: { id } });
+  if (!old_data) {
+    return null;
+  }
+  delete old_data.history;
+  const result = await repository.update(
+    { id },
+    { state, updated_at: new Date().toISOString() }
+  );
+  const history_data = await repository.findOne({ where: { id } });
+  if (!history_data.history) {
+    history_data.history = [];
+  }
+  history_data.history.push({
+    type: 'storage_plan',
+    data: { ...old_data, updated_at: new Date().toISOString() },
+  });
+  await repository.update({ id }, history_data);
+
+  return result;
+};
