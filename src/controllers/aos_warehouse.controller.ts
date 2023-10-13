@@ -27,7 +27,6 @@ export const index = async (req: Request, res: Response) => {
     );
     res.json(organization);
   } catch (e) {
-    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -41,7 +40,6 @@ export const show = async (req: Request, res: Response) => {
       res.json(organization);
     }
   } catch (e) {
-    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -51,7 +49,6 @@ export const count = async (req: Request, res: Response) => {
     const count = await countAOSWarehouse();
     res.json({ count });
   } catch (e) {
-    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -80,7 +77,6 @@ export const update = async (req: Request, res: Response) => {
       res.status(409).json(result);
     }
   } catch (e) {
-    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -94,7 +90,6 @@ export const remove = async (req: Request, res: Response) => {
       res.status(200).json(result);
     }
   } catch (e) {
-    console.log(e);
     res.status(500).send(e);
   }
 };

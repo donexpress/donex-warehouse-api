@@ -66,7 +66,6 @@ export const create = async (req: Request, res: Response) => {
   if (result instanceof PackingList) {
     res.status(201).json(result);
   } else {
-    console.log(result);
     res.status(422).json(result);
   }
 };
