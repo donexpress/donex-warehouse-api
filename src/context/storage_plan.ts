@@ -198,6 +198,7 @@ export const updateStoragePlan = async (id: number, data) => {
     return null;
   }
   delete old_data.history;
+  delete data.state;
   const result = await repository.update(
     { id },
     { ...data, updated_at: new Date().toISOString() }
