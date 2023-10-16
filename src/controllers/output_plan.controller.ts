@@ -10,6 +10,7 @@ import {
   getOutputPlanByState,
   listOutputPlan,
   removeOutputPlan,
+  returnBoxes,
   showOutputPlan,
   updateOutputPlan,
 } from '../context/output_plan';
@@ -147,6 +148,28 @@ export const changeState = async (req: Request, res: Response) => {
       req.body.state
     );
     res.status(200).json(result);
+  } catch (e) {
+    console.log(e);
+    res.status(500).send(e);
+  }
+};
+
+export const removeBoxes = async (req: Request, res: Response) => {
+  try {
+    const result = await returnBoxes(Number(req.params.id), req.body);
+    if (result['warning']) {
+      if (result['warning'] === 'own') {
+        res.status(401).json(result);
+      } else {
+        res.status(422).json(result);
+      }
+      return;
+    }
+    if (result instanceof UpdateResult && result.affected === 0) {
+      res.status(404).json(result);
+    } else {
+      res.status(200).json(result);
+    }
   } catch (e) {
     console.log(e);
     res.status(500).send(e);

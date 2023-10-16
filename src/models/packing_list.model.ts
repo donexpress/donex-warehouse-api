@@ -102,6 +102,20 @@ export class PackingList {
   order_transfer_number: string;
 
   @Column({
+    nullable: false,
+    type: 'boolean',
+    default: false
+  })
+  dispatched: boolean;
+
+  @Column({
+    nullable: true,
+    type: 'timestamp',
+    default: null
+  })
+  dispatched_time: string;
+
+  @Column({
     type: 'json',
     nullable: true,
     default: [],
