@@ -18,6 +18,7 @@ import { getUserByUsername } from '../context/user';
 import { User } from '../models/user.model';
 import { getAosWarehouseByCode } from '../context/aos_warehouse';
 import { AOSWarehouse } from '../models/aos_warehouse.model';
+import internal from 'stream';
 //import { getFormatExcel } from '../helpers/excel';
 
 export const index = async (req: Request, res: Response) => {
@@ -112,7 +113,7 @@ export const createMulti = async (req: Request, res: Response) => {
       storage_plan_body,
       user_id
     );
-    storage_plan_save.push(storage_plan);
+    storage_plan_save.push(storage_plan.message);
   }
 
   if (storage_plan_save.length === storage_plans.length) {
