@@ -92,7 +92,13 @@ export const createMulti = async (req: Request, res: Response) => {
     const storage_plan_body = storage_plans[i];
     storage_plan_body.state = states.entry_plan.to_be_storage.value;
     console.log(storage_plan_body.username);
-    const user = await getUserByUsername(storage_plan_body.username);
+
+    const username =
+      storage_plan_body.username !== null
+        ? storage_plan_body.username
+        //@ts-ignore
+        : current_user.username;
+    const user = await getUserByUsername(username);
     console.log(user);
     const AOWarehouse = await getAosWarehouseByCode(
       storage_plan_body.warehouse_code

@@ -110,10 +110,12 @@ export const countUser = async () => {
   });
 };
 
-export const getUserByUsername = async (username: string): Promise<User | null> => {
-  return await AppDataSource.manager.findOne(User, {
+export const getUserByUsername = async (
+  username: string | null
+): Promise<User | null> => {
+  return await AppDataSource.getRepository(User).findOne({
     where: {
-      username
+      username,
     },
   });
 };
