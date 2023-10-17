@@ -113,7 +113,15 @@ export const createMulti = async (req: Request, res: Response) => {
       storage_plan_body,
       user_id
     );
-    storage_plan_save.push(storage_plan.message);
+    if (storage_plan instanceof StoragePlan) {
+      storage_plan_save.push(storage_plan);
+    } else {
+      return res
+        .status(422)
+        .send(
+          'An unexpected error has happened in Storage Plan return. Please check it...'
+        );
+    }
   }
 
   if (storage_plan_save.length === storage_plans.length) {

@@ -253,25 +253,16 @@ export const createStoragePlanMulti = async (data, user_id: number) => {
       if (result instanceof PackingList) {
         package_list.push(result);
       } else {
-        return {
-          status: 1,
-          message: 'There was a problem saving the package list',
-        };
+        return null;
       }
     }
     if (package_list.length === save_storage_plan.box_amount) {
-      return { status: 0, message: save_storage_plan };
+      return save_storage_plan;
     } else {
-      return {
-        status: 1,
-        message: 'Unable to save all package lists',
-      };
+      return null;
     }
   } else {
-    return {
-      status: 1,
-      message: 'There was a problem saving the storage plan',
-    };
+    return save_storage_plan.error;
   }
 };
 
