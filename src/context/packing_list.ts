@@ -1,4 +1,4 @@
-import { ILike, Like, Not } from 'typeorm';
+import { ILike, In, Like, Not } from 'typeorm';
 import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { PackingList } from '../models/packing_list.model';
@@ -194,4 +194,24 @@ export const isStored = async(case_number: string): Promise<boolean> => {
     return package_shelf.length > 0
   }
   return false
-} 
+}
+
+export const dispatchBox = async(case_number: string) => {
+  const repository = await AppDataSource.getRepository(PackingList);
+  return repository.update({case_number}, {dispatched: true, dispatched_time: (new Date()).toISOString()})
+}
+
+export const returnDispatchedBox = async(case_number: string) => {
+  const repository = await AppDataSource.getRepository(PackingList);
+  return repository.update({case_number}, {dispatched: false, dispatched_time: null})
+}
+
+export const dispatchBulkBoxes = async(case_numbers: string[]) => {
+  const repository = await AppDataSource.getRepository(PackingList);
+  return repository.update({case_number: In(case_numbers)}, {dispatched: true, dispatched_time: (new Date()).toISOString()})
+}
+
+export const returnDispatchedBulkBoxes = async(case_numbers: string[]) => {
+  const repository = await AppDataSource.getRepository(PackingList);
+  return repository.update({case_number: In(case_numbers)}, {dispatched: false, dispatched_time: null})
+}

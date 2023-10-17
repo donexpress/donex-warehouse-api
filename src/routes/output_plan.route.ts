@@ -33,6 +33,11 @@ router.patch(
   verifyTokenPresent,
   OutputPlanController.changeState
 );
+router.patch(
+  '/api/v1/output_plan/:id/remove_boxes',
+  verifyTokenPresent,
+  OutputPlanController.removeBoxes
+);
 router.delete(
   '/api/v1/output_plan/:id',
   verifyTokenPresent,

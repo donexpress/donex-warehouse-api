@@ -4,7 +4,13 @@ import { validateContext } from '../helpers/validate';
 import { OutputPlan } from '../models/output_plan.model';
 import { User } from '../models/user.model';
 import states from '../config/states';
-import { chgeckPackingListCaseNumberByUser, getPackingListByCaseNumber, isStored } from './packing_list';
+import {
+  chgeckPackingListCaseNumberByUser,
+  dispatchBulkBoxes,
+  getPackingListByCaseNumber,
+  isStored,
+  returnDispatchedBulkBoxes,
+} from './packing_list';
 import { OperationInstruction } from '../models/instruction_operation.model';
 import { getAppendagesByOutputPlan } from './appendix';
 import { getCountByState } from '../helpers/states';
@@ -265,9 +271,9 @@ export const createOutputPlan = async (data: any) => {
   for (let i = 0; i < 6 - (count + 1).toString().length; i++) {
     number += '0';
   }
-  data.output_number = `DEWMXO${date.getFullYear()}${month}${date.getDate() <= 9 ? `0${date.getDate()}` : date.getDate()}${number}${
-    count + 1
-  }`;
+  data.output_number = `DEWMXO${date.getFullYear()}${month}${
+    date.getDate() <= 9 ? `0${date.getDate()}` : date.getDate()
+  }${number}${count + 1}`;
   data.state = states.output_plan.pending.value;
   data.amount = 0;
   data.box_amount = 0;
@@ -280,36 +286,51 @@ export const createOutputPlan = async (data: any) => {
 
 export const updateOutputPlan = async (id: number, data) => {
   const repository = await AppDataSource.getRepository(OutputPlan);
-  const exitPlan = await repository.findOne({where: {id}})
+  const exitPlan = await repository.findOne({ where: { id } });
   const stored = [];
   if (data.case_numbers) {
     let contiue = true;
-    for(let i = 0; i < data.case_numbers.length; i++) {
-      const isOwnByMe = await chgeckPackingListCaseNumberByUser(data.case_numbers[i], exitPlan.user_id)
-      if(!isOwnByMe) {
-        contiue = false
+    for (let i = 0; i < data.case_numbers.length; i++) {
+      const isOwnByMe = await chgeckPackingListCaseNumberByUser(
+        data.case_numbers[i],
+        exitPlan.user_id
+      );
+      if (!isOwnByMe) {
+        contiue = false;
       }
       const is_stored = await isStored(data.case_numbers[i]);
-      if(is_stored) {
-        stored.push(data.case_numbers[i])
+      if (is_stored) {
+        stored.push(data.case_numbers[i]);
       }
     }
-    if(contiue) {
+    if (contiue) {
       data.case_numbers = stored;
       const box_amount = data.case_numbers.length;
       if (box_amount > 0) {
         data.output_boxes = box_amount;
         data.box_amount = box_amount;
-      }  
+      }
     } else {
-      return {warning: "own"}
+      return { warning: 'own' };
     }
-    
   }
   data.updated_at = new Date().toISOString();
   const result = await repository.update({ id }, data);
-  if(exitPlan.case_numbers.length !== stored.length) {
-    return  {warining: "stored"}
+  if (
+    data.state &&
+    data.state !== exitPlan.state &&
+    exitPlan.state === 'dispatched'
+  ) {
+    const output_plan = await showOutputPlan(id);
+    console.log(output_plan.case_numbers);
+    await returnDispatchedBulkBoxes(output_plan.case_numbers);
+  }
+  else if (data.state === 'dispatched') {
+    const output_plan = await showOutputPlan(id);
+    await dispatchBulkBoxes(output_plan.case_numbers);
+  }
+  if (exitPlan.case_numbers.length !== stored.length) {
+    return { warining: 'stored' };
   }
   return result;
 };
@@ -384,6 +405,21 @@ export const getOutputPlanByFilter = async (filter: OutputPlanFilter) => {
 
 export const changeOutputPlanState = async (id: number, state) => {
   const repository = await AppDataSource.getRepository(OutputPlan);
-  const result = await repository.update({ id }, {state});
+  const result = await repository.update({ id }, { state });
+  return result;
+};
+
+export const returnBoxes = async (id: number, data) => {
+  const repository = await AppDataSource.getRepository(OutputPlan);
+  const output_plan = await showOutputPlan(id);
+  data.updated_at = new Date().toISOString();
+  if (output_plan.state === 'dispatched') {
+    console.log(data);
+    await returnDispatchedBulkBoxes(data.case_numbers);
+  }
+  data.case_numbers = output_plan.case_numbers.filter(
+    (el) => !data.case_numbers.find((cn) => cn === el)
+  );
+  const result = await repository.update({ id }, data);
   return result;
 };
