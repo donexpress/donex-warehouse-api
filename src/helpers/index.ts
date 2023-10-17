@@ -8,3 +8,10 @@ export const randomStr = (length) => {
   }
   return result;
 };
+
+export const splitLastOccurrence = (str, substring) => {
+  const lastIndex = str.lastIndexOf(substring);
+  const before = str.slice(0, lastIndex);
+  const after = str.slice(lastIndex + 1);
+  return [before, after];
+}

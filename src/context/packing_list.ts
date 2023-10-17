@@ -4,6 +4,7 @@ import { validateContext } from '../helpers/validate';
 import { PackingList } from '../models/packing_list.model';
 import { StoragePlan } from '../models/storage_plan.model';
 import { getDataByPackageId } from './shelf_package';
+import { splitLastOccurrence } from '../helpers';
 
 export const listPackingList = async (
   current_page: number,
@@ -73,7 +74,7 @@ export const createPackingList = async (data) => {
   const repository = await AppDataSource.getRepository(PackingList);
   const check_count = await repository.count({
     where: {
-      box_number: Like(`%${data.box_number.split('U')[0]}%`),
+      box_number: Like(`%${splitLastOccurrence(data.box_number, 'U')[0]}%`),
       storage_plan_id: Not(data.storage_plan_id),
     },
   });
