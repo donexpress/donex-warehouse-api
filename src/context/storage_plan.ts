@@ -249,6 +249,7 @@ export const createStoragePlanMulti = async (data, user_id: number) => {
         operator_picture: '',
       };
       const result = await createPackingList(packing_list);
+      console.log(result)
 
       if (result instanceof PackingList) {
         package_list.push(result);
