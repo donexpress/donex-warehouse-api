@@ -95,9 +95,10 @@ export const createMulti = async (req: Request, res: Response) => {
     const AOWarehouse = await getAosWarehouseByCode(
       storage_plan_body.warehouse_code
     );
-    storage_plan_body.user_id = user instanceof User ? user.id : user_id;
+    storage_plan_body.user_id = user instanceof User ? user.id : null;
     storage_plan_body.warehouse_id =
       AOWarehouse instanceof AOSWarehouse ? AOWarehouse.id : null;
+    console.log(storage_plan_body);
     const storage_plan = await createStoragePlanMulti(
       storage_plan_body,
       user_id
@@ -146,7 +147,10 @@ export const listStates = (req: Request, res: Response) => {
 
 export const changeState = async (req: Request, res: Response) => {
   try {
-    const result = await changeStoragePlanState(Number(req.params.id), req.body.state);
+    const result = await changeStoragePlanState(
+      Number(req.params.id),
+      req.body.state
+    );
     if (!result || result.affected === 0) {
       res.status(404).json(result);
     } else {
