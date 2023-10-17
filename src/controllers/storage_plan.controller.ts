@@ -83,6 +83,7 @@ export const create = async (req: Request, res: Response) => {
 
 export const createMulti = async (req: Request, res: Response) => {
   const current_user = getCurrentUser(req);
+  console.log(current_user);
   //@ts-ignore
   const user_id = parseInt(current_user.id);
   const storage_plans = req.body;
