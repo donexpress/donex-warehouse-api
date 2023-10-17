@@ -95,8 +95,8 @@ export const createMulti = async (req: Request, res: Response) => {
     const username =
       storage_plan_body.username !== null
         ? storage_plan_body.username
-        //@ts-ignore
-        : current_user.username;
+        : //@ts-ignore
+          current_user.username;
     const user = await getUserByUsername(username);
     const AOWarehouse = await getAosWarehouseByCode(
       storage_plan_body.warehouse_code
@@ -104,6 +104,10 @@ export const createMulti = async (req: Request, res: Response) => {
     storage_plan_body.user_id = user instanceof User ? user.id : null;
     storage_plan_body.warehouse_id =
       AOWarehouse instanceof AOSWarehouse ? AOWarehouse.id : null;
+    storage_plan_body.digits_box_number =
+      storage_plan_body.digits_box_number !== null
+        ? storage_plan_body.digits_box_number
+        : 6;
     const storage_plan = await createStoragePlanMulti(
       storage_plan_body,
       user_id
