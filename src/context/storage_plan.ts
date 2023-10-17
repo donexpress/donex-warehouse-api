@@ -181,9 +181,9 @@ export const createStoragePlan = async (data, user_id: number) => {
   data.order_number = `DEWMXI${date.getFullYear()}${month}${date.getDate()}${number}${
     count + 1
   }`;
-  //if (!data.user_id) {
-    //data.user_id = user_id;
-  //}
+  if (!data.user_id) {
+    data.user_id = user_id;
+  }
   if (data.images) {
     data.is_images = true;
   }
