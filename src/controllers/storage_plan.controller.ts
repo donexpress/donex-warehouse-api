@@ -112,7 +112,6 @@ export const createMulti = async (req: Request, res: Response) => {
       storage_plan_body,
       user_id
     );
-    console.log(storage_plan);
     if (storage_plan instanceof StoragePlan) {
       storage_plan_save.push(storage_plan);
     } else {
