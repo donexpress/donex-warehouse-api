@@ -223,7 +223,6 @@ export const removeStoragePlan = async (id: number) => {
 
 export const createStoragePlanMulti = async (data, user_id: number) => {
   const save_storage_plan = await createStoragePlan(data, user_id);
-  console.log(save_storage_plan);
 
   if (save_storage_plan instanceof StoragePlan) {
     let package_list = [];
@@ -250,12 +249,11 @@ export const createStoragePlanMulti = async (data, user_id: number) => {
         operator_picture: '',
       };
       const result = await createPackingList(packing_list);
-      console.log(result);
 
       if (result instanceof PackingList) {
         package_list.push(result);
       } else {
-        return null;
+        return result.message;
       }
     }
     if (package_list.length === save_storage_plan.box_amount) {
@@ -264,7 +262,7 @@ export const createStoragePlanMulti = async (data, user_id: number) => {
       return null;
     }
   } else {
-    return save_storage_plan.error;
+    return null;
   }
 };
 
