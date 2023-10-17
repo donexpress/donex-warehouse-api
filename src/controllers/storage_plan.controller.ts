@@ -91,7 +91,9 @@ export const createMulti = async (req: Request, res: Response) => {
   for (let i = 0; i < storage_plans.length; i++) {
     const storage_plan_body = storage_plans[i];
     storage_plan_body.state = states.entry_plan.to_be_storage.value;
+    console.log(storage_plan_body.username);
     const user = await getUserByUsername(storage_plan_body.username);
+    console.log(user);
     const AOWarehouse = await getAosWarehouseByCode(
       storage_plan_body.warehouse_code
     );
