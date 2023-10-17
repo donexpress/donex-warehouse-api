@@ -82,9 +82,9 @@ export const create = async (req: Request, res: Response) => {
 };
 
 export const createMulti = async (req: Request, res: Response) => {
-  const user = getCurrentUser(req);
+  const current_user = getCurrentUser(req);
   //@ts-ignore
-  const user_id = parseInt(user.id);
+  const user_id = parseInt(current_user.id);
   const storage_plans = req.body;
   let storage_plan_save = [];
   for (let i = 0; i < storage_plans.length; i++) {
@@ -94,7 +94,7 @@ export const createMulti = async (req: Request, res: Response) => {
     const AOWarehouse = await getAosWarehouseByCode(
       storage_plan_body.warehouse_code
     );
-    storage_plan_body.user_id = user instanceof User ? user.id : null;
+    storage_plan_body.user_id = user instanceof User ? user.id : user_id;
     storage_plan_body.warehouse_id =
       AOWarehouse instanceof AOSWarehouse ? AOWarehouse.id : null;
     const storage_plan = await createStoragePlanMulti(
