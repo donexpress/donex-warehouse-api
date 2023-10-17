@@ -110,10 +110,10 @@ export const countUser = async () => {
   });
 };
 
-export const getUserByUsername = async (username: string): Promise<User> => {
+export const getUserByUsername = async (username: string): Promise<User | null> => {
   return await AppDataSource.manager.findOne(User, {
     where: {
-      username: username,
+      username
     },
   });
 };
