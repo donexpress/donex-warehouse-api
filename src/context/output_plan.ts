@@ -329,7 +329,7 @@ export const updateOutputPlan = async (id: number, data) => {
     const output_plan = await showOutputPlan(id);
     await dispatchBulkBoxes(output_plan.case_numbers);
   }
-  if (exitPlan.case_numbers.length !== stored.length && data.case_numbers.length > 0) {
+  if (data.case_numbers.length !== stored.length && data.case_numbers.length > 0) {
     return { warning: 'stored' };
   }
   return result;
