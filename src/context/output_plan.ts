@@ -427,7 +427,7 @@ export const returnBoxes = async (id: number, data) => {
 export const nonBoxesOnExitPlans = async (excluded_output_plan: number, case_numbers: string[]) => {
   const none_store: string[] = [];
   let stored: string[] = [];
-  const output_plans = await AppDataSource.manager.find(OutputPlan, {where: {id: Not(excluded_output_plan)}})
+  const output_plans = await AppDataSource.manager.find(OutputPlan, {where: {id: Not(excluded_output_plan), state: Not(states.output_plan.cancelled.value)}})
   output_plans.forEach(op => {
     stored = stored.concat(op.case_numbers)
   })
