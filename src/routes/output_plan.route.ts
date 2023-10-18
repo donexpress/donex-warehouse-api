@@ -23,6 +23,11 @@ router.post(
   verifyTokenPresent,
   OutputPlanController.getByFilter
 );
+router.post(
+  '/api/v1/output_plan/get_non_boxes_on_output_plans',
+  verifyTokenPresent,
+  OutputPlanController.getNonBoxesOnExitPlans
+);
 router.put(
   '/api/v1/output_plan/:id',
   verifyTokenPresent,
