@@ -1,4 +1,4 @@
-import { Between, FindOneOptions, FindOptionsWhere, ILike, In } from 'typeorm';
+import { Between, FindOneOptions, FindOptionsWhere, ILike, In, Not } from 'typeorm';
 import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { OutputPlan } from '../models/output_plan.model';
@@ -329,8 +329,8 @@ export const updateOutputPlan = async (id: number, data) => {
     const output_plan = await showOutputPlan(id);
     await dispatchBulkBoxes(output_plan.case_numbers);
   }
-  if (exitPlan.case_numbers.length !== stored.length) {
-    return { warining: 'stored' };
+  if (exitPlan.case_numbers.length !== stored.length && data.case_numbers.length > 0) {
+    return { warning: 'stored' };
   }
   return result;
 };
@@ -423,3 +423,18 @@ export const returnBoxes = async (id: number, data) => {
   const result = await repository.update({ id }, data);
   return result;
 };
+
+export const nonBoxesOnExitPlans = async (excluded_output_plan: number, case_numbers: string[]) => {
+  const none_store: string[] = [];
+  let stored: string[] = [];
+  const output_plans = await AppDataSource.manager.find(OutputPlan, {where: {id: Not(excluded_output_plan)}})
+  output_plans.forEach(op => {
+    stored = stored.concat(op.case_numbers)
+  })
+  case_numbers.forEach(cn => {
+    if(stored.find(s => s === cn) === undefined) {
+      none_store.push(cn)
+    }
+  })
+  return none_store
+}

@@ -9,6 +9,7 @@ import {
   getOutputPlanByFilter,
   getOutputPlanByState,
   listOutputPlan,
+  nonBoxesOnExitPlans,
   removeOutputPlan,
   returnBoxes,
   showOutputPlan,
@@ -170,6 +171,16 @@ export const removeBoxes = async (req: Request, res: Response) => {
     } else {
       res.status(200).json(result);
     }
+  } catch (e) {
+    console.log(e);
+    res.status(500).send(e);
+  }
+};
+
+export const getNonBoxesOnExitPlans = async (req: Request, res: Response) => {
+  try {
+    const result = await nonBoxesOnExitPlans(req.body.excluded_output_plan, req.body.case_numbers);
+    res.send(result)
   } catch (e) {
     console.log(e);
     res.status(500).send(e);
