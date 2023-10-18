@@ -330,7 +330,7 @@ export const updateOutputPlan = async (id: number, data) => {
     await dispatchBulkBoxes(output_plan.case_numbers);
   }
   if (exitPlan.case_numbers.length !== stored.length) {
-    return { warining: 'stored' };
+    return { warning: 'stored' };
   }
   return result;
 };
