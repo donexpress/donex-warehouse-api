@@ -7,8 +7,6 @@ import { AppDataSource } from './config/ormconfig';
 import routeInstantiator from './routes';
 import { appMode } from './config/app';
 import { LoggerMiddleware, fetchcurrentUser, verifyTokenPresent } from './middlewares';
-import { PackingList } from './models/packing_list.model';
-import { MoreThan } from 'typeorm';
 
 const app: Express = express();
 const PORT = process.env.PORT ?? 3000;
@@ -35,11 +33,8 @@ if (appMode() === 'api') {
 }
 
 AppDataSource.initialize()
-  .then(async () => {
+  .then(() => {
     console.log(`Database sync successfully`);
-    const repo = await AppDataSource.getRepository(PackingList)
-    await repo.delete({id: MoreThan(879)})
-    console.log("done")
   })
   .catch((error) => console.log(error));
 
