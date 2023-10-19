@@ -82,7 +82,7 @@ export const createPackingList = async (data) => {
     const result = await repository.create(data);
     return await validateContext(AppDataSource, result);
   } else {
-    return null
+    return null;
   }
 };
 
@@ -175,7 +175,10 @@ export const chgeckPackingListCaseNumberByUser = async (
   return storage_plan.user_id === user_id;
 };
 
-export const exist_expansion_number = async (expansion_number: string, storage_plan_id: number): Promise<boolean> => {
+export const exist_expansion_number = async (
+  expansion_number: string,
+  storage_plan_id: number
+): Promise<boolean> => {
   const check_count = await AppDataSource.manager.count(PackingList, {
     where: {
       box_number: Like(`%${expansion_number}%`),
@@ -183,36 +186,104 @@ export const exist_expansion_number = async (expansion_number: string, storage_p
     },
   });
 
-  return check_count > 0
-}
+  return check_count > 0;
+};
 
-export const isStored = async(case_number: string): Promise<boolean> => {
+export const isStored = async (case_number: string): Promise<boolean> => {
   const packing_list = await AppDataSource.manager.findOne(PackingList, {
     where: { case_number },
   });
   if (packing_list) {
     const package_shelf = await getDataByPackageId(packing_list.id);
-    return package_shelf.length > 0
+    return package_shelf.length > 0;
   }
-  return false
-}
+  return false;
+};
 
-export const dispatchBox = async(case_number: string) => {
+export const dispatchBox = async (case_number: string) => {
   const repository = await AppDataSource.getRepository(PackingList);
-  return repository.update({case_number}, {dispatched: true, dispatched_time: (new Date()).toISOString()})
-}
+  return repository.update(
+    { case_number },
+    { dispatched: true, dispatched_time: new Date().toISOString() }
+  );
+};
 
-export const returnDispatchedBox = async(case_number: string) => {
+export const returnDispatchedBox = async (case_number: string) => {
   const repository = await AppDataSource.getRepository(PackingList);
-  return repository.update({case_number}, {dispatched: false, dispatched_time: null})
-}
+  return repository.update(
+    { case_number },
+    { dispatched: false, dispatched_time: null }
+  );
+};
 
-export const dispatchBulkBoxes = async(case_numbers: string[]) => {
+export const dispatchBulkBoxes = async (case_numbers: string[]) => {
   const repository = await AppDataSource.getRepository(PackingList);
-  return repository.update({case_number: In(case_numbers)}, {dispatched: true, dispatched_time: (new Date()).toISOString()})
-}
+  return repository.update(
+    { case_number: In(case_numbers) },
+    { dispatched: true, dispatched_time: new Date().toISOString() }
+  );
+};
 
-export const returnDispatchedBulkBoxes = async(case_numbers: string[]) => {
+export const returnDispatchedBulkBoxes = async (case_numbers: string[]) => {
   const repository = await AppDataSource.getRepository(PackingList);
-  return repository.update({case_number: In(case_numbers)}, {dispatched: false, dispatched_time: null})
-}
+  return repository.update(
+    { case_number: In(case_numbers) },
+    { dispatched: false, dispatched_time: null }
+  );
+};
+
+export const createBulkPackingList = async (
+  storage_plan_id: number,
+  data: PackingList[]
+) => {
+  const storage_plan_repository = await AppDataSource.getRepository(
+    StoragePlan
+  );
+  const storage_plan = await storage_plan_repository.findOne({
+    where: { id: storage_plan_id },
+  });
+  const repository = await AppDataSource.getRepository(PackingList);
+  const check_count = await repository.find({
+    where: {
+      storage_plan_id: Not(storage_plan_id),
+    },
+  });
+  if (!storage_plan) {
+    return null;
+  }
+  const to_add: PackingList[] = [];
+  let count: number = await countPackingList();
+  data.forEach((pl) => {
+    let number = '';
+    for (let i = 0; i < 3 - (count + 1).toString().length; i++) {
+      number += '0';
+    }
+    pl.case_number = `${storage_plan.order_number}U${number}${count + 1}`;
+    if (!pl.client_weight) {
+      pl.client_weight = 0;
+    }
+    if (!pl.client_length) {
+      pl.client_length = 0;
+    }
+    if (!pl.client_width) {
+      pl.client_width = 0;
+    }
+    if (!pl.client_weight) {
+      pl.client_height = 0;
+    }
+    if(check_count.filter(el => el.box_number === pl.box_number).length === 0 || storage_plan.rejected_boxes) {
+      to_add.push(pl)
+      count ++;
+    }
+  });
+  const result = await repository.create(to_add)
+  return await validateContext(AppDataSource, result)
+  //     // box_number: Like(`%${splitLastOccurrence(data.box_number, 'U')[0]}%`),
+
+  // if (check_count === 0 || storage_plan.rejected_boxes) {
+  //   const result = await repository.create(data);
+  //   return await validateContext(AppDataSource, result);
+  // } else {
+  //   return null;
+  // }
+};
