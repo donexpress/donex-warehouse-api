@@ -28,6 +28,11 @@ router.post(
   verifyTokenPresent,
   OutputPlanController.getNonBoxesOnExitPlans
 );
+router.post(
+  '/api/v1/output_plan/pull_boxes',
+  verifyTokenPresent,
+  OutputPlanController.pull_boxes
+);
 router.put(
   '/api/v1/output_plan/:id',
   verifyTokenPresent,

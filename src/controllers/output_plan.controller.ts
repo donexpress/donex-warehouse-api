@@ -10,6 +10,7 @@ import {
   getOutputPlanByState,
   listOutputPlan,
   nonBoxesOnExitPlans,
+  pullBoxes,
   removeOutputPlan,
   returnBoxes,
   showOutputPlan,
@@ -186,3 +187,14 @@ export const getNonBoxesOnExitPlans = async (req: Request, res: Response) => {
     res.status(500).send(e);
   }
 };
+
+
+export const pull_boxes = async(req:Request, res: Response) => {
+  try {
+    const result = await pullBoxes(req.body)
+    res.send(result)
+  } catch(e) {
+    console.log(e)
+    res.status(500).send(e)
+  }
+}

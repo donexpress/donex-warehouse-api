@@ -278,12 +278,15 @@ export const createBulkPackingList = async (
   });
   const result = await repository.create(to_add)
   return await validateContext(AppDataSource, result)
-  //     // box_number: Like(`%${splitLastOccurrence(data.box_number, 'U')[0]}%`),
-
-  // if (check_count === 0 || storage_plan.rejected_boxes) {
-  //   const result = await repository.create(data);
-  //   return await validateContext(AppDataSource, result);
-  // } else {
-  //   return null;
-  // }
 };
+
+export const getPackingListFromCaseNumbers = async(case_numbers: string[]): Promise<PackingList[]> => {
+  const package_list = await AppDataSource.manager.find(PackingList, {where:{case_number: In(case_numbers)}})
+  const mod_packing_list = []
+  for (let i = 0; i < package_list.length; i++) {
+    const element = package_list[i];
+    const package_shelf = await getDataByPackageId(element.id);
+    mod_packing_list.push({ ...element, package_shelf });
+  }
+  return mod_packing_list
+}
