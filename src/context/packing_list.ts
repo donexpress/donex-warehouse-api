@@ -3,7 +3,7 @@ import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { PackingList } from '../models/packing_list.model';
 import { StoragePlan } from '../models/storage_plan.model';
-import { getDataByPackageId } from './shelf_package';
+import { getDataByPackageId, getDataByPackagesIds } from './shelf_package';
 import { splitLastOccurrence } from '../helpers';
 
 export const listPackingList = async (
@@ -290,3 +290,20 @@ export const getPackingListFromCaseNumbers = async(case_numbers: string[]): Prom
   }
   return mod_packing_list
 }
+
+export const getPackingListByCaseNumbers = async (case_number: string[]) => {
+  const packing_list = await AppDataSource.manager.find(PackingList, {
+    where: { case_number: In(case_number) },
+  });
+  const package_shelf = await getDataByPackagesIds(packing_list.map(pl => pl.id));
+  const mod_packing_list = []
+  packing_list.forEach(pl => {
+    const ps = package_shelf.find(l_ps => l_ps.package_id === pl.id)
+    if(!ps) {
+      mod_packing_list.push(pl)
+    } else {
+      mod_packing_list.push({...pl, package_shelf: ps})
+    }
+  })
+  return mod_packing_list;
+};
