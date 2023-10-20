@@ -23,12 +23,14 @@ export const upload_file = async (req: Request, res: Response) => {
     .on(
       'file',
       function (
-        _name: string, file: NodeJS.ReadableStream, info: {filename: string, encoding: string, mimeType: string}
+        _name: string,
+        file: NodeJS.ReadableStream,
+        info: { filename: string; encoding: string; mimeType: string }
       ) {
         const randomFilename = randomStr(32);
         extension = info.mimeType.split('/')[1];
         saveToPath = path
-          .join(os.tmpdir(), randomFilename + '.'+extension)
+          .join(os.tmpdir(), randomFilename + '.' + extension)
           .toString();
         file.pipe(fs.createWriteStream(saveToPath));
       }
@@ -47,14 +49,53 @@ export const upload_file = async (req: Request, res: Response) => {
 };
 
 export const remove_file = async (req: Request, res: Response) => {
-    try {
-    const url = req.body.url as string
-    const arr = url.split('/')
-    const filename =  arr[arr.length-1]
-    await removeFile(filename)
-    res.status(200).send(url)
-    } catch (e) {
-        console.log(e)
-        res.status(500).json(e)
-    }
-}
+  try {
+    const url = req.body.url as string;
+    const arr = url.split('/');
+    const filename = arr[arr.length - 1];
+    await removeFile(filename);
+    res.status(200).send(url);
+  } catch (e) {
+    console.log(e);
+    res.status(500).json(e);
+  }
+};
+
+export const upload = async (req: Request, res: Response) => {
+  let saveToPath = null;
+  let extension = null;
+  const busboy = Busboy({
+    headers: req.headers,
+    limits: {
+      fileSize: 5 * 1024 * 1024,
+    },
+  });
+  busboy
+    .on(
+      'file',
+      function (
+        _name: string,
+        file: NodeJS.ReadableStream,
+        info: { filename: string; encoding: string; mimeType: string }
+      ) {
+        const randomFilename = randomStr(32);
+        extension = info.mimeType.split('/')[1];
+        saveToPath = path
+          .join(os.tmpdir(), randomFilename + '.' + extension)
+          .toString();
+        file.pipe(fs.createWriteStream(saveToPath));
+      }
+    )
+    .on('finish', async function () {
+      try {
+        const urls = await uploadFileToStore(saveToPath, extension);
+        fs.unlink(saveToPath, () => {});
+        console.log(urls)
+        return urls;
+      } catch (e) {
+        console.error(e.toString());
+        return null;
+      }
+    });
+  return req.pipe(busboy);
+};
