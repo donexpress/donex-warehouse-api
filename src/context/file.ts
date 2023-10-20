@@ -3,7 +3,8 @@ import oss from 'ali-oss';
 
 export const uploadFileToStore = async (
   buffer: string,
-  extension: string
+  extension: string,
+  name: string | null = null
 ) => {
   const bucket = 'warehouse-sav01ok';
   let tmp_extension: string = extension
@@ -13,7 +14,7 @@ export const uploadFileToStore = async (
     tmp_extension = 'xlsx'
   }
   console.log(bucket, buffer, tmp_extension);
-  const filename = randomStr(32) + '.' + tmp_extension;
+  const filename = name === null ? randomStr(32) + '.' + tmp_extension : name + '.'+tmp_extension;
   const store = new oss({
     region: 'oss-us-west-1',
     accessKeyId: process.env.ALIYUN_PUBLIC_KEY,

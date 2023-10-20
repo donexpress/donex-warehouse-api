@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import {
   countPackingList,
+  createBulkPackingList,
   createPackingList,
   exist_expansion_number,
   getPackingListByBoxNumber,
@@ -131,4 +132,17 @@ export const getByBoxNumber = async (req:Request, res: Response) => {
 export const existExpansionNumber =  async (req: Request, res: Response) => {
   const data: {expansion_number: string, storage_plan_id: number} = req.body;
   res.send(await exist_expansion_number(data.expansion_number, data.storage_plan_id))
+}
+
+export const bulkCreate = async (req: Request, res: Response) => {
+  const result = await createBulkPackingList(req.body.storage_plan_id, req.body.data);
+  if(result == null) {
+    res.status(409).json(result)
+    return;
+  }
+  if (result.length > 0) {
+    res.status(201).json(result);
+  } else {
+    res.status(422).json(result);
+  }
 }

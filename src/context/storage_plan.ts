@@ -1,4 +1,4 @@
-import { FindOptionsWhere, ILike } from 'typeorm';
+import { FindOptionsWhere, ILike, In } from 'typeorm';
 import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { StoragePlan } from '../models/storage_plan.model';
@@ -23,7 +23,7 @@ export const listStoragePlan = async (
 ) => {
   let where: FindOptionsWhere<StoragePlan> | FindOptionsWhere<StoragePlan>[] = [
     { customer_order_number: query },
-    { order_number: query},
+    { order_number: query },
   ];
 
   if (state.trim().length !== 0) {
@@ -289,3 +289,46 @@ export const changeStoragePlanState = async (id: number, state) => {
 
   return result;
 };
+
+export const filterStoragePlan = async (
+  query: string,
+) => {
+  let where: FindOptionsWhere<StoragePlan> | FindOptionsWhere<StoragePlan>[] = [
+    { customer_order_number: query },
+    { order_number: query },
+  ];
+
+  const storage_plans = await AppDataSource.manager.find(StoragePlan, {
+    where,
+    order: {
+      id: 'DESC',
+    },
+  });
+
+  const data = [];
+  for (let i = 0; i < storage_plans.length; i++) {
+    const storage_plan = storage_plans[i];
+    let packing_list = await getPackingListByStoragePlanId(storage_plan.id);
+    if (!packing_list) {
+      packing_list = [];
+    }
+    let storage_state = null;
+    if (storage_plan.state) {
+      const array_states = getStates(states.entry_plan);
+      storage_state = array_states.find((s) => s.value === storage_plan.state);
+    }
+    data.push({
+      ...storage_plan,
+      packing_list,
+      storage_state,
+    });
+  }
+  return data;
+};
+
+export const getStoragePlansbyIds = async(ids: number[]) => {
+  const storage_plans = await AppDataSource.manager.find(StoragePlan, {
+    where: {id: In(ids)}
+  });
+  return storage_plans
+}
