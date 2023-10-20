@@ -16,6 +16,7 @@ import {
   chgeckPackingListCaseNumberByUser,
   dispatchBulkBoxes,
   getPackingListByCaseNumber,
+  getPackingListByCaseNumbers,
   getPackingListFromCaseNumbers,
   isStored,
   returnDispatchedBulkBoxes,
@@ -262,14 +263,14 @@ export const showOutputPlan = async (id: number) => {
       where: { id: result.warehouse_id },
     });
   }
-  const packing_lists = [];
-  for (let i = 0; i < result.case_numbers.length; i++) {
-    const element = result.case_numbers[i];
-    const res = await getPackingListByCaseNumber(element);
-    if (res) {
-      packing_lists.push(res);
-    }
-  }
+  const packing_lists = await getPackingListByCaseNumbers(result.case_numbers);
+  // for (let i = 0; i < result.case_numbers.length; i++) {
+  //   const element = result.case_numbers[i];
+  //   const res = await getPackingListByCaseNumber(element);
+  //   if (res) {
+  //     packing_lists.push(res);
+  //   }
+  // }
   const appendages = await getAppendagesByOutputPlan(id);
   return { ...result, user, warehouse, packing_lists, appendages };
 };
