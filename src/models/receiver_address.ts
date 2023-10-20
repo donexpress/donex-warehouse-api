@@ -11,7 +11,7 @@ import { IsInt, IsOptional, IsPositive, Min } from 'class-validator';
 import { Manifest } from './manifest';
 
 @Entity({ name: 'receiver_addreses' })
-export class ReseiverAddress {
+export class ReceiverAddress {
   @PrimaryGeneratedColumn()
   id: number;
 

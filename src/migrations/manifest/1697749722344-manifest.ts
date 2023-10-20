@@ -22,7 +22,7 @@ export class Manifest1697749722344 implements MigrationInterface {
             type: 'varchar',
           },
           {
-            name: 'order_id',
+            name: 'waybill_id',
             type: 'varchar',
           },
           {

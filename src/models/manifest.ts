@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { IsOptional, IsPositive } from 'class-validator';
 import { SenderAddress } from './sender_address';
-import { ReseiverAddress } from "./receiver_address";
+import { ReceiverAddress } from "./receiver_address";
 
 @Index(['order_id', 'tracking_number', 'state'])
 @Entity({ name: 'manifests' })
@@ -27,7 +27,7 @@ export class Manifest {
   @Column({
     type: 'varchar'
   })
-  order_id: string;
+  waybill_id: string;
 
   @Column({
     type: 'varchar'
@@ -41,7 +41,9 @@ export class Manifest {
   quantity: number;
 
   @Column({
-    type: 'integer'
+    type: 'float',
+    nullable: false,
+    default: 0
   })
   @IsPositive()
   weigth: number;
@@ -63,13 +65,17 @@ export class Manifest {
   item_description: string;
 
   @Column({
-    type: 'integer'
+    type: 'float',
+    nullable: false,
+    default: 0
   })
   @IsPositive()
   shipping_cost: number;
 
   @Column({
-    type: 'integer'
+    type: 'float',
+    nullable: false,
+    default: 0
   })
   @IsPositive()
   sale_price: number;
@@ -118,10 +124,10 @@ export class Manifest {
   @JoinColumn({ name: 'id', referencedColumnName: 'manifest_id' })
   senderAddress: SenderAddress;
 
-  @OneToOne(type => ReseiverAddress, reseiverAddress => reseiverAddress.manifest_id, {
+  @OneToOne(type => ReceiverAddress, receiverAddress => receiverAddress.manifest_id, {
     nullable: true
   })
   @JoinColumn({ name: 'id', referencedColumnName: 'manifest_id' })
-  reseiverAddress: ReseiverAddress;
+  receiverAddress: ReceiverAddress;
 
 }

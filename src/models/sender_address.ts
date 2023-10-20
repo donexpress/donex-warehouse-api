@@ -17,7 +17,7 @@ export class SenderAddress {
 
   @Column({
     type: 'integer',
-    nullable: false
+    nullable: true
   })
   @IsInt()
   @Min(1)
@@ -31,11 +31,13 @@ export class SenderAddress {
 
   @Column({
     type: 'varchar',
+    nullable: true,
   })
   tax_id: string;
 
   @Column({
     type: 'varchar',
+    nullable: true,
   })
   address1: string;
 
@@ -47,31 +49,37 @@ export class SenderAddress {
 
   @Column({
     type: 'varchar',
+    nullable: true,
   })
   city: string;
 
   @Column({
     type: 'varchar',
+    nullable: true,
   })
   state: string;
 
   @Column({
     type: 'varchar',
+    nullable: true,
   })
   country: string;
 
   @Column({
     type: 'varchar',
+    nullable: true,
   })
   code_zip: string;
 
   @Column({
     type: 'varchar',
+    nullable: true,
   })
   phone_number: string;
 
   @Column({
     type: 'varchar',
+    nullable: true,
   })
   email: string;
 
