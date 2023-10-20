@@ -5,6 +5,7 @@ import { PackingList } from '../models/packing_list.model';
 import { StoragePlan } from '../models/storage_plan.model';
 import { getDataByPackageId, getDataByPackagesIds } from './shelf_package';
 import { splitLastOccurrence } from '../helpers';
+import { OutputPlan } from '../models/output_plan.model';
 
 export const listPackingList = async (
   current_page: number,
@@ -150,11 +151,18 @@ export const getPackingListByStoragePlanId = async (
   const packing_list = await AppDataSource.manager.find(PackingList, {
     where: { storage_plan_id },
   });
+  const output_plans = await AppDataSource.manager.find(OutputPlan);
   const mod_packing_list = [];
   for (let i = 0; i < packing_list.length; i++) {
     const pl = packing_list[i];
     const package_shelf = await getDataByPackageId(pl.id);
-    mod_packing_list.push({ ...pl, package_shelf });
+    let output_plan_delivered_number: null | string = null
+    output_plans.forEach(op => {
+      if(op.case_numbers.find(cn => cn === pl.case_number) !== undefined) {
+        output_plan_delivered_number = op.output_number;
+      }
+    })
+    mod_packing_list.push({ ...pl, package_shelf, output_plan_delivered_number });
   }
   return mod_packing_list;
 };
