@@ -1,4 +1,12 @@
-import { Between, FindOneOptions, FindOptionsWhere, ILike, In, Not } from 'typeorm';
+import {
+  Between,
+  FindOneOptions,
+  FindOptionsWhere,
+  ILike,
+  In,
+  MoreThan,
+  Not,
+} from 'typeorm';
 import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { OutputPlan } from '../models/output_plan.model';
@@ -8,6 +16,7 @@ import {
   chgeckPackingListCaseNumberByUser,
   dispatchBulkBoxes,
   getPackingListByCaseNumber,
+  getPackingListFromCaseNumbers,
   isStored,
   returnDispatchedBulkBoxes,
 } from './packing_list';
@@ -17,6 +26,9 @@ import { getCountByState } from '../helpers/states';
 import { AOSWarehouse } from '../models/aos_warehouse.model';
 import { addresses, destinations } from '../config/destination';
 import { OutputPlanFilter } from '../types/OutputPlanFilter';
+import { filterStoragePlan, getStoragePlansbyIds } from './storage_plan';
+import { PackingList } from '../models/packing_list.model';
+import { StoragePlan } from '../models/storage_plan.model';
 
 export const listOutputPlan = async (
   current_page: number,
@@ -324,12 +336,14 @@ export const updateOutputPlan = async (id: number, data) => {
     const output_plan = await showOutputPlan(id);
     console.log(output_plan.case_numbers);
     await returnDispatchedBulkBoxes(output_plan.case_numbers);
-  }
-  else if (data.state === 'dispatched') {
+  } else if (data.state === 'dispatched') {
     const output_plan = await showOutputPlan(id);
     await dispatchBulkBoxes(output_plan.case_numbers);
   }
-  if (exitPlan.case_numbers.length !== stored.length && data.case_numbers.length > 0) {
+  if (
+    exitPlan.case_numbers.length !== stored.length &&
+    data.case_numbers.length > 0
+  ) {
     return { warning: 'stored' };
   }
   return result;
@@ -424,17 +438,117 @@ export const returnBoxes = async (id: number, data) => {
   return result;
 };
 
-export const nonBoxesOnExitPlans = async (excluded_output_plan: number, case_numbers: string[]) => {
+export const nonBoxesOnExitPlans = async (
+  excluded_output_plan: number,
+  case_numbers: string[]
+) => {
   const none_store: string[] = [];
   let stored: string[] = [];
-  const output_plans = await AppDataSource.manager.find(OutputPlan, {where: {id: Not(excluded_output_plan)}})
-  output_plans.forEach(op => {
-    stored = stored.concat(op.case_numbers)
-  })
-  case_numbers.forEach(cn => {
-    if(stored.find(s => s === cn) === undefined) {
-      none_store.push(cn)
+  const output_plans = await AppDataSource.manager.find(OutputPlan, {
+    where: { id: Not(excluded_output_plan) },
+  });
+  output_plans.forEach((op) => {
+    stored = stored.concat(op.case_numbers);
+  });
+  case_numbers.forEach((cn) => {
+    if (stored.find((s) => s === cn) === undefined) {
+      none_store.push(cn);
+    }
+  });
+  return none_store;
+};
+
+export const getNonExcludedOutputPlans = async (excluded_output_plan: number) => {
+  const output_plans = await AppDataSource.manager.find(OutputPlan, {
+    where: { id: Not(excluded_output_plan), state: Not('cancelled'), box_amount: MoreThan(0) },
+  });
+  return output_plans
+};
+
+export const pullBoxes = async ({
+  id,
+  data,
+}: {
+  id: number;
+  data: {
+    case_number: string;
+    warehouse_order_number: string;
+  };
+}) => {
+  let case_numbers: string[] = [];
+  let packing_lists: PackingList[] = [];
+  const error_type = {};
+  if (data.case_number && data.case_number.trim() !== '') {
+    case_numbers = case_numbers.concat(
+      data.case_number.split(',').map((el) => el.trim())
+    );
+  }
+  if (
+    data.warehouse_order_number &&
+    data.warehouse_order_number.trim() !== ''
+  ) {
+    const arr = data.warehouse_order_number.split(',');
+    for (let i = 0; i < arr.length; i++) {
+      const to_search = arr[i];
+      const storage_plans = await filterStoragePlan(to_search.trim());
+      if (storage_plans) {
+        storage_plans.forEach((storage_plan) => {
+          storage_plan.packing_list.forEach((pl: PackingList) => {
+            if (
+              case_numbers.find((cn) => cn === pl.case_number) === undefined
+            ) {
+              packing_lists.push(pl);
+            }
+          });
+        });
+      }
+    }
+  }
+  packing_lists = packing_lists.concat(
+    await getPackingListFromCaseNumbers(case_numbers)
+  );
+  const total = packing_lists.length;
+  // @ts-ignore
+  packing_lists = packing_lists.filter((pl) => pl.package_shelf.length > 0);
+  if (total !== packing_lists.length) {
+    error_type['stored'] = true;
+  }
+  const storage_plan_id: number[] = [];
+  packing_lists.forEach((pl) => {
+    if (storage_plan_id.find((el) => el === pl.storage_plan_id) === undefined) {
+      storage_plan_id.push(pl.storage_plan_id);
+    }
+  });
+  const output_plans: OutputPlan[] = await getNonExcludedOutputPlans(id)
+  const unstored: PackingList[] = []
+  packing_lists.forEach(pl => {
+    let found: boolean = false
+    output_plans.forEach(op => {
+      if(op.case_numbers.find(op_cn => op_cn === pl.case_number)) {
+        found = true;
+      }
+    })
+    if(!found) {
+      unstored.push(pl)
     }
   })
-  return none_store
-}
+  packing_lists = unstored
+  if (total !== packing_lists.length) {
+    error_type['already_used'] = true;
+  }
+  const respository = await AppDataSource.getRepository(OutputPlan)
+  const current = await respository.findOne({where:{id}})
+  console.log(packing_lists)
+  packing_lists.forEach(pl => {
+    if(current.case_numbers.find(c_cn => c_cn === pl.case_number) === undefined) {
+        current.case_numbers.push(pl.case_number)
+    } else {
+      error_type['duplicated'] = true
+    }
+  })
+  const result = await respository.update({id}, current)
+  if(Object.keys(error_type).length > 0) {
+    return error_type
+  }
+  return result
+};

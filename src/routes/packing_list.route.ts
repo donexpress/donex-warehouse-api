@@ -18,6 +18,11 @@ router.post(
   PackingListController.create
 );
 router.post(
+  '/api/v1/packing_list/bulk_create',
+  verifyTokenPresent,
+  PackingListController.bulkCreate
+);
+router.post(
   '/api/v1/packing_list/exist_expasion_number',
   verifyTokenPresent,
   PackingListController.existExpansionNumber
