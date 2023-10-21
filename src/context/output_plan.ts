@@ -459,11 +459,17 @@ export const nonBoxesOnExitPlans = async (
   return none_store;
 };
 
-export const getNonExcludedOutputPlans = async (excluded_output_plan: number) => {
+export const getNonExcludedOutputPlans = async (
+  excluded_output_plan: number
+) => {
   const output_plans = await AppDataSource.manager.find(OutputPlan, {
-    where: { id: Not(excluded_output_plan), state: Not('cancelled'), box_amount: MoreThan(0) },
+    where: {
+      id: Not(excluded_output_plan),
+      state: Not('cancelled'),
+      box_amount: MoreThan(0),
+    },
   });
-  return output_plans
+  return output_plans;
 };
 
 export const pullBoxes = async ({
@@ -520,36 +526,43 @@ export const pullBoxes = async ({
       storage_plan_id.push(pl.storage_plan_id);
     }
   });
-  const output_plans: OutputPlan[] = await getNonExcludedOutputPlans(id)
-  const unstored: PackingList[] = []
-  packing_lists.forEach(pl => {
-    let found: boolean = false
-    output_plans.forEach(op => {
-      if(op.case_numbers.find(op_cn => op_cn === pl.case_number)) {
+  const output_plans: OutputPlan[] = await getNonExcludedOutputPlans(id);
+  const unstored: PackingList[] = [];
+  packing_lists.forEach((pl) => {
+    let found: boolean = false;
+    output_plans.forEach((op) => {
+      if (op.case_numbers.find((op_cn) => op_cn === pl.case_number)) {
         found = true;
       }
-    })
-    if(!found) {
-      unstored.push(pl)
+    });
+    if (!found) {
+      unstored.push(pl);
     }
-  })
-  packing_lists = unstored
+  });
+  packing_lists = unstored;
   if (total !== packing_lists.length) {
     error_type['already_used'] = true;
   }
-  const respository = await AppDataSource.getRepository(OutputPlan)
-  const current = await respository.findOne({where:{id}})
-  console.log(packing_lists)
-  packing_lists.forEach(pl => {
-    if(current.case_numbers.find(c_cn => c_cn === pl.case_number) === undefined) {
-        current.case_numbers.push(pl.case_number)
+  const respository = await AppDataSource.getRepository(OutputPlan);
+  const current = await respository.findOne({ where: { id } });
+  console.log(packing_lists);
+  packing_lists.forEach((pl) => {
+    if (
+      current.case_numbers.find((c_cn) => c_cn === pl.case_number) === undefined
+    ) {
+      current.case_numbers.push(pl.case_number);
     } else {
-      error_type['duplicated'] = true
+      error_type['duplicated'] = true;
     }
-  })
-  const result = await respository.update({id}, current)
-  if(Object.keys(error_type).length > 0) {
-    return error_type
+  });
+  const box_amount = current.case_numbers.length;
+  if (box_amount > 0) {
+    current.output_boxes = box_amount;
+    current.box_amount = box_amount;
   }
-  return result
+  const result = await respository.update({ id }, current);
+  if (Object.keys(error_type).length > 0) {
+    return error_type;
+  }
+  return result;
 };
