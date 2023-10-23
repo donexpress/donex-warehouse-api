@@ -486,9 +486,9 @@ export const pullBoxes = async ({
   let packing_lists: PackingList[] = [];
   const error_type = {};
   if (data.case_number && data.case_number.trim() !== '') {
-    case_numbers = case_numbers.concat(
-      data.case_number.split(',').map((el) => el.trim())
-    );
+    const split = data.case_number.split(',').map((el) => el.trim())
+    case_numbers = case_numbers.concat(split);
+
   }
   if (
     data.warehouse_order_number &&
@@ -545,7 +545,6 @@ export const pullBoxes = async ({
   }
   const respository = await AppDataSource.getRepository(OutputPlan);
   const current = await respository.findOne({ where: { id } });
-  console.log(packing_lists);
   packing_lists.forEach((pl) => {
     if (
       current.case_numbers.find((c_cn) => c_cn === pl.case_number) === undefined
