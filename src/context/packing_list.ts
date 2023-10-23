@@ -156,13 +156,17 @@ export const getPackingListByStoragePlanId = async (
   for (let i = 0; i < packing_list.length; i++) {
     const pl = packing_list[i];
     const package_shelf = await getDataByPackageId(pl.id);
-    let output_plan_delivered_number: null | string = null
-    output_plans.forEach(op => {
-      if(op.case_numbers.find(cn => cn === pl.case_number) !== undefined) {
+    let output_plan_delivered_number: null | string = null;
+    output_plans.forEach((op) => {
+      if (op.case_numbers.find((cn) => cn === pl.case_number) !== undefined) {
         output_plan_delivered_number = op.output_number;
       }
-    })
-    mod_packing_list.push({ ...pl, package_shelf, output_plan_delivered_number });
+    });
+    mod_packing_list.push({
+      ...pl,
+      package_shelf,
+      output_plan_delivered_number,
+    });
   }
   return mod_packing_list;
 };
@@ -279,39 +283,49 @@ export const createBulkPackingList = async (
     if (!pl.client_weight) {
       pl.client_height = 0;
     }
-    if(check_count.filter(el => el.box_number === pl.box_number).length === 0 || storage_plan.rejected_boxes) {
-      to_add.push(pl)
-      count ++;
+    if (
+      check_count.filter((el) => el.box_number === pl.box_number).length ===
+        0 ||
+      storage_plan.rejected_boxes
+    ) {
+      to_add.push(pl);
+      count++;
     }
   });
-  const result = await repository.create(to_add)
-  return await validateContext(AppDataSource, result)
+  const result = await repository.create(to_add);
+  return await validateContext(AppDataSource, result);
 };
 
-export const getPackingListFromCaseNumbers = async(case_numbers: string[]): Promise<PackingList[]> => {
-  const package_list = await AppDataSource.manager.find(PackingList, {where:{case_number: In(case_numbers)}})
-  const mod_packing_list = []
+export const getPackingListFromCaseNumbers = async (
+  case_numbers: string[]
+): Promise<PackingList[]> => {
+  const package_list = await AppDataSource.manager.find(PackingList, {
+    where: [{ case_number: In(case_numbers)},{ box_number: In(case_numbers) }],
+  });
+  const mod_packing_list = [];
   for (let i = 0; i < package_list.length; i++) {
     const element = package_list[i];
     const package_shelf = await getDataByPackageId(element.id);
     mod_packing_list.push({ ...element, package_shelf });
   }
-  return mod_packing_list
-}
+  return mod_packing_list;
+};
 
 export const getPackingListByCaseNumbers = async (case_number: string[]) => {
   const packing_list = await AppDataSource.manager.find(PackingList, {
     where: { case_number: In(case_number) },
   });
-  const package_shelf = await getDataByPackagesIds(packing_list.map(pl => pl.id));
-  const mod_packing_list = []
-  packing_list.forEach(pl => {
-    const ps = package_shelf.find(l_ps => l_ps.package_id === pl.id)
-    if(!ps) {
-      mod_packing_list.push(pl)
+  const package_shelf = await getDataByPackagesIds(
+    packing_list.map((pl) => pl.id)
+  );
+  const mod_packing_list = [];
+  packing_list.forEach((pl) => {
+    const ps = package_shelf.find((l_ps) => l_ps.package_id === pl.id);
+    if (!ps) {
+      mod_packing_list.push(pl);
     } else {
-      mod_packing_list.push({...pl, package_shelf: ps})
+      mod_packing_list.push({ ...pl, package_shelf: ps });
     }
-  })
+  });
   return mod_packing_list;
 };
