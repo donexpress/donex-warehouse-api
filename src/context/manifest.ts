@@ -1,11 +1,11 @@
 import { ValidationError } from 'class-validator';
 import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
-import { Manifest } from '../models/manifest';
-import { ReceiverAddress } from '../models/receiver_address';
-import { SenderAddress } from '../models/sender_address';
+import { Manifest } from '../models/manifest.model';
+import { ConsigneeAddress } from '../models/consignee_address.model';
+import { ShipperAddress } from '../models/shipper_address.model';
 
-export const find = async (
+export const findManifest = async (
   current_page: number,
   number_of_rows: number,
   waybill_id: string
@@ -17,7 +17,7 @@ export const find = async (
     order: {
       created_at: 'DESC',
     },
-    relations: ['sender_addreses', 'receiver_addreses'],
+    relations: ['shipperAddress', 'consigneeAddress'],
   });
 };
 
@@ -27,48 +27,53 @@ export const findByTracking = async (tracking: string) => {
   });
 };
 
-export const create = async (manifest_data) => {
+export const findByWaybillId = async (waybill_id: string) => {
+  return await AppDataSource.manager.find(Manifest, {
+    where: { waybill_id },
+  });
+};
+
+export const countManifest = async (waybill_id) => {
+  return AppDataSource.manager.count(Manifest, { where: { waybill_id } });
+};
+
+export const createManifest = async (
+  manifest_data,
+  shipper_data,
+  consignee_data
+) => {
   const repository = await AppDataSource.getRepository(Manifest);
   const manifest = repository.create(manifest_data);
-  const save_manifest = await validateContext(AppDataSource, manifest);
+  const manifest_save = await validateContext(AppDataSource, manifest);
+  console.log(manifest_save);
 
-  if (save_manifest instanceof Manifest) {
-    let sender = {
-      manifest_id: save_manifest.id,
-      name_sender: manifest_data.name_sender,
-      tax_id: manifest_data.tax_id_sender,
-      address1: manifest_data.address1_sender,
-      address2: manifest_data.address2_sender,
-      city: manifest_data.city_sender,
-      country: manifest_data.country_sender,
-      code_zip: manifest_data.code_zip_sender,
-      phone_number: manifest_data.phone_number_sender,
-      email: manifest_data.email_sender,
-    };
+  if (manifest_save instanceof Manifest) {
+    await createShipperAddress({
+      ...shipper_data,
+      manifest_id: manifest_save.id,
+    });
 
-    const repository_sender = await AppDataSource.getRepository(SenderAddress);
-    const sender_data = repository_sender.create(sender);
-    await validateContext(AppDataSource, sender_data);
-
-    let receiver = {
-      manifest_id: save_manifest.id,
-      name_sender: manifest_data.name_receiver,
-      tax_id: manifest_data.tax_id_receiver,
-      address1: manifest_data.address1_receiver,
-      address2: manifest_data.address2_receiver,
-      city: manifest_data.city_receiver,
-      country: manifest_data.country_receiver,
-      code_zip: manifest_data.code_zip_receiver,
-      phone_number: manifest_data.phone_number_receiver,
-      email: manifest_data.email_receiver,
-    };
-
-    const repository_receiver = await AppDataSource.getRepository(
-      ReceiverAddress
-    );
-    const receiver_data = repository_receiver.create(receiver);
-    await validateContext(AppDataSource, receiver_data);
+    await createConsigneeAddress({
+      ...consignee_data,
+      manifest_id: manifest_save.id,
+    });
   }
+
+  return manifest_save;
+};
+
+export const createShipperAddress = async (shipper_addreses) => {
+  const repository_shipper = await AppDataSource.getRepository(ShipperAddress);
+  const shipper_data = repository_shipper.create(shipper_addreses);
+  await validateContext(AppDataSource, shipper_data);
+};
+
+export const createConsigneeAddress = async (consignee_addreses) => {
+  const repository_shipper = await AppDataSource.getRepository(
+    ConsigneeAddress
+  );
+  const consignee_data = repository_shipper.create(consignee_addreses);
+  await validateContext(AppDataSource, consignee_data);
 };
 
 export const updateManifest = async (

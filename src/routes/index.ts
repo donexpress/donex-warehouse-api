@@ -23,6 +23,7 @@ import fileRoute from './file.route';
 import shelfPackageRoute from './shelf_package.route';
 import operationInstruction from './operation_instruction.route'
 import appendixRoute from './appendix.route'
+import manifestRouter from "./manifest.route";
 
 export default (app) => {
   app.use('/', organizationRouter);
@@ -50,5 +51,6 @@ export default (app) => {
   app.use('/', shelfPackageRoute);
   app.use('/', operationInstruction);
   app.use('/', appendixRoute);
+  app.use('/', manifestRouter);
   app.get('/api/v1', (req, res) => res.sendStatus(200));
 };

@@ -14,4 +14,12 @@ export const splitLastOccurrence = (str, substring) => {
   const before = str.slice(0, lastIndex);
   const after = str.slice(lastIndex + 1);
   return [before, after];
-}
+};
+
+export const getValues = (obj) => {
+  const obj_array = [];
+  for (const [key, value] of Object.entries(obj)) {
+    obj_array.push(value);
+  }
+  return obj_array;
+};

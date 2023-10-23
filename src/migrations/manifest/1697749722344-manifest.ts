@@ -14,7 +14,19 @@ export class Manifest1697749722344 implements MigrationInterface {
             isPrimary: true,
           },
           {
-            name: 'manifest_name',
+            name: 'waybill_id',
+            type: 'varchar',
+          },
+          {
+            name: 'bag_code',
+            type: 'varchar',
+          },
+          {
+            name: 'bag_id',
+            type: 'varchar',
+          },
+          {
+            name: 'tracking_number',
             type: 'varchar',
           },
           {
@@ -22,11 +34,25 @@ export class Manifest1697749722344 implements MigrationInterface {
             type: 'varchar',
           },
           {
-            name: 'waybill_id',
+            name: 'manifest_name',
             type: 'varchar',
           },
           {
-            name: 'tracking_number',
+            name: 'weigth',
+            type: 'varchar'
+          },
+          {
+            name: 'unit_weigth',
+            type: 'float',
+            default: 0
+          },
+          {
+            name: 'total_declare',
+            type: 'float',
+            default: 0
+          },
+          {
+            name: 'currency',
             type: 'varchar',
           },
           {
@@ -40,11 +66,6 @@ export class Manifest1697749722344 implements MigrationInterface {
           {
             name: 'quantity',
             type: 'integer',
-          },
-          {
-            name: 'weigth',
-            type: 'float',
-            default: 0
           },
           {
             name: 'pieces',
@@ -61,21 +82,8 @@ export class Manifest1697749722344 implements MigrationInterface {
             default: 0
           },
           {
-            name: 'currency',
-            type: 'varchar',
-          },
-          {
             name: 'state',
             type: 'varchar',
-          },
-          {
-            name: 'receiver_country',
-            type: 'varchar',
-          },
-          {
-            name: 'sender_country',
-            type: 'varchar',
-            isNullable: true,
           },
           {
             name: 'paid',
@@ -91,6 +99,10 @@ export class Manifest1697749722344 implements MigrationInterface {
             name: 'bill_state',
             type: 'varchar',
             isNullable: true,
+          },
+          {
+            name: 'carrier',
+            type: 'varchar'
           },
           {
             name: 'created_at',
@@ -109,7 +121,7 @@ export class Manifest1697749722344 implements MigrationInterface {
     await queryRunner.createIndex(
       'manifests',
       new TableIndex({
-        columnNames: ['order_id'],
+        columnNames: ['waybill_id'],
       })
     );
     await queryRunner.createIndex(

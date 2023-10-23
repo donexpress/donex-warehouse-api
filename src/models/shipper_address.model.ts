@@ -8,16 +8,16 @@ import {
   OneToOne,
 } from 'typeorm';
 import { IsInt, IsOptional, IsPositive, Min } from 'class-validator';
-import { Manifest } from './manifest';
+import { Manifest } from './manifest.model';
 
-@Entity({ name: 'receiver_addreses' })
-export class ReceiverAddress {
+@Entity({ name: 'shipper_addresses' })
+export class ShipperAddress {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({
     type: 'integer',
-    nullable: false
+    nullable: true
   })
   @IsInt()
   @Min(1)
@@ -27,51 +27,71 @@ export class ReceiverAddress {
     type: 'varchar',
     nullable: true,
   })
-  name_receiver: string;
-
-  @Column({
-    type: 'varchar',
-  })
-  tax_id: string;
-
-  @Column({
-    type: 'varchar',
-  })
-  address1: string;
+  name: string;
 
   @Column({
     type: 'varchar',
     nullable: true,
   })
+  tax_id: string;
+
+  @Column({
+    type: 'varchar',
+    nullable: true,
+  })
+  address: string;
+
+  @Column({
+    type: 'varchar',
+    nullable: true
+  })
   address2: string;
 
   @Column({
     type: 'varchar',
+    nullable: true,
   })
   city: string;
 
   @Column({
     type: 'varchar',
+    nullable: true,
+  })
+  city_code: string;
+
+  @Column({
+    type: 'varchar',
+    nullable: true,
   })
   state: string;
 
   @Column({
     type: 'varchar',
+    nullable: true,
   })
   country: string;
 
   @Column({
     type: 'varchar',
+    nullable: true,
+  })
+  country_code: string;
+
+  @Column({
+    type: 'varchar',
+    nullable: true,
   })
   code_zip: string;
 
   @Column({
     type: 'varchar',
+    nullable: true,
   })
   phone_number: string;
 
   @Column({
     type: 'varchar',
+    nullable: true,
   })
   email: string;
 
