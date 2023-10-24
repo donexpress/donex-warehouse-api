@@ -1,3 +1,4 @@
+import { In } from 'typeorm';
 import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { PackingList } from '../models/packing_list.model';
@@ -93,4 +94,21 @@ export const removeShelfPackages = async (id: number) => {
   const repository = await AppDataSource.getRepository(ShelfPackages);
   const result = await repository.delete({ id });
   return result;
+};
+
+export const getDataByPackagesIds = async (ids: number[]) => {
+  const shelf_packages = await AppDataSource.manager.find(ShelfPackages, {
+    where: { package_id: In(ids) },
+  });
+  const shelfs = await AppDataSource.manager.find(Shelf);
+  const mod_data = [];
+  for (let i = 0; i < shelf_packages.length; i++) {
+    const shelf = shelfs.find(el => el.id === shelf_packages[i].shelf_id)
+    if (!shelf) {
+      mod_data.push(shelf_packages[i])
+    } else {
+      mod_data.push({ ...shelf_packages[i], shelf });
+    }
+  }
+  return mod_data;
 };

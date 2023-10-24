@@ -16,6 +16,7 @@ import {
   chgeckPackingListCaseNumberByUser,
   dispatchBulkBoxes,
   getPackingListByCaseNumber,
+  getPackingListByCaseNumbers,
   getPackingListFromCaseNumbers,
   isStored,
   returnDispatchedBulkBoxes,
@@ -262,14 +263,14 @@ export const showOutputPlan = async (id: number) => {
       where: { id: result.warehouse_id },
     });
   }
-  const packing_lists = [];
-  for (let i = 0; i < result.case_numbers.length; i++) {
-    const element = result.case_numbers[i];
-    const res = await getPackingListByCaseNumber(element);
-    if (res) {
-      packing_lists.push(res);
-    }
-  }
+  const packing_lists = await getPackingListByCaseNumbers(result.case_numbers);
+  // for (let i = 0; i < result.case_numbers.length; i++) {
+  //   const element = result.case_numbers[i];
+  //   const res = await getPackingListByCaseNumber(element);
+  //   if (res) {
+  //     packing_lists.push(res);
+  //   }
+  // }
   const appendages = await getAppendagesByOutputPlan(id);
   return { ...result, user, warehouse, packing_lists, appendages };
 };
@@ -458,11 +459,17 @@ export const nonBoxesOnExitPlans = async (
   return none_store;
 };
 
-export const getNonExcludedOutputPlans = async (excluded_output_plan: number) => {
+export const getNonExcludedOutputPlans = async (
+  excluded_output_plan: number
+) => {
   const output_plans = await AppDataSource.manager.find(OutputPlan, {
-    where: { id: Not(excluded_output_plan), state: Not('cancelled'), box_amount: MoreThan(0) },
+    where: {
+      id: Not(excluded_output_plan),
+      state: Not('cancelled'),
+      box_amount: MoreThan(0),
+    },
   });
-  return output_plans
+  return output_plans;
 };
 
 export const pullBoxes = async ({
@@ -479,9 +486,9 @@ export const pullBoxes = async ({
   let packing_lists: PackingList[] = [];
   const error_type = {};
   if (data.case_number && data.case_number.trim() !== '') {
-    case_numbers = case_numbers.concat(
-      data.case_number.split(',').map((el) => el.trim())
-    );
+    const split = data.case_number.split(',').map((el) => el.trim())
+    case_numbers = case_numbers.concat(split);
+
   }
   if (
     data.warehouse_order_number &&
@@ -519,36 +526,42 @@ export const pullBoxes = async ({
       storage_plan_id.push(pl.storage_plan_id);
     }
   });
-  const output_plans: OutputPlan[] = await getNonExcludedOutputPlans(id)
-  const unstored: PackingList[] = []
-  packing_lists.forEach(pl => {
-    let found: boolean = false
-    output_plans.forEach(op => {
-      if(op.case_numbers.find(op_cn => op_cn === pl.case_number)) {
+  const output_plans: OutputPlan[] = await getNonExcludedOutputPlans(id);
+  const unstored: PackingList[] = [];
+  packing_lists.forEach((pl) => {
+    let found: boolean = false;
+    output_plans.forEach((op) => {
+      if (op.case_numbers.find((op_cn) => op_cn === pl.case_number)) {
         found = true;
       }
-    })
-    if(!found) {
-      unstored.push(pl)
+    });
+    if (!found) {
+      unstored.push(pl);
     }
-  })
-  packing_lists = unstored
+  });
+  packing_lists = unstored;
   if (total !== packing_lists.length) {
     error_type['already_used'] = true;
   }
-  const respository = await AppDataSource.getRepository(OutputPlan)
-  const current = await respository.findOne({where:{id}})
-  console.log(packing_lists)
-  packing_lists.forEach(pl => {
-    if(current.case_numbers.find(c_cn => c_cn === pl.case_number) === undefined) {
-        current.case_numbers.push(pl.case_number)
+  const respository = await AppDataSource.getRepository(OutputPlan);
+  const current = await respository.findOne({ where: { id } });
+  packing_lists.forEach((pl) => {
+    if (
+      current.case_numbers.find((c_cn) => c_cn === pl.case_number) === undefined
+    ) {
+      current.case_numbers.push(pl.case_number);
     } else {
-      error_type['duplicated'] = true
+      error_type['duplicated'] = true;
     }
-  })
-  const result = await respository.update({id}, current)
-  if(Object.keys(error_type).length > 0) {
-    return error_type
+  });
+  const box_amount = current.case_numbers.length;
+  if (box_amount > 0) {
+    current.output_boxes = box_amount;
+    current.box_amount = box_amount;
   }
-  return result
+  const result = await respository.update({ id }, current);
+  if (Object.keys(error_type).length > 0) {
+    return error_type;
+  }
+  return result;
 };
