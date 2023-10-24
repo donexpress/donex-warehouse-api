@@ -27,9 +27,9 @@ import { getCountByState } from '../helpers/states';
 import { AOSWarehouse } from '../models/aos_warehouse.model';
 import { addresses, destinations } from '../config/destination';
 import { OutputPlanFilter } from '../types/OutputPlanFilter';
-import { filterStoragePlan, getStoragePlansbyIds } from './storage_plan';
+import { filterStoragePlan } from './storage_plan';
 import { PackingList } from '../models/packing_list.model';
-import { StoragePlan } from '../models/storage_plan.model';
+import { calcDate } from '../helpers';
 
 export const listOutputPlan = async (
   current_page: number,
@@ -250,6 +250,7 @@ export const showOutputPlan = async (id: number) => {
   const result = await AppDataSource.manager.findOne(OutputPlan, {
     where: { id },
   });
+  let destination = destinations[result.destination];
   let user = null;
   if (result.user_id) {
     user = await AppDataSource.manager.findOne(User, {
@@ -263,7 +264,15 @@ export const showOutputPlan = async (id: number) => {
       where: { id: result.warehouse_id },
     });
   }
+  const date = result.delivered_time
+    ? result.delivered_time
+    : new Date().toISOString();
   const packing_lists = await getPackingListByCaseNumbers(result.case_numbers);
+  packing_lists.forEach((pl) => {
+    const storage_date = pl.package_shelf.created_at;
+    const storage_time = calcDate(date, storage_date);
+    pl['storage_time'] = storage_time.total_days;
+  });
   // for (let i = 0; i < result.case_numbers.length; i++) {
   //   const element = result.case_numbers[i];
   //   const res = await getPackingListByCaseNumber(element);
@@ -272,7 +281,7 @@ export const showOutputPlan = async (id: number) => {
   //   }
   // }
   const appendages = await getAppendagesByOutputPlan(id);
-  return { ...result, user, warehouse, packing_lists, appendages };
+  return { ...result, user, warehouse, packing_lists, appendages, destination_ref: destination, };
 };
 
 export const createOutputPlan = async (data: any) => {
@@ -342,6 +351,7 @@ export const updateOutputPlan = async (id: number, data) => {
     await dispatchBulkBoxes(output_plan.case_numbers);
   }
   if (
+    data.case_numbers !== undefined &&
     exitPlan.case_numbers.length !== stored.length &&
     data.case_numbers.length > 0
   ) {
@@ -486,9 +496,8 @@ export const pullBoxes = async ({
   let packing_lists: PackingList[] = [];
   const error_type = {};
   if (data.case_number && data.case_number.trim() !== '') {
-    const split = data.case_number.split(',').map((el) => el.trim())
+    const split = data.case_number.split(',').map((el) => el.trim());
     case_numbers = case_numbers.concat(split);
-
   }
   if (
     data.warehouse_order_number &&
