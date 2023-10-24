@@ -1,4 +1,4 @@
-import { FindOptionsWhere, ILike, In } from 'typeorm';
+import { FindOptionsWhere, ILike, In, Not } from 'typeorm';
 import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { StoragePlan } from '../models/storage_plan.model';
@@ -165,7 +165,7 @@ export const createStoragePlan = async (data, user_id: number) => {
   }
   if (data.customer_order_number) {
     const customer_order_number_count = await repository.count({
-      where: { customer_order_number: data.customer_order_number },
+      where: { customer_order_number: data.customer_order_number, state: Not(states.entry_plan.cancelled.value) },
     });
     if (customer_order_number_count > 0 && data.rejected_boxes !== true) {
       return { message: 'customer order number already exists' };
