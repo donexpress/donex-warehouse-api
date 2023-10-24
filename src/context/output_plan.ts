@@ -266,7 +266,7 @@ export const showOutputPlan = async (id: number) => {
   }
   const packing_lists = await getPackingListByCaseNumbers(result.case_numbers);
   packing_lists.forEach((pl) => {
-    if(pl && pl.package_shelf && pl.package_shelf.created_at && pl.dispatched_time) {
+    if(pl && pl.package_shelf && pl.package_shelf.created_at) {
       const date = pl.dispatched_time
       ? pl.dispatched_time
       : new Date().toISOString();
