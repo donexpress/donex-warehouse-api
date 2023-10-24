@@ -29,13 +29,12 @@ export const listStaff = async (
   }
 
   const users = await AppDataSource.manager.find(Staff, {
-    take: take,
-    skip: skip,
+    take: number_of_rows,
+    skip: (current_page - 1) * number_of_rows,
     where,
     order: {
       id: 'DESC',
     },
-    // relations: ['states', 'roles', 'organizations', 'warehouses'],
   });
   const roles = await AppDataSource.manager.find(Role);
   const organizations = await AppDataSource.manager.find(Organization);
