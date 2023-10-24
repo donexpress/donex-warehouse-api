@@ -29,8 +29,8 @@ export const listUser = async (
   }
 
   const users = await AppDataSource.manager.find(User, {
-    take: take,
-    skip: skip,
+    take: number_of_rows,
+    skip: (current_page - 1) * number_of_rows,
     where,
     order: {
       id: 'DESC',
