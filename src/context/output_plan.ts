@@ -264,22 +264,17 @@ export const showOutputPlan = async (id: number) => {
       where: { id: result.warehouse_id },
     });
   }
-  const date = result.delivered_time
-    ? result.delivered_time
-    : new Date().toISOString();
   const packing_lists = await getPackingListByCaseNumbers(result.case_numbers);
   packing_lists.forEach((pl) => {
-    const storage_date = pl.package_shelf.created_at;
-    const storage_time = calcDate(date, storage_date);
-    pl['storage_time'] = storage_time.total_days;
+    if(pl && pl.package_shelf && pl.package_shelf.created_at && pl.dispatched_time) {
+      const date = pl.dispatched_time
+      ? pl.dispatched_time
+      : new Date().toISOString();
+      const storage_date = pl.package_shelf.created_at;
+      const storage_time = calcDate(date, storage_date);
+      pl['storage_time'] = storage_time.total_days;
+    }
   });
-  // for (let i = 0; i < result.case_numbers.length; i++) {
-  //   const element = result.case_numbers[i];
-  //   const res = await getPackingListByCaseNumber(element);
-  //   if (res) {
-  //     packing_lists.push(res);
-  //   }
-  // }
   const appendages = await getAppendagesByOutputPlan(id);
   return { ...result, user, warehouse, packing_lists, appendages, destination_ref: destination, };
 };
