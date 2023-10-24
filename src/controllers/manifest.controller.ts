@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { removeFile } from '../context/file';
 import { upload } from '../helpers/file';
 import { getEntries, xslx } from '../helpers/xlsx';
-import { getValues } from '../helpers';
+import { getObject, getValues } from '../helpers';
 import {
   createManifest,
   createConsigneeAddress,
@@ -16,89 +16,53 @@ import { Manifest } from '../models/manifest.model';
 
 export const create = async (req: Request, res: Response) => {
   try {
-    /* const contentLength = parseInt(req.headers['content-length'], 10);
-  if (contentLength >= 5 * 1024 * 1024) {
-    res.status(413).send('Upload exceeds max size');
-  }
-  await upload(
-    req,
-    (urls: any) => {
-      if (urls === null) {
-        return res.status(422).json(urls);
-      } else {
-        console.log(urls);
-        return res.json(urls.url);
-      }
-    },
-    true
-  ); */
-
-    const url = req.body.url;
     const carrier = req.query.carrier;
-    var worksheetsBody = await xslx(url);
-    for (let i = 0; i < worksheetsBody.data.length; i++) {
-      const value = await getValues(worksheetsBody.data[i]);
-
-      if (carrier === undefined) {
-        return res.status(422).send('the carrier is not empty');
-      }
-
-      let manifest_data = {
-        waybill_id: value[0],
-        bag_code: value[1],
-        bag_id: value[2],
-        tracking_number: value[3],
-        client_reference: value[4],
-        weigth: value[19],
-        unit_weigth: value[20],
-        total_declare: value[21],
-        sale_price: value[21],
-        currency: value[22],
-        item_title: value[23],
-        quantity: value[24],
-        pieces: value[24],
-        carrier: carrier,
-        state: 'pending',
-        manifest_name: '',
-        item_description: '',
-        payment_voucher: '',
-        bill_state: '',
-      };
-
-      let shipper_data = {
-        name: value[5],
-        tax_id: '',
-        address: value[6],
-        address2: '',
-        city: value[7],
-        state: value[7],
-        city_code: value[8],
-        country: value[9],
-        country_code: value[10],
-        code_zip: '',
-        phone_number: '',
-        email: '',
-      };
-
-      let consignee_data = {
-        name: value[11],
-        tax_id: '',
-        address: value[12],
-        address2: '',
-        code_zip: value[13],
-        city: value[14],
-        state: value[14],
-        phone_number: value[15],
-        city_code: value[16],
-        country: value[17],
-        country_code: value[18],
-        email: '',
-      };
-
-      await createManifest(manifest_data, shipper_data, consignee_data);
+    if (carrier === undefined) {
+      return res.status(422).send('the carrier is not empty');
     }
+    const contentLength = parseInt(req.headers['content-length'], 10);
+    if (contentLength >= 5 * 1024 * 1024) {
+      return res.status(413).send('Upload exceeds max size');
+    }
+    await upload(
+      req,
+      async (urls: any) => {
+        if (urls === null) {
+          return res.status(422).json(urls);
+        } else {
+          const url = urls.url;
+          //const url = req.body.url;
+          let error = [];
+          let manifests = [];
+          var worksheetsBody = await xslx(url);
+          for (let i = 0; i < worksheetsBody.data.length; i++) {
+            const value = await getValues(worksheetsBody.data[i]);
 
-    res.sendStatus(201);
+            const manifest_obj = await getObject(value, carrier);
+
+            const manifest = await createManifest(
+              manifest_obj.manifest_data,
+              manifest_obj.shipper_data,
+              manifest_obj.consignee_data
+            );
+
+            if (manifest instanceof Manifest) {
+              manifests.push(manifest);
+            } else {
+              error.push(manifest);
+            }
+          }
+
+          await removeFile(urls.name);
+          if (manifests.length === worksheetsBody.data.length) {
+            return res.sendStatus(201);
+          } else {
+            return res.status(402).send(error);
+          }
+        }
+      },
+      true
+    );
   } catch (error) {
     console.log(error);
     res.status(500).send(error);

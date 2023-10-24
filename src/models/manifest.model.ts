@@ -148,12 +148,12 @@ export class Manifest {
     nullable: true
   })
   @JoinColumn({ name: 'id', referencedColumnName: 'manifest_id' })
-  shipperAddress: ShipperAddress;
+  shipper_address: ShipperAddress;
 
   @OneToOne(type => ConsigneeAddress, consigneeAddress => consigneeAddress.manifest_id, {
     nullable: true
   })
   @JoinColumn({ name: 'id', referencedColumnName: 'manifest_id' })
-  consigneeAddress: ConsigneeAddress;
+  consignee_address: ConsigneeAddress;
 
 }

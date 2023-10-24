@@ -17,7 +17,7 @@ export const findManifest = async (
     order: {
       created_at: 'DESC',
     },
-    relations: ['shipperAddress', 'consigneeAddress'],
+    relations: ['shipper_address', 'consignee_address'],
   });
 };
 
