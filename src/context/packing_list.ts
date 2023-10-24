@@ -6,6 +6,7 @@ import { StoragePlan } from '../models/storage_plan.model';
 import { getDataByPackageId, getDataByPackagesIds } from './shelf_package';
 import { splitLastOccurrence } from '../helpers';
 import { OutputPlan } from '../models/output_plan.model';
+import states from '../config/states';
 
 export const listPackingList = async (
   current_page: number,
@@ -73,13 +74,15 @@ export const createPackingList = async (data) => {
     data.client_height = 0;
   }
   const repository = await AppDataSource.getRepository(PackingList);
-  const check_count = await repository.count({
+  const packing_lists = await repository.find({
     where: {
       box_number: Like(`%${splitLastOccurrence(data.box_number, 'U')[0]}%`),
       storage_plan_id: Not(data.storage_plan_id),
     },
   });
-  if (check_count === 0 || storage_plan.rejected_boxes) {
+  const ids: number[] = packing_lists.map(el => el.storage_plan_id)
+  const plans = await storage_plan_repository.find({where: {id: In(ids)}})
+  if (plans.filter(el => el.state !== states.entry_plan.cancelled.value).length === 0 || storage_plan.rejected_boxes) {
     const result = await repository.create(data);
     return await validateContext(AppDataSource, result);
   } else {
