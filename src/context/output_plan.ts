@@ -236,7 +236,7 @@ export const countAllOutputPlan = async (
     to_be_processed,
     processing,
     dispatched,
-    cancelled
+    cancelled,
   };
   return result;
 };
@@ -271,50 +271,56 @@ export const getWhere = async (current_user, query, state_value) => {
     ];
   }
 
-  return where
+  return where;
 };
 
 export const showOutputPlan = async (id: number) => {
   const result = await AppDataSource.manager.findOne(OutputPlan, {
     where: { id },
   });
-  let destination = null;
-  if(result  && result.destination && destinations[result.destination]) {
-    destination = destinations[result.destination];
-  }
-  let user = null;
-  if (result && result.user_id) {
-    user = await AppDataSource.manager.findOne(User, {
-      where: { id: result.user_id },
-    });
-    delete user.password;
-  }
-  let warehouse = null;
-  if (result && result.warehouse_id) {
-    warehouse = await AppDataSource.manager.findOne(AOSWarehouse, {
-      where: { id: result.warehouse_id },
-    });
-  }
-  const packing_lists = await getPackingListByCaseNumbers(result.case_numbers);
-  packing_lists.forEach((pl) => {
-    if (pl && pl.package_shelf && pl.package_shelf.created_at) {
-      const date = pl.dispatched_time
-        ? pl.dispatched_time
-        : new Date().toISOString();
-      const storage_date = pl.package_shelf.created_at;
-      const storage_time = calcDate(date, storage_date);
-      pl['storage_time'] = storage_time.total_days;
+  if (result) {
+    let destination = null;
+    if (result.destination && destinations[result.destination]) {
+      destination = destinations[result.destination];
     }
-  });
-  const appendages = await getAppendagesByOutputPlan(id);
-  return {
-    ...result,
-    user,
-    warehouse,
-    packing_lists,
-    appendages,
-    destination_ref: destination,
-  };
+    let user = null;
+    if (result.user_id) {
+      user = await AppDataSource.manager.findOne(User, {
+        where: { id: result.user_id },
+      });
+      delete user.password;
+    }
+    let warehouse = null;
+    if (result.warehouse_id) {
+      warehouse = await AppDataSource.manager.findOne(AOSWarehouse, {
+        where: { id: result.warehouse_id },
+      });
+    }
+    const packing_lists = await getPackingListByCaseNumbers(
+      result.case_numbers
+    );
+    packing_lists.forEach((pl) => {
+      if (pl && pl.package_shelf && pl.package_shelf.created_at) {
+        const date = pl.dispatched_time
+          ? pl.dispatched_time
+          : new Date().toISOString();
+        const storage_date = pl.package_shelf.created_at;
+        const storage_time = calcDate(date, storage_date);
+        pl['storage_time'] = storage_time.total_days;
+      }
+    });
+    const appendages = await getAppendagesByOutputPlan(id);
+    return {
+      ...result,
+      user,
+      warehouse,
+      packing_lists,
+      appendages,
+      destination_ref: destination,
+    };
+  } else {
+    return null;
+  }
 };
 
 export const createOutputPlan = async (data: any) => {
