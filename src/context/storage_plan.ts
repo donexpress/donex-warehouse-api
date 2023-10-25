@@ -24,6 +24,8 @@ export const listStoragePlan = async (
   let where: FindOptionsWhere<StoragePlan> | FindOptionsWhere<StoragePlan>[] = [
     { customer_order_number: query },
     { order_number: query },
+    { pr_number: query },
+    { reference_number: query },
   ];
 
   if (state.trim().length !== 0) {
@@ -165,7 +167,10 @@ export const createStoragePlan = async (data, user_id: number) => {
   }
   if (data.customer_order_number) {
     const customer_order_number_count = await repository.count({
-      where: { customer_order_number: data.customer_order_number, state: Not(states.entry_plan.cancelled.value) },
+      where: {
+        customer_order_number: data.customer_order_number,
+        state: Not(states.entry_plan.cancelled.value),
+      },
     });
     if (customer_order_number_count > 0 && data.rejected_boxes !== true) {
       return { message: 'customer order number already exists' };
@@ -290,9 +295,7 @@ export const changeStoragePlanState = async (id: number, state) => {
   return result;
 };
 
-export const filterStoragePlan = async (
-  query: string,
-) => {
+export const filterStoragePlan = async (query: string) => {
   let where: FindOptionsWhere<StoragePlan> | FindOptionsWhere<StoragePlan>[] = [
     { customer_order_number: query },
     { order_number: query },
@@ -326,9 +329,9 @@ export const filterStoragePlan = async (
   return data;
 };
 
-export const getStoragePlansbyIds = async(ids: number[]) => {
+export const getStoragePlansbyIds = async (ids: number[]) => {
   const storage_plans = await AppDataSource.manager.find(StoragePlan, {
-    where: {id: In(ids)}
+    where: { id: In(ids) },
   });
-  return storage_plans
-}
+  return storage_plans;
+};
