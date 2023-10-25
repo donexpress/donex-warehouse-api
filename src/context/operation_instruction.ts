@@ -115,42 +115,30 @@ export const countAllOI = async (
   const repository = AppDataSource.getRepository(OperationInstruction);
   const total = await countOI();
 
-  const pending = await getCountByState(
+  const pending = await getCountByStateAndOutputId(
     repository,
-    await getWhere(
-      current_user,
-      query,
-      output_id,
-      states.operation_instruction.pending.value
-    )
+    states.operation_instruction.pending.value,
+    output_id,
+    current_user
   );
-  const processed = await getCountByState(
+  const processed = await getCountByStateAndOutputId(
     repository,
-    await getWhere(
-      current_user,
-      query,
-      output_id,
-      states.operation_instruction.processed.value
-    )
+    states.operation_instruction.processed.value,
+    output_id,
+    current_user
   );
-  const processing = await getCountByState(
+  const processing = await getCountByStateAndOutputId(
     repository,
-    await getWhere(
-      current_user,
-      query,
-      output_id,
-      states.operation_instruction.processing.value
-    )
+    states.operation_instruction.processing.value,
+    output_id,
+    current_user
   );
 
-  const cancelled = await getCountByState(
+  const cancelled = await getCountByStateAndOutputId(
     repository,
-    await getWhere(
-      current_user,
-      query,
-      output_id,
-      states.operation_instruction.cancelled.value
-    )
+    states.operation_instruction.cancelled.value,
+    output_id,
+    current_user
   );
 
   const result = {
@@ -187,7 +175,7 @@ export const getWhere = async (
     where = [
       {
         number_delivery: ILike(`%${query}%`),
-        state: state_value
+        state: state_value,
       },
     ];
   }
@@ -296,9 +284,7 @@ const getCountByStateAndOutputId = async (
   if (current_user.customer_number) {
     where.user_id = current_user.id;
   }
-  const state_count = await repository.find({
+  return await repository.count({
     where,
   });
-
-  return state_count ? state_count.length : 0;
 };
