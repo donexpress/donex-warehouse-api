@@ -22,7 +22,6 @@ export const login = async (req: Request, res: Response) => {
   let user = await repository.findOne({
     where: { username: req.body.username },
   });
-  console.log(user);
 
   if (!user || !bcrypt.compareSync(req.body.password, user.password)) {
     res.status(401).json({
