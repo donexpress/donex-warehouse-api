@@ -19,7 +19,7 @@ export const login = async (req: Request, res: Response) => {
   const warehouse_service = req.headers.warehouse_service;
   const repository = await getUserRepositoryData(warehouse_service);
 
-  const user = await repository.findOne({
+  let user = await repository.findOne({
     where: { username: req.body.username },
   });
 
@@ -35,6 +35,11 @@ export const login = async (req: Request, res: Response) => {
           'We have a problem with this user. Please contact an administrator for a solution.',
       });
     }
+
+    user =
+      warehouse_service === 'oms'
+        ? { ...user, customer_number: undefined }
+        : user;
 
     delete user.password;
     const exp = Math.floor(Date.now() / 1000) + 60 * 60 * 24;
