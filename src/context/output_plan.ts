@@ -250,7 +250,10 @@ export const showOutputPlan = async (id: number) => {
   const result = await AppDataSource.manager.findOne(OutputPlan, {
     where: { id },
   });
-  let destination = destinations[result.destination];
+  let destination = null;
+  if(result  && result.destination && destinations[result.destination]) {
+    destination = destinations[result.destination];
+  }
   let user = null;
   if (result.user_id) {
     user = await AppDataSource.manager.findOne(User, {
