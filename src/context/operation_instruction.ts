@@ -17,10 +17,10 @@ export const listOI = async (
   current_user: any
 ): Promise<OperationInstruction[] | null> => {
   let query = {};
-  if (state === "all") {
-    const where: any =  {}
-    if(current_user.customer_number) {
-      where.user_id = current_user.id
+  if (state === 'all') {
+    const where: any = {};
+    if (current_user.customer_number) {
+      where.user_id = current_user.id;
     }
     query = {
       take: number_of_rows,
@@ -31,9 +31,9 @@ export const listOI = async (
       },
     };
   } else {
-    const where: any =  {state}
-    if(current_user.customer_number) {
-      where.user_id = current_user.id
+    const where: any = { state };
+    if (current_user.customer_number) {
+      where.user_id = current_user.id;
     }
     query = {
       take: number_of_rows,
@@ -100,56 +100,100 @@ export const listOIByOutputPlanId = async (
 };
 
 export const countOI = async (current_user?: any) => {
-  let where: any = {}
-  if(current_user && current_user.customer_number) {
-    where.user_id = current_user.id
+  let where: any = {};
+  if (current_user && current_user.customer_number) {
+    where.user_id = current_user.id;
   }
-  return AppDataSource.manager.count(OperationInstruction, {where});
+  return AppDataSource.manager.count(OperationInstruction, { where });
 };
 
-export const countAllOI = async (output_id: number, current_user: any): Promise<Object> => {
+export const countAllOI = async (
+  output_id: number,
+  current_user: any,
+  query = ''
+): Promise<Object> => {
   const repository = AppDataSource.getRepository(OperationInstruction);
   const total = await countOI();
-  /* const audited = await getCountByStateAndOutputId(
+
+  const pending = await getCountByState(
     repository,
-    states.operation_instruction.audited.value,
-    output_id
-  ); */
-  const pending = await getCountByStateAndOutputId(
-    repository,
-    states.operation_instruction.pending.value,
-    output_id,
-    current_user
+    await getWhere(
+      current_user,
+      query,
+      output_id,
+      states.operation_instruction.pending.value
+    )
   );
-  const processed = await getCountByStateAndOutputId(
+  const processed = await getCountByState(
     repository,
-    states.operation_instruction.processed.value,
-    output_id,
-    current_user
+    await getWhere(
+      current_user,
+      query,
+      output_id,
+      states.operation_instruction.processed.value
+    )
   );
-  const processing = await getCountByStateAndOutputId(
+  const processing = await getCountByState(
     repository,
-    states.operation_instruction.processing.value,
-    output_id,
-    current_user
+    await getWhere(
+      current_user,
+      query,
+      output_id,
+      states.operation_instruction.processing.value
+    )
   );
 
-  const cancelled = await getCountByStateAndOutputId(
+  const cancelled = await getCountByState(
     repository,
-    states.operation_instruction.cancelled.value,
-    output_id,
-    current_user
+    await getWhere(
+      current_user,
+      query,
+      output_id,
+      states.operation_instruction.cancelled.value
+    )
   );
 
   const result = {
     total,
-    //audited,
     pending,
     processed,
     processing,
     cancelled,
   };
   return result;
+};
+
+export const getWhere = async (
+  current_user,
+  query,
+  output_plan_id,
+  state_value
+) => {
+  let where:
+    | FindOptionsWhere<OperationInstruction>
+    | FindOptionsWhere<OperationInstruction>[] = {
+    state: state_value,
+  };
+  if (current_user.customer_number) {
+    where = [
+      {
+        number_delivery: ILike(`%${query}%`),
+        state: state_value,
+        user_id: current_user.id,
+        output_plan_id: output_plan_id,
+      },
+    ];
+  } else {
+    where = [
+      {
+        number_delivery: ILike(`%${query}%`),
+        state: state_value,
+        output_plan_id: output_plan_id,
+      },
+    ];
+  }
+
+  return where;
 };
 
 export const showOI = async (
@@ -250,8 +294,8 @@ const getCountByStateAndOutputId = async (
   } else {
     where = { state: state_value };
   }
-  if(current_user.customer_number) {
-    where.user_id = current_user.id
+  if (current_user.customer_number) {
+    where.user_id = current_user.id;
   }
   const state_count = await repository.find({
     where,
