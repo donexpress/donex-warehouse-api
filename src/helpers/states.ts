@@ -65,9 +65,30 @@ export const getCountByState = async (
   query: string = ''
 ): Promise<number> => {
   let where: any = { state: state_value };
-  //if (current_user.customer_number) {
-  //where.user_id = current_user.id;
-  //}
+  if (current_user.customer_number) {
+    where = [
+      {
+        customer_order_number: ILike(`%${query}%`),
+        state: state_value,
+        user_id: current_user.id,
+      },
+      {
+        order_number: ILike(`%${query}%`),
+        state: state_value,
+        user_id: current_user.id,
+      },
+      {
+        pr_number: ILike(`%${query}%`),
+        state: state_value,
+        user_id: current_user.id,
+      },
+      {
+        reference_number: ILike(`%${query}%`),
+        state: state_value,
+        user_id: current_user.id,
+      },
+    ];
+  }
   if (query.trim().length !== 0) {
     where = [
       { customer_order_number: ILike(`%${query}%`), state: state_value },

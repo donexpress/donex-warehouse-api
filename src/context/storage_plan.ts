@@ -22,15 +22,15 @@ export const listStoragePlan = async (
   current_user
 ) => {
   let where: FindOptionsWhere<StoragePlan> | FindOptionsWhere<StoragePlan>[] = [
-    { customer_order_number: ILike(`%${query}%`) },
-    { order_number: ILike(`%${query}%`) },
-    { pr_number: ILike(`%${query}%`) },
-    { reference_number: ILike(`%${query}%`) },
+    { customer_order_number: ILike(`%${query}%`), state: state },
+    { order_number: ILike(`%${query}%`), state: state },
+    { pr_number: ILike(`%${query}%`), state: state },
+    { reference_number: ILike(`%${query}%`), state: state },
   ];
 
-  if (state.trim().length !== 0) {
-    where.push({state: state});
-  }
+  //if (state.trim().length !== 0) {
+    //where.push({state: state});
+  //}
 
   if (current_user.customer_number) {
     where = { state: ILike(`%${state}%`), user_id: current_user.id };
