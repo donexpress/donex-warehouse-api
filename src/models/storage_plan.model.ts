@@ -1,13 +1,19 @@
 import { Entity, PrimaryGeneratedColumn, Column, Index } from 'typeorm';
 
-@Index(['customer_order_number', 'order_number'])
+@Index([
+  'customer_order_number',
+  'order_number',
+  'state',
+  'user_id',
+  'warehouse_id',
+])
 @Entity({ name: 'storage_plans' })
 export class StoragePlan {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({
-    nullable: true
+    nullable: true,
   })
   customer_order_number: string;
 
@@ -96,26 +102,26 @@ export class StoragePlan {
   @Column({
     nullable: true,
     default: false,
-    type: 'boolean'
+    type: 'boolean',
   })
-  rejected_boxes: boolean
+  rejected_boxes: boolean;
 
   @Column({
     nullable: true,
     default: false,
-    type: 'boolean'
+    type: 'boolean',
   })
-  return: boolean
+  return: boolean;
 
   @Column({
     nullable: true,
-    type: 'varchar'
+    type: 'varchar',
   })
   reference_number: string;
 
   @Column({
     nullable: true,
-    type: 'varchar'
+    type: 'varchar',
   })
   pr_number: string;
 
@@ -135,21 +141,21 @@ export class StoragePlan {
 
   @Column({
     default: false,
-    type: 'boolean'
+    type: 'boolean',
   })
-  is_images: boolean
+  is_images: boolean;
 
   @Column({
     type: 'varchar',
     nullable: true,
-    default: (new Date()).toISOString()
+    default: new Date().toISOString(),
   })
-  created_at: string
+  created_at: string;
 
   @Column({
     type: 'varchar',
     nullable: true,
-    default: (new Date()).toISOString()
+    default: new Date().toISOString(),
   })
-  updated_at: string
+  updated_at: string;
 }
