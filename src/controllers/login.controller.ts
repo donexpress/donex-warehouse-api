@@ -69,6 +69,6 @@ export const self = async (req: Request, res: Response) => {
 
     res.send({ ...user, role });
   } else {
-    res.send(user);
+    res.send({ ...user, customer_number: undefined });
   }
 };
