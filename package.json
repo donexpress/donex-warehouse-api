@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/index.ts",
   "scripts": {
-    "start": "tsc-watch --onSuccess \"node --max_old_space_size=2560 dist/index.js\"",
+    "start": "tsc-watch --onSuccess \"node --max_old_space_size=1024 dist/index.js\"",
     "dev": "nodemon src/index.ts",
     "build": "tsc",
     "typeorm:conf": "ts-node ./node_modules/typeorm/cli -d ./dist/config/ormconfig.js",
