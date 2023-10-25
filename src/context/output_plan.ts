@@ -283,14 +283,14 @@ export const showOutputPlan = async (id: number) => {
     destination = destinations[result.destination];
   }
   let user = null;
-  if (result.user_id) {
+  if (result && result.user_id) {
     user = await AppDataSource.manager.findOne(User, {
       where: { id: result.user_id },
     });
     delete user.password;
   }
   let warehouse = null;
-  if (result.warehouse_id) {
+  if (result && result.warehouse_id) {
     warehouse = await AppDataSource.manager.findOne(AOSWarehouse, {
       where: { id: result.warehouse_id },
     });
