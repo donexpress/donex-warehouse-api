@@ -59,6 +59,7 @@ export const getStates = (states) => {
 };
 
 export const getCountByState = async (repository, where): Promise<number> => {
+  console.log(where);
   return await repository.count({
     where,
   });
