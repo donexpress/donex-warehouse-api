@@ -200,39 +200,35 @@ export const countOutputPlan = async (current_user?) => {
 };
 
 export const countAllOutputPlan = async (
-  current_user: any
+  current_user: any,
+  query = ''
 ): Promise<Object> => {
   const repository = AppDataSource.getRepository(OutputPlan);
   const total = await countOutputPlan(current_user);
   const pending = await getCountByState(
     repository,
-    states.output_plan.pending.value,
-    current_user
+    await getWhere(current_user, query, states.output_plan.pending.value)
   );
   const to_be_processed = await getCountByState(
     repository,
-    states.output_plan.to_be_processed.value,
-    current_user
+    await getWhere(
+      current_user,
+      query,
+      states.output_plan.to_be_processed.value
+    )
   );
   const processing = await getCountByState(
     repository,
-    states.output_plan.processing.value,
-    current_user
+    await getWhere(current_user, query, states.output_plan.processing.value)
   );
   const dispatched = await getCountByState(
     repository,
-    states.output_plan.dispatched.value,
-    current_user
+    await getWhere(current_user, query, states.output_plan.dispatched.value)
   );
   const cancelled = await getCountByState(
     repository,
-    states.output_plan.cancelled.value,
-    current_user
+    await getWhere(current_user, query, states.output_plan.cancelled.value)
   );
-  /* const collecting = await getCountByState(
-    repository,
-    states.output_plan.collecting.value
-  ); */
 
   const result = {
     total,
@@ -240,10 +236,40 @@ export const countAllOutputPlan = async (
     to_be_processed,
     processing,
     dispatched,
-    cancelled,
-    //collecting,
+    cancelled
   };
   return result;
+};
+
+export const getWhere = async (current_user, query, state_value) => {
+  let where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] = {
+    state: state_value,
+  };
+  if (current_user.customer_number) {
+    where = [
+      {
+        output_number: ILike(`%${query}%`),
+        state: state_value,
+        user_id: current_user.id,
+      },
+      {
+        destination: ILike(`%${query}%`),
+        state: state_value,
+        user_id: current_user.id,
+      },
+      {
+        reference_number: ILike(`%${query}%`),
+        state: state_value,
+        user_id: current_user.id,
+      },
+    ];
+  } else {
+    where = [
+      { output_number: ILike(`%${query}%`), state: state_value },
+      { destination: ILike(`%${query}%`), state: state_value },
+      { reference_number: ILike(`%${query}%`), state: state_value },
+    ];
+  }
 };
 
 export const showOutputPlan = async (id: number) => {
@@ -266,17 +292,24 @@ export const showOutputPlan = async (id: number) => {
   }
   const packing_lists = await getPackingListByCaseNumbers(result.case_numbers);
   packing_lists.forEach((pl) => {
-    if(pl && pl.package_shelf && pl.package_shelf.created_at) {
+    if (pl && pl.package_shelf && pl.package_shelf.created_at) {
       const date = pl.dispatched_time
-      ? pl.dispatched_time
-      : new Date().toISOString();
+        ? pl.dispatched_time
+        : new Date().toISOString();
       const storage_date = pl.package_shelf.created_at;
       const storage_time = calcDate(date, storage_date);
       pl['storage_time'] = storage_time.total_days;
     }
   });
   const appendages = await getAppendagesByOutputPlan(id);
-  return { ...result, user, warehouse, packing_lists, appendages, destination_ref: destination, };
+  return {
+    ...result,
+    user,
+    warehouse,
+    packing_lists,
+    appendages,
+    destination_ref: destination,
+  };
 };
 
 export const createOutputPlan = async (data: any) => {

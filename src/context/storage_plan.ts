@@ -29,7 +29,7 @@ export const listStoragePlan = async (
   ];
 
   //if (state.trim().length !== 0) {
-    //where.push({state: state});
+  //where.push({state: state});
   //}
 
   if (current_user.customer_number) {
@@ -113,27 +113,19 @@ export const countAllStoragePlan = async (
   const total = await countStoragePlan();
   const to_be_storage = await getCountByState(
     repository,
-    states.entry_plan.to_be_storage.value,
-    current_user,
-    query
+    await getWhere(current_user, query, states.entry_plan.to_be_storage.value)
   );
   const into_warehouse = await getCountByState(
     repository,
-    states.entry_plan.into_warehouse.value,
-    current_user,
-    query
+    await getWhere(current_user, query, states.entry_plan.into_warehouse.value)
   );
   const cancelled = await getCountByState(
     repository,
-    states.entry_plan.cancelled.value,
-    current_user,
-    query
+    await getWhere(current_user, query, states.entry_plan.cancelled.value)
   );
   const stocked = await getCountByState(
     repository,
-    states.entry_plan.stocked.value,
-    current_user,
-    query
+    await getWhere(current_user, query, states.entry_plan.stocked.value)
   );
 
   const result = {
@@ -144,6 +136,43 @@ export const countAllStoragePlan = async (
     stocked,
   };
   return result;
+};
+
+export const getWhere = async (current_user, query, state_value) => {
+  let where: FindOptionsWhere<StoragePlan> | FindOptionsWhere<StoragePlan>[] = {
+    state: state_value,
+  };
+  if (current_user.customer_number) {
+    where = [
+      {
+        customer_order_number: ILike(`%${query}%`),
+        state: state_value,
+        user_id: current_user.id,
+      },
+      {
+        order_number: ILike(`%${query}%`),
+        state: state_value,
+        user_id: current_user.id,
+      },
+      {
+        pr_number: ILike(`%${query}%`),
+        state: state_value,
+        user_id: current_user.id,
+      },
+      {
+        reference_number: ILike(`%${query}%`),
+        state: state_value,
+        user_id: current_user.id,
+      },
+    ];
+  } else {
+    where = [
+      { customer_order_number: ILike(`%${query}%`), state: state_value },
+      { order_number: ILike(`%${query}%`), state: state_value },
+      { pr_number: ILike(`%${query}%`), state: state_value },
+      { reference_number: ILike(`%${query}%`), state: state_value },
+    ];
+  }
 };
 
 export const showStoragePlan = async (id: number) => {
