@@ -1,4 +1,4 @@
-import { EntityMetadata, FindOptionsWhere, Repository } from 'typeorm';
+import { EntityMetadata, FindOptionsWhere, ILike, Repository } from 'typeorm';
 import states from '../config/states';
 import { OutputPlan } from '../models/output_plan.model';
 
@@ -70,10 +70,10 @@ export const getCountByState = async (
   //}
   if (query.trim().length !== 0) {
     where = [
-      { customer_order_number: query },
-      { order_number: query },
-      { pr_number: query },
-      { reference_number: query },
+      { customer_order_number: ILike(`%${query}%`) },
+      { order_number: ILike(`%${query}%`) },
+      { pr_number: ILike(`%${query}%`) },
+      { reference_number: ILike(`%${query}%`) },
     ];
   }
   const state_count = await repository.find({
