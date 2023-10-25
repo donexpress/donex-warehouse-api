@@ -10,8 +10,6 @@ export const listWarehouse = async (
   number_of_rows: number,
   state: string = ''
 ) => {
-  const skip = ((current_page - 1) * number_of_rows) | 0;
-  const take = number_of_rows | 10;
   const not_deleted = Not('deleted');
 
   let where: FindOptionsWhere<Warehouse> | FindOptionsWhere<Warehouse>[] = {
@@ -23,8 +21,8 @@ export const listWarehouse = async (
   }
 
   const warehouses = await AppDataSource.manager.find(Warehouse, {
-    take: take,
-    skip: skip,
+    take: number_of_rows,
+    skip: (current_page - 1) * number_of_rows,
     where,
     order: {
       id: 'DESC',

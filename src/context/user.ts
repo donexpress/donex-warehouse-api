@@ -15,8 +15,6 @@ export const listUser = async (
   query: string,
   state: string = ''
 ) => {
-  const skip = ((current_page - 1) * number_of_rows) | 0;
-  const take = number_of_rows | 10;
   const not_deleted = Not('deleted');
 
   let where: FindOptionsWhere<User> | FindOptionsWhere<User>[] = [
