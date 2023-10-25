@@ -35,7 +35,6 @@ export const login = async (req: Request, res: Response) => {
           'We have a problem with this user. Please contact an administrator for a solution.',
       });
     }
-    console.log(user);
     delete user.password;
     const exp = Math.floor(Date.now() / 1000) + 60 * 60 * 24;
     const token = JWT.sign(
