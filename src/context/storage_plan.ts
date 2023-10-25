@@ -173,6 +173,8 @@ export const getWhere = async (current_user, query, state_value) => {
       { reference_number: ILike(`%${query}%`), state: state_value },
     ];
   }
+
+  return where;
 };
 
 export const showStoragePlan = async (id: number) => {
