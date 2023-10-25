@@ -76,9 +76,9 @@ export const getCountByState = async (
       { reference_number: ILike(`%${query}%`) },
     ];
   }
-  const state_count = await repository.find({
+  const by_state = await repository.count({
     where,
   });
 
-  return state_count ? state_count.length : 0;
+  return by_state
 };
