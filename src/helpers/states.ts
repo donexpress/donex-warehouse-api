@@ -68,13 +68,13 @@ export const getCountByState = async (
   //if (current_user.customer_number) {
   //where.user_id = current_user.id;
   //}
+  const state = { state: state_value };
   if (query.trim().length !== 0) {
     where = [
-      { customer_order_number: ILike(`%${query}%`) },
-      { order_number: ILike(`%${query}%`) },
-      { pr_number: ILike(`%${query}%`) },
-      { reference_number: ILike(`%${query}%`) },
-      { state: state_value },
+      { customer_order_number: ILike(`%${query}%`), state },
+      { order_number: ILike(`%${query}%`), state },
+      { pr_number: ILike(`%${query}%`), state },
+      { reference_number: ILike(`%${query}%`), state }
     ];
   }
   const by_state = await repository.count({
