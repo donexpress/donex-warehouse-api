@@ -58,13 +58,26 @@ export const getStates = (states) => {
   return states_array;
 };
 
-export const getCountByState = async (repository, state_value, current_user): Promise<number> => {
-  const where: any = {state: state_value}
-  if(current_user.customer_number) {
-    where.user_id = current_user.id
+export const getCountByState = async (
+  repository,
+  state_value,
+  current_user,
+  query: string = ''
+): Promise<number> => {
+  let where: any = { state: state_value };
+  if (current_user.customer_number) {
+    where.user_id = current_user.id;
+  }
+  if (query.trim().length !== 0) {
+    where = [
+      { customer_order_number: query },
+      { order_number: query },
+      { pr_number: query },
+      { reference_number: query },
+    ];
   }
   const state_count = await repository.find({
-    where
+    where,
   });
 
   return state_count ? state_count.length : 0;
