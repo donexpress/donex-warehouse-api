@@ -140,8 +140,6 @@ export const countAllStoragePlan = async (
 
 export const getWhere = async (current_user, query, state_value) => {
   console.log(current_user);
-  console.log(query);
-  console.log(state_value);
   let where: FindOptionsWhere<StoragePlan> | FindOptionsWhere<StoragePlan>[] = {
     state: state_value,
   };
