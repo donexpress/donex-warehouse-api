@@ -174,7 +174,7 @@ export const getWhere = async (
     | FindOptionsWhere<OperationInstruction>[] = {
     state: state_value,
   };
-  if (current_user.customer_number) {
+  if (current_user.customer_number && output_plan_id) {
     where = [
       {
         number_delivery: ILike(`%${query}%`),
@@ -187,8 +187,7 @@ export const getWhere = async (
     where = [
       {
         number_delivery: ILike(`%${query}%`),
-        state: state_value,
-        output_plan_id: output_plan_id,
+        state: state_value
       },
     ];
   }
