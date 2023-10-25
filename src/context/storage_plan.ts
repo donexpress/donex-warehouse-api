@@ -142,7 +142,7 @@ export const getWhere = async (current_user, query, state_value) => {
   let where: FindOptionsWhere<StoragePlan> | FindOptionsWhere<StoragePlan>[] = {
     state: state_value,
   };
-  if (current_user.customer_number) {
+  if (current_user.customer_number !== undefined) {
     where = [
       {
         customer_order_number: ILike(`%${query}%`),
