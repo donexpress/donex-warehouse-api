@@ -39,17 +39,17 @@ export class Manifest1697749722344 implements MigrationInterface {
           },
           {
             name: 'weigth',
-            type: 'varchar'
+            type: 'varchar',
           },
           {
             name: 'unit_weigth',
             type: 'float',
-            default: 0
+            default: 0,
           },
           {
             name: 'total_declare',
             type: 'float',
-            default: 0
+            default: 0,
           },
           {
             name: 'currency',
@@ -74,17 +74,17 @@ export class Manifest1697749722344 implements MigrationInterface {
           {
             name: 'shipping_cost',
             type: 'float',
-            default: 0
+            default: 0,
           },
           {
             name: 'sale_price',
             type: 'float',
-            default: 0
+            default: 0,
           },
           {
             name: 'invoice_weight',
             type: 'float',
-            default: 0
+            default: 0,
           },
           {
             name: 'state',
@@ -107,7 +107,7 @@ export class Manifest1697749722344 implements MigrationInterface {
           },
           {
             name: 'carrier',
-            type: 'varchar'
+            type: 'varchar',
           },
           {
             name: 'created_at',
@@ -136,43 +136,23 @@ export class Manifest1697749722344 implements MigrationInterface {
       })
     );
     await queryRunner.createIndex(
-        'manifests',
-        new TableIndex({
-          columnNames: ['state'],
-        })
-      );
-      await queryRunner.createIndex(
-        'manifests',
-        new TableIndex({
-          columnNames: ['client_reference'],
-        })
-      );
-      await queryRunner.createIndex(
-        'manifests',
-        new TableIndex({
-          columnNames: ['updated_at'],
-        })
-      );
-      await queryRunner.createIndex(
-        'manifests',
-        new TableIndex({
-          columnNames: ['carrier'],
-        })
-      );
-      await queryRunner.createIndex(
-        'manifests',
-        new TableIndex({
-          columnNames: ['waybill_id', 'carrier'],
-          isUnique: true
-        })
-      );
-      await queryRunner.createIndex(
-        'manifests',
-        new TableIndex({
-          columnNames: ['waybill_id', 'state'],
-          isUnique: true
-        })
-      );
+      'manifests',
+      new TableIndex({
+        columnNames: ['client_reference'],
+      })
+    );
+    await queryRunner.createIndex(
+      'manifests',
+      new TableIndex({
+        columnNames: ['updated_at'],
+      })
+    );
+    await queryRunner.createIndex(
+      'manifests',
+      new TableIndex({
+        columnNames: ['carrier'],
+      })
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

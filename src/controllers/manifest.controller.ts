@@ -51,7 +51,12 @@ export const create = async (req: Request, res: Response) => {
 
           await removeFile(urls.name);
           if (manifests.length === worksheetsBody.data.length) {
-            return res.sendStatus(201);
+            const count = await countManifest(manifests[0].waybill_id);
+            const body = {
+              count,
+              waybill_id: manifests[0].waybill_id,
+            };
+            return res.json(body);
           } else {
             return res.status(402).send(errors);
           }

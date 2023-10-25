@@ -4,15 +4,27 @@ import { validateContext } from '../helpers/validate';
 import { Manifest } from '../models/manifest.model';
 import { ConsigneeAddress } from '../models/consignee_address.model';
 import { ShipperAddress } from '../models/shipper_address.model';
-import { FindOptionsWhere } from 'typeorm';
+import { Between, FindOptionsWhere } from 'typeorm';
 
 export const findManifest = async (
   current_page: number,
   number_of_rows: number,
   params
 ) => {
-  let where: FindOptionsWhere<Manifest> | FindOptionsWhere<Manifest>[] = null;
-  return AppDataSource.manager.find(Manifest, {
+  const where: FindOptionsWhere<Manifest> | FindOptionsWhere<Manifest>[] = {
+    waybill_id: params.waybill_id,
+    carrier: params.carrier,
+  };
+
+  if (params.tracking_number) {
+    where.tracking_number = params.tracking_number;
+  }
+
+  if (params.paid) {
+    where.paid = params.paid;
+  }
+
+  return await AppDataSource.manager.find(Manifest, {
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
     where,
@@ -47,7 +59,6 @@ export const createManifest = async (
   const repository = await AppDataSource.getRepository(Manifest);
   const manifest = repository.create(manifest_data);
   const manifest_save = await validateContext(AppDataSource, manifest);
-  console.log(manifest_save);
 
   if (manifest_save instanceof Manifest) {
     await createShipperAddress({
