@@ -5,9 +5,6 @@ import { getEntries, xslx } from '../helpers/xlsx';
 import { getObject, getValues } from '../helpers';
 import {
   createManifest,
-  createConsigneeAddress,
-  createShipperAddress,
-  findByWaybillId,
   findManifest,
   countManifest,
 } from '../context/manifest';
@@ -31,8 +28,7 @@ export const create = async (req: Request, res: Response) => {
           return res.status(422).json(urls);
         } else {
           const url = urls.url;
-          //const url = req.body.url;
-          let error = [];
+          let errors = [];
           let manifests = [];
           var worksheetsBody = await xslx(url);
           for (let i = 0; i < worksheetsBody.data.length; i++) {
@@ -49,7 +45,7 @@ export const create = async (req: Request, res: Response) => {
             if (manifest instanceof Manifest) {
               manifests.push(manifest);
             } else {
-              error.push(manifest);
+              errors.push(manifest);
             }
           }
 
@@ -57,7 +53,7 @@ export const create = async (req: Request, res: Response) => {
           if (manifests.length === worksheetsBody.data.length) {
             return res.sendStatus(201);
           } else {
-            return res.status(402).send(error);
+            return res.status(402).send(errors);
           }
         }
       },
@@ -77,7 +73,8 @@ export const find = async (req: Request, res: Response) => {
   const number_of_rows = req.query.number_of_rows
     ? Number(req.query.number_of_rows)
     : await countManifest(waybill);
-  const manifest = await findManifest(current_page, number_of_rows, waybill);
+  const params = req.query;
+  const manifest = await findManifest(current_page, number_of_rows, params);
   return res.json(manifest);
 };
 

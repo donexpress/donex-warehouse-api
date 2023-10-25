@@ -12,7 +12,7 @@ import { IsIn, IsOptional, IsPositive } from 'class-validator';
 import { ShipperAddress } from './shipper_address.model';
 import { ConsigneeAddress } from "./consignee_address.model";
 
-@Index(['waybill_id', 'tracking_number', 'state'])
+@Index(['waybill_id', 'tracking_number', 'state', 'carrier'])
 @Entity({ name: 'manifests' })
 export class Manifest {
   @PrimaryGeneratedColumn()
@@ -88,13 +88,15 @@ export class Manifest {
   item_description: string;
 
   @Column({
-    type: 'integer'
+    type: 'integer',
+    nullable: false
   })
   @IsPositive()
   quantity: number;
 
   @Column({
-    type: 'integer'
+    type: 'integer',
+    nullable: false
   })
   pieces: number;
 
@@ -107,12 +109,21 @@ export class Manifest {
 
   @Column({
     type: 'float',
+    nullable: true,
     default: 0
   })
   sale_price: number;
 
   @Column({
-    type: 'varchar'
+    type: 'float',
+    nullable: true,
+    default: 0
+  })
+  invoice_weight: number;
+
+  @Column({
+    type: 'varchar',
+    nullable: true
   })
   state: string;
 
@@ -123,12 +134,14 @@ export class Manifest {
   paid: boolean;
 
   @Column({
-    type: 'varchar'
+    type: 'varchar',
+    nullable: true
   })
   payment_voucher: string;
 
   @Column({
-    type: 'varchar'
+    type: 'varchar',
+    nullable: true
   })
   bill_state: string;
 

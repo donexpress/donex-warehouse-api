@@ -82,6 +82,11 @@ export class Manifest1697749722344 implements MigrationInterface {
             default: 0
           },
           {
+            name: 'invoice_weight',
+            type: 'float',
+            default: 0
+          },
+          {
             name: 'state',
             type: 'varchar',
           },
@@ -140,6 +145,32 @@ export class Manifest1697749722344 implements MigrationInterface {
         'manifests',
         new TableIndex({
           columnNames: ['client_reference'],
+        })
+      );
+      await queryRunner.createIndex(
+        'manifests',
+        new TableIndex({
+          columnNames: ['updated_at'],
+        })
+      );
+      await queryRunner.createIndex(
+        'manifests',
+        new TableIndex({
+          columnNames: ['carrier'],
+        })
+      );
+      await queryRunner.createIndex(
+        'manifests',
+        new TableIndex({
+          columnNames: ['waybill_id', 'carrier'],
+          isUnique: true
+        })
+      );
+      await queryRunner.createIndex(
+        'manifests',
+        new TableIndex({
+          columnNames: ['waybill_id', 'state'],
+          isUnique: true
         })
       );
   }

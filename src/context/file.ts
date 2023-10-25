@@ -58,8 +58,8 @@ export const removeFile = async(filename: string) => {
   const bucket = 'warehouse-sav01ok';
   const store = new oss({
     region: 'oss-us-west-1',
-    accessKeyId: process.env.ALIYUN_PUBLIC_KEY,
-    accessKeySecret: process.env.ALIYUN_PRIVATE_KEY,
+    accessKeyId: process.env.ALIYUN_PUBLIC_KEY || 'LTAIGmg7WXMnXaOi',
+    accessKeySecret: process.env.ALIYUN_PRIVATE_KEY || '6vFzQR3ZVb0Xf3Rg6uZNZZwUv4y3JV',
     bucket
   });
   await store.delete(filename)

@@ -4,16 +4,18 @@ import { validateContext } from '../helpers/validate';
 import { Manifest } from '../models/manifest.model';
 import { ConsigneeAddress } from '../models/consignee_address.model';
 import { ShipperAddress } from '../models/shipper_address.model';
+import { FindOptionsWhere } from 'typeorm';
 
 export const findManifest = async (
   current_page: number,
   number_of_rows: number,
-  waybill_id: string
+  params
 ) => {
+  let where: FindOptionsWhere<Manifest> | FindOptionsWhere<Manifest>[] = null;
   return AppDataSource.manager.find(Manifest, {
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
-    where: { waybill_id },
+    where,
     order: {
       created_at: 'DESC',
     },

@@ -36,7 +36,6 @@ export const getObject = (value, carrier) => {
     weigth: value[19],
     unit_weigth: value[20],
     total_declare: value[21],
-    sale_price: value[21],
     currency: value[22],
     item_title: value[23],
     quantity: value[24],
