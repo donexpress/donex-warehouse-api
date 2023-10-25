@@ -48,6 +48,7 @@ const fetchcurrentUser = (req, res, next) => {
   if (headers.hasOwnProperty('authorization')) {
     const token = req.headers.authorization.split(' ')[1];
     const object = decodeToken(token);
+    console.log(object.data);
 
     if (!req.hasOwnProperty('assigns')) {
       req.assigns = {};
