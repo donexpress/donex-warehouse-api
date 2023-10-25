@@ -29,7 +29,7 @@ export const listStoragePlan = async (
   ];
 
   if (state.trim().length !== 0) {
-    where = { state: state };
+    where.push({state: state});
   }
 
   if (current_user.customer_number) {
