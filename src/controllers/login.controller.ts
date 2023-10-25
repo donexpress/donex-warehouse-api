@@ -36,11 +36,6 @@ export const login = async (req: Request, res: Response) => {
       });
     }
 
-    user =
-      warehouse_service === 'oms'
-        ? { ...user, customer_number: undefined }
-        : user;
-
     delete user.password;
     const exp = Math.floor(Date.now() / 1000) + 60 * 60 * 24;
     const token = JWT.sign(
