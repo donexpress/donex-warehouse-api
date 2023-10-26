@@ -41,7 +41,7 @@ export const listOutputPlan = async (
 ) => {
   let where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] = [
     { output_number: ILike(`%${query}%`), state: state },
-    { case_numbers: ArrayContains([query]), state: state },
+    //{ case_numbers: ArrayContains([query]), state: state },
     { reference_number: ILike(`%${query}%`), state: state },
   ];
 
@@ -52,11 +52,11 @@ export const listOutputPlan = async (
         state: state,
         user_id: current_user.id,
       },
-      {
+      /* {
         case_numbers: ArrayContains([query]),
         state: state,
         user_id: current_user.id,
-      },
+      }, */
       {
         reference_number: ILike(`%${query}%`),
         state: state,
