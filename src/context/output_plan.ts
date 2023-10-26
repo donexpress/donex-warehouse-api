@@ -634,3 +634,13 @@ export const pullBoxes = async ({
   }
   return result;
 };
+
+export const cleanOutputPlan = async () => {
+  const result = AppDataSource.manager.find(OutputPlan, {
+    where: {state: Not(states.output_plan.cancelled.value)},
+    order: {
+      id: 'DESC',
+    },
+  });
+ return result
+};
