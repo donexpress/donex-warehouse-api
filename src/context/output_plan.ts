@@ -222,7 +222,7 @@ export const countOutputPlan = async (current_user?) => {
 
 export const countAllOutputPlan = async (
   current_user: any,
-  query = ''
+  query
 ): Promise<Object> => {
   const repository = AppDataSource.getRepository(OutputPlan);
   const total = await countOutputPlan(current_user);
@@ -274,7 +274,7 @@ export const getWhere = async (current_user, query, state_value) => {
         user_id: current_user.id,
       },
       {
-        destination: ILike(`%${query}%`),
+        case_numbers: ArrayContains([query]),
         state: state_value,
         user_id: current_user.id,
       },
@@ -287,7 +287,7 @@ export const getWhere = async (current_user, query, state_value) => {
   } else {
     where = [
       { output_number: ILike(`%${query}%`), state: state_value },
-      { destination: ILike(`%${query}%`), state: state_value },
+      { case_numbers: ArrayContains([query]), state: state_value },
       { reference_number: ILike(`%${query}%`), state: state_value },
     ];
   }
