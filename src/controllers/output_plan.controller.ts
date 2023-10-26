@@ -33,13 +33,13 @@ export const index = async (req: Request, res: Response) => {
 
     const query = req.query.query;
     const state = req.query.state;
-    let outpu_plans = [];
+    //let outpu_plans = [];
     const current_user = getCurrentUser(req);
 
-    outpu_plans = await listOutputPlan(
+    const outpu_plans = await listOutputPlan(
       current_page,
       number_of_rows,
-      String(state),
+      state == undefined ? '' : String(state),
       query == undefined ? '' : String(query),
       current_user
     );
