@@ -22,7 +22,9 @@ export const listOI = async (
 ) => {
   let query = {};
   if (state === 'all') {
-    const where: any = {};
+    const where:
+      | FindOptionsWhere<OperationInstruction>
+      | FindOptionsWhere<OperationInstruction>[] = {};
     if (current_user.customer_number) {
       where.user_id = current_user.id;
     }
@@ -35,7 +37,9 @@ export const listOI = async (
       },
     };
   } else {
-    const where: any = { state };
+    const where:
+      | FindOptionsWhere<OperationInstruction>
+      | FindOptionsWhere<OperationInstruction>[] = { state };
     if (current_user.customer_number) {
       where.user_id = current_user.id;
     }
@@ -58,7 +62,7 @@ export const listOI = async (
   const count_user = await countUser();
   const users = await listUser(1, count_user, '');
   const count_op = await countOutputPlan();
-  const output_plans = await listOutputPlan(1, count_op, '', '', null); // TODO check this
+  const output_plans = await listOutputPlan(1, count_op, '', '', current_user); // TODO check this
   const mod_operation_instructions = [];
   for (let i = 0; i < operation_instructions.length; i++) {
     const element = operation_instructions[i];
