@@ -35,21 +35,15 @@ export const index = async (req: Request, res: Response) => {
     const state = req.query.state;
     let outpu_plans = [];
     const current_user = getCurrentUser(req);
-    if (state && state !== 'all') {
-      outpu_plans = await getOutputPlanByState(
-        current_page,
-        number_of_rows,
-        String(state),
-        current_user
-      );
-    } else {
-      outpu_plans = await listOutputPlan(
-        current_page,
-        number_of_rows,
-        query == undefined ? '' : String(query),
-        current_user
-      );
-    }
+
+    outpu_plans = await listOutputPlan(
+      current_page,
+      number_of_rows,
+      String(state),
+      query == undefined ? '' : String(query),
+      current_user
+    );
+
     res.json(outpu_plans);
   } catch (e) {
     console.log(e);
@@ -180,21 +174,23 @@ export const removeBoxes = async (req: Request, res: Response) => {
 
 export const getNonBoxesOnExitPlans = async (req: Request, res: Response) => {
   try {
-    const result = await nonBoxesOnExitPlans(req.body.excluded_output_plan, req.body.case_numbers);
-    res.send(result)
+    const result = await nonBoxesOnExitPlans(
+      req.body.excluded_output_plan,
+      req.body.case_numbers
+    );
+    res.send(result);
   } catch (e) {
     console.log(e);
     res.status(500).send(e);
   }
 };
 
-
-export const pull_boxes = async(req:Request, res: Response) => {
+export const pull_boxes = async (req: Request, res: Response) => {
   try {
-    const result = await pullBoxes(req.body)
-    res.send(result)
-  } catch(e) {
-    console.log(e)
-    res.status(500).send(e)
+    const result = await pullBoxes(req.body);
+    res.send(result);
+  } catch (e) {
+    console.log(e);
+    res.status(500).send(e);
   }
-}
+};

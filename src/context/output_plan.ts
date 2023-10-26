@@ -34,14 +34,33 @@ import { calcDate } from '../helpers';
 export const listOutputPlan = async (
   current_page: number,
   number_of_rows: number,
+  state: string,
   query: string,
   current_user: any
 ) => {
-  const where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] = {
-    output_number: ILike(`%${query}%`),
-  };
+  let where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] = [
+    { output_number: ILike(`%${query}%`), state: state },
+    { case_numbers: ILike(`%${query}%`), state: state },
+    { reference_number: ILike(`%${query}%`), state: state },
+  ];
   if (current_user.customer_number) {
-    where.user_id = current_user.id;
+    where = [
+      {
+        output_number: ILike(`%${query}%`),
+        state: state,
+        user_id: current_user.id,
+      },
+      {
+        case_numbers: ILike(`%${query}%`),
+        state: state,
+        user_id: current_user.id,
+      },
+      {
+        reference_number: ILike(`%${query}%`),
+        state: state,
+        user_id: current_user.id,
+      },
+    ];
   }
   const result = await AppDataSource.manager.find(OutputPlan, {
     take: number_of_rows,
