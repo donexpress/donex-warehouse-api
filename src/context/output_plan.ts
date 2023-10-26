@@ -40,7 +40,7 @@ export const listOutputPlan = async (
   const where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] = {
     output_number: ILike(`%${query}%`),
   };
-  if (current_user.customer_number) {
+  if (current_user && current_user.customer_number) {
     where.user_id = current_user.id;
   }
   const result = await AppDataSource.manager.find(OutputPlan, {
