@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import {
   changeOutputPlanState,
+  cleanOutputPlan,
   countAllOutputPlan,
   countOutputPlan,
   createOutputPlan,
@@ -44,6 +45,16 @@ export const index = async (req: Request, res: Response) => {
       current_user
     );
 
+    res.json(outpu_plans);
+  } catch (e) {
+    console.log(e);
+    res.status(500).send(e);
+  }
+};
+
+export const cleanIndex = async (req: Request, res: Response) => {
+  try {
+    const outpu_plans = await cleanOutputPlan();
     res.json(outpu_plans);
   } catch (e) {
     console.log(e);
