@@ -5,7 +5,11 @@ import { OperationInstruction } from '../models/instruction_operation.model';
 import { ValidationError } from 'class-validator';
 import states from '../config/states';
 import warehouse_type from '../config/types';
-import { countAOSWarehouse, listAOSWarehouse, showAOSWarehouse } from './aos_warehouse';
+import {
+  countAOSWarehouse,
+  listAOSWarehouse,
+  showAOSWarehouse,
+} from './aos_warehouse';
 import { countUser, listUser, showUser } from './user';
 import { countOutputPlan, listOutputPlan, showOutputPlan } from './output_plan';
 import { getCountByState } from '../helpers/states';
@@ -49,26 +53,28 @@ export const listOI = async (
     query
   );
 
-  const count_aos = await countAOSWarehouse()
-  const warehouses = await listAOSWarehouse(1, count_aos, '')
-  const count_user = await countUser()
-  const users = await listUser(1, count_user, '')
-  const count_op = await countOutputPlan()
-  const output_plans = await listOutputPlan(1, count_op, '', null)
+  const count_aos = await countAOSWarehouse();
+  const warehouses = await listAOSWarehouse(1, count_aos, '');
+  const count_user = await countUser();
+  const users = await listUser(1, count_user, '');
+  const count_op = await countOutputPlan();
+  const output_plans = await listOutputPlan(1, count_op, '', '', null); // TODO check this
   const mod_operation_instructions = [];
   for (let i = 0; i < operation_instructions.length; i++) {
     const element = operation_instructions[i];
-    const warehouse = warehouses.find(w => w.id === element.warehouse_id)
-    const user = users.find(u => u.id === element.user_id)
-    const output_plan = output_plans.find(op => op.id === element.output_plan_id)
+    const warehouse = warehouses.find((w) => w.id === element.warehouse_id);
+    const user = users.find((u) => u.id === element.user_id);
+    const output_plan = output_plans.find(
+      (op) => op.id === element.output_plan_id
+    );
     mod_operation_instructions.push({
-            ...element,
-            user,
-            warehouse,
-            output_plan,
-          });
-    }
-    return mod_operation_instructions;
+      ...element,
+      user,
+      warehouse,
+      output_plan,
+    });
+  }
+  return mod_operation_instructions;
 };
 
 export const listOIByOutputPlanId = async (
