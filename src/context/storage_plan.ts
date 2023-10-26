@@ -28,12 +28,29 @@ export const listStoragePlan = async (
     { reference_number: ILike(`%${query}%`), state: state },
   ];
 
-  //if (state.trim().length !== 0) {
-  //where.push({state: state});
-  //}
-
   if (current_user.customer_number) {
-    where = { state: ILike(`%${state}%`), user_id: current_user.id };
+    where = [
+      {
+        customer_order_number: ILike(`%${query}%`),
+        state: state,
+        user_id: current_user.id,
+      },
+      {
+        order_number: ILike(`%${query}%`),
+        state: state,
+        user_id: current_user.id,
+      },
+      {
+        pr_number: ILike(`%${query}%`),
+        state: state,
+        user_id: current_user.id,
+      },
+      {
+        reference_number: ILike(`%${query}%`),
+        state: state,
+        user_id: current_user.id,
+      },
+    ];
   }
   const storage_plans = await AppDataSource.manager.find(StoragePlan, {
     take: number_of_rows,
