@@ -672,11 +672,20 @@ export const pullBoxes = async ({
 };
 
 export const cleanOutputPlan = async () => {
-  const result = AppDataSource.manager.find(OutputPlan, {
-    where: { state: Not(states.output_plan.cancelled.value) },
+  const result = await AppDataSource.manager.find(OutputPlan, {
+    where: {state: Not(states.output_plan.cancelled.value)},
     order: {
       id: 'DESC',
     },
   });
-  return result;
+  const mod_package_list = [];
+  for (let i = 0; i < result.length; i++) {
+    const el = result[i];
+    const packing_lists = await getPackingListByCaseNumbers(el.case_numbers);
+    mod_package_list.push({
+      ...el,
+      packing_lists,
+    });
+  }
+ return mod_package_list
 };
