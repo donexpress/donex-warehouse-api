@@ -33,6 +33,7 @@
     "@types/express": "^4.17.17",
     "@types/morgan": "^1.9.4",
     "ali-oss": "^6.18.0",
+    "axios": "^1.5.1",
     "bcryptjs": "^2.4.3",
     "busboy": "^1.6.0",
     "class-validator": "^0.14.0",
@@ -47,7 +48,8 @@
     "pg": "^8.4.0",
     "reflect-metadata": "^0.1.13",
     "tsc-watch": "^6.0.4",
-    "typeorm": "0.3.17"
+    "typeorm": "0.3.17",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/ali-oss": "^6.16.8",
