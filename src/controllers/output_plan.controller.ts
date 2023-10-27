@@ -34,6 +34,7 @@ export const index = async (req: Request, res: Response) => {
 
     const query = req.query.query;
     const state = req.query.state;
+    const filter = req.body.filter;
     //let outpu_plans = [];
     const current_user = getCurrentUser(req);
 

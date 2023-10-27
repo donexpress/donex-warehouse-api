@@ -662,5 +662,5 @@ export const cleanOutputPlan = async () => {
       packing_lists,
     });
   }
-  return mod_package_list;
+ return mod_package_list
 };
