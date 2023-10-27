@@ -24,6 +24,10 @@ export const findManifest = async (
     where.paid = params.paid;
   }
 
+  if (params.client_reference) {
+    where.client_reference = params.client_reference;
+  }
+
   return await AppDataSource.manager.find(Manifest, {
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
