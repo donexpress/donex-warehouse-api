@@ -1,6 +1,7 @@
 import {
   ArrayContains,
   Between,
+  Brackets,
   FindOneOptions,
   FindOptionsWhere,
   ILike,
@@ -37,16 +38,19 @@ export const listOutputPlan = async (
   number_of_rows: number,
   state: string,
   query: string,
-  current_user: any
+  current_user: any,
+  filter: OutputPlanFilter
 ) => {
-  let where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] = [
-    { output_number: ILike(`%${query}%`), state: state },
-    { case_numbers: ArrayContains([query]), state: state },
-    { reference_number: ILike(`%${query}%`), state: state },
-  ];
+  let where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] = {};
+  let or_where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] =
+    [
+      { output_number: ILike(`%${query}%`), state: state },
+      { case_numbers: ArrayContains([query]), state: state },
+      { reference_number: ILike(`%${query}%`), state: state },
+    ];
 
   if (current_user.customer_number) {
-    where = [
+    or_where = [
       {
         output_number: ILike(`%${query}%`),
         state: state,
@@ -64,7 +68,39 @@ export const listOutputPlan = async (
       },
     ];
   }
-  const result = await AppDataSource.manager.find(OutputPlan, {
+
+  if (filter.initialDate) {
+    const date = new Date(filter.initialDate);
+    let final_date = new Date(filter.initialDate);
+    if (filter.finalDate) {
+      final_date = new Date(filter.finalDate);
+    }
+    final_date.setDate(final_date.getDate() + 1);
+    where.delivered_time = Between(
+      date.toISOString(),
+      final_date.toISOString()
+    );
+  }
+
+  if (filter.location) {
+    where = { ...where, destination: In(filter.location) };
+  }
+  const output_plan = await AppDataSource.createQueryBuilder(
+    OutputPlan,
+    'output_plans'
+  )
+    .where(where)
+    .orWhere(
+      new Brackets((qy) => {
+        qy.where(or_where);
+      })
+    )
+    .skip((current_page - 1) * number_of_rows)
+    .take(number_of_rows)
+    .orderBy('created_at', 'DESC')
+    .getMany();
+
+  const result1 = await AppDataSource.manager.find(OutputPlan, {
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
     where,
@@ -76,8 +112,8 @@ export const listOutputPlan = async (
   const warehouses = await AppDataSource.manager.find(AOSWarehouse);
   const oper_inst = await AppDataSource.manager.find(OperationInstruction);
   const mod_package_list = [];
-  for (let i = 0; i < result.length; i++) {
-    const el = result[i];
+  for (let i = 0; i < output_plan.length; i++) {
+    const el = output_plan[i];
     let user = null;
     if (el.user_id) {
       user = users.find((t) => t.id === el.user_id);
@@ -637,10 +673,10 @@ export const pullBoxes = async ({
 
 export const cleanOutputPlan = async () => {
   const result = AppDataSource.manager.find(OutputPlan, {
-    where: {state: Not(states.output_plan.cancelled.value)},
+    where: { state: Not(states.output_plan.cancelled.value) },
     order: {
       id: 'DESC',
     },
   });
- return result
+  return result;
 };

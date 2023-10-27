@@ -67,7 +67,8 @@ export const listOI = async (
     count_op,
     state,
     '',
-    current_user
+    current_user,
+    null
   ); // TODO check this
   const mod_operation_instructions = [];
   for (let i = 0; i < operation_instructions.length; i++) {
