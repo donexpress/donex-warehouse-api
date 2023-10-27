@@ -63,7 +63,11 @@ export const show = async (req: Request, res: Response) => {
 export const count = async (req: Request, res: Response) => {
   try {
     const current_user = getCurrentUser(req);
-    const count = await countAllStoragePlan(current_user);
+    const query = req.query.query;
+    const count = await countAllStoragePlan(
+      current_user,
+      query == undefined ? '' : String(query)
+    );
     res.json(count);
   } catch (e) {
     console.log(e);

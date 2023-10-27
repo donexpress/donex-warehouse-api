@@ -1,4 +1,5 @@
 import {
+  ArrayContains,
   Between,
   FindOneOptions,
   FindOptionsWhere,
@@ -27,21 +28,41 @@ import { getCountByState } from '../helpers/states';
 import { AOSWarehouse } from '../models/aos_warehouse.model';
 import { addresses, destinations } from '../config/destination';
 import { OutputPlanFilter } from '../types/OutputPlanFilter';
-import { filterStoragePlan, getStoragePlansbyIds } from './storage_plan';
+import { filterStoragePlan } from './storage_plan';
 import { PackingList } from '../models/packing_list.model';
-import { StoragePlan } from '../models/storage_plan.model';
+import { calcDate } from '../helpers';
 
 export const listOutputPlan = async (
   current_page: number,
   number_of_rows: number,
+  state: string,
   query: string,
   current_user: any
 ) => {
-  const where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] = {
-    output_number: ILike(`%${query}%`),
-  };
+  let where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] = [
+    { output_number: ILike(`%${query}%`), state: state },
+    { case_numbers: ArrayContains([query]), state: state },
+    { reference_number: ILike(`%${query}%`), state: state },
+  ];
+
   if (current_user.customer_number) {
-    where.user_id = current_user.id;
+    where = [
+      {
+        output_number: ILike(`%${query}%`),
+        state: state,
+        user_id: current_user.id,
+      },
+      {
+        case_numbers: ArrayContains([query]),
+        state: state,
+        user_id: current_user.id,
+      },
+      {
+        reference_number: ILike(`%${query}%`),
+        state: state,
+        user_id: current_user.id,
+      },
+    ];
   }
   const result = await AppDataSource.manager.find(OutputPlan, {
     take: number_of_rows,
@@ -200,39 +221,35 @@ export const countOutputPlan = async (current_user?) => {
 };
 
 export const countAllOutputPlan = async (
-  current_user: any
+  current_user: any,
+  query
 ): Promise<Object> => {
   const repository = AppDataSource.getRepository(OutputPlan);
   const total = await countOutputPlan(current_user);
   const pending = await getCountByState(
     repository,
-    states.output_plan.pending.value,
-    current_user
+    await getWhere(current_user, query, states.output_plan.pending.value)
   );
   const to_be_processed = await getCountByState(
     repository,
-    states.output_plan.to_be_processed.value,
-    current_user
+    await getWhere(
+      current_user,
+      query,
+      states.output_plan.to_be_processed.value
+    )
   );
   const processing = await getCountByState(
     repository,
-    states.output_plan.processing.value,
-    current_user
+    await getWhere(current_user, query, states.output_plan.processing.value)
   );
   const dispatched = await getCountByState(
     repository,
-    states.output_plan.dispatched.value,
-    current_user
+    await getWhere(current_user, query, states.output_plan.dispatched.value)
   );
   const cancelled = await getCountByState(
     repository,
-    states.output_plan.cancelled.value,
-    current_user
+    await getWhere(current_user, query, states.output_plan.cancelled.value)
   );
-  /* const collecting = await getCountByState(
-    repository,
-    states.output_plan.collecting.value
-  ); */
 
   const result = {
     total,
@@ -241,38 +258,90 @@ export const countAllOutputPlan = async (
     processing,
     dispatched,
     cancelled,
-    //collecting,
   };
   return result;
+};
+
+export const getWhere = async (current_user, query, state_value) => {
+  let where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] = {
+    state: state_value,
+  };
+  if (current_user.customer_number) {
+    where = [
+      {
+        output_number: ILike(`%${query}%`),
+        state: state_value,
+        user_id: current_user.id,
+      },
+      {
+        case_numbers: ArrayContains([query]),
+        state: state_value,
+        user_id: current_user.id,
+      },
+      {
+        reference_number: ILike(`%${query}%`),
+        state: state_value,
+        user_id: current_user.id,
+      },
+    ];
+  } else {
+    where = [
+      { output_number: ILike(`%${query}%`), state: state_value },
+      { case_numbers: ArrayContains([query]), state: state_value },
+      { reference_number: ILike(`%${query}%`), state: state_value },
+    ];
+  }
+
+  return where;
 };
 
 export const showOutputPlan = async (id: number) => {
   const result = await AppDataSource.manager.findOne(OutputPlan, {
     where: { id },
   });
-  let user = null;
-  if (result.user_id) {
-    user = await AppDataSource.manager.findOne(User, {
-      where: { id: result.user_id },
+  if (result) {
+    let destination = null;
+    if (result.destination && destinations[result.destination]) {
+      destination = destinations[result.destination];
+    }
+    let user = null;
+    if (result.user_id) {
+      user = await AppDataSource.manager.findOne(User, {
+        where: { id: result.user_id },
+      });
+      delete user.password;
+    }
+    let warehouse = null;
+    if (result.warehouse_id) {
+      warehouse = await AppDataSource.manager.findOne(AOSWarehouse, {
+        where: { id: result.warehouse_id },
+      });
+    }
+    const packing_lists = await getPackingListByCaseNumbers(
+      result.case_numbers
+    );
+    packing_lists.forEach((pl) => {
+      if (pl && pl.package_shelf && pl.package_shelf.created_at) {
+        const date = pl.dispatched_time
+          ? pl.dispatched_time
+          : new Date().toISOString();
+        const storage_date = pl.package_shelf.created_at;
+        const storage_time = calcDate(date, storage_date);
+        pl['storage_time'] = storage_time.total_days;
+      }
     });
-    delete user.password;
+    const appendages = await getAppendagesByOutputPlan(id);
+    return {
+      ...result,
+      user,
+      warehouse,
+      packing_lists,
+      appendages,
+      destination_ref: destination,
+    };
+  } else {
+    return null;
   }
-  let warehouse = null;
-  if (result.warehouse_id) {
-    warehouse = await AppDataSource.manager.findOne(AOSWarehouse, {
-      where: { id: result.warehouse_id },
-    });
-  }
-  const packing_lists = await getPackingListByCaseNumbers(result.case_numbers);
-  // for (let i = 0; i < result.case_numbers.length; i++) {
-  //   const element = result.case_numbers[i];
-  //   const res = await getPackingListByCaseNumber(element);
-  //   if (res) {
-  //     packing_lists.push(res);
-  //   }
-  // }
-  const appendages = await getAppendagesByOutputPlan(id);
-  return { ...result, user, warehouse, packing_lists, appendages };
 };
 
 export const createOutputPlan = async (data: any) => {
@@ -342,6 +411,7 @@ export const updateOutputPlan = async (id: number, data) => {
     await dispatchBulkBoxes(output_plan.case_numbers);
   }
   if (
+    data.case_numbers !== undefined &&
     exitPlan.case_numbers.length !== stored.length &&
     data.case_numbers.length > 0
   ) {
@@ -486,9 +556,8 @@ export const pullBoxes = async ({
   let packing_lists: PackingList[] = [];
   const error_type = {};
   if (data.case_number && data.case_number.trim() !== '') {
-    const split = data.case_number.split(',').map((el) => el.trim())
+    const split = data.case_number.split(',').map((el) => el.trim());
     case_numbers = case_numbers.concat(split);
-
   }
   if (
     data.warehouse_order_number &&
@@ -564,4 +633,14 @@ export const pullBoxes = async ({
     return error_type;
   }
   return result;
+};
+
+export const cleanOutputPlan = async () => {
+  const result = AppDataSource.manager.find(OutputPlan, {
+    where: {state: Not(states.output_plan.cancelled.value)},
+    order: {
+      id: 'DESC',
+    },
+  });
+ return result
 };

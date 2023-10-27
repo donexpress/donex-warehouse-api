@@ -8,6 +8,11 @@ router.get(
   verifyTokenPresent,
   OutputPlanController.index
 );
+router.get(
+  '/api/v1/output_plan/cleanIndex',
+  verifyTokenPresent,
+  OutputPlanController.cleanIndex
+);
 router.get('/api/v1/output_plan/count', OutputPlanController.count);
 router.get('/api/v1/output_plan/states', OutputPlanController.listStates);
 router.get('/api/v1/output_plan/destinations', verifyTokenPresent, OutputPlanController.destinations);

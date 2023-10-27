@@ -85,13 +85,6 @@ const output_plan = {
     value: 'to_be_processed',
     position: 2,
   },
-  /* collecting: {
-    name: 'Collecting',
-    es_name: 'Recogiendo',
-    zh_name: '收藏',
-    value: 'collecting',
-    position: 3,
-  }, */
   processing: {
     name: 'Processing',
     es_name: 'Procesando',
@@ -112,14 +105,7 @@ const output_plan = {
     zh_name: '取消',
     value: 'cancelled',
     position: 6,
-  },
-  all: {
-    name: 'All',
-    es_name: 'Todos',
-    zh_name: '全部',
-    value: 'all',
-    position: 7,
-  },
+  }
 };
 
 const operation_instruction = {

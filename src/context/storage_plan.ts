@@ -1,4 +1,4 @@
-import { FindOptionsWhere, ILike, In } from 'typeorm';
+import { FindOptionsWhere, ILike, In, Not } from 'typeorm';
 import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { StoragePlan } from '../models/storage_plan.model';
@@ -22,16 +22,35 @@ export const listStoragePlan = async (
   current_user
 ) => {
   let where: FindOptionsWhere<StoragePlan> | FindOptionsWhere<StoragePlan>[] = [
-    { customer_order_number: query },
-    { order_number: query },
+    { customer_order_number: ILike(`%${query}%`), state: state },
+    { order_number: ILike(`%${query}%`), state: state },
+    { pr_number: ILike(`%${query}%`), state: state },
+    { reference_number: ILike(`%${query}%`), state: state },
   ];
 
-  if (state.trim().length !== 0) {
-    where = { state: state };
-  }
-
   if (current_user.customer_number) {
-    where = { state: ILike(`%${state}%`), user_id: current_user.id };
+    where = [
+      {
+        customer_order_number: ILike(`%${query}%`),
+        state: state,
+        user_id: current_user.id,
+      },
+      {
+        order_number: ILike(`%${query}%`),
+        state: state,
+        user_id: current_user.id,
+      },
+      {
+        pr_number: ILike(`%${query}%`),
+        state: state,
+        user_id: current_user.id,
+      },
+      {
+        reference_number: ILike(`%${query}%`),
+        state: state,
+        user_id: current_user.id,
+      },
+    ];
   }
   const storage_plans = await AppDataSource.manager.find(StoragePlan, {
     take: number_of_rows,
@@ -104,29 +123,26 @@ export const countStoragePlan = async () => {
 };
 
 export const countAllStoragePlan = async (
-  current_user: any
+  current_user: any,
+  query: string
 ): Promise<Object> => {
   const repository = AppDataSource.getRepository(StoragePlan);
   const total = await countStoragePlan();
   const to_be_storage = await getCountByState(
     repository,
-    states.entry_plan.to_be_storage.value,
-    current_user
+    await getWhere(current_user, query, states.entry_plan.to_be_storage.value)
   );
   const into_warehouse = await getCountByState(
     repository,
-    states.entry_plan.into_warehouse.value,
-    current_user
+    await getWhere(current_user, query, states.entry_plan.into_warehouse.value)
   );
   const cancelled = await getCountByState(
     repository,
-    states.entry_plan.cancelled.value,
-    current_user
+    await getWhere(current_user, query, states.entry_plan.cancelled.value)
   );
   const stocked = await getCountByState(
     repository,
-    states.entry_plan.stocked.value,
-    current_user
+    await getWhere(current_user, query, states.entry_plan.stocked.value)
   );
 
   const result = {
@@ -137,6 +153,45 @@ export const countAllStoragePlan = async (
     stocked,
   };
   return result;
+};
+
+export const getWhere = async (current_user, query, state_value) => {
+  let where: FindOptionsWhere<StoragePlan> | FindOptionsWhere<StoragePlan>[] = {
+    state: state_value,
+  };
+  if (current_user.customer_number) {
+    where = [
+      {
+        customer_order_number: ILike(`%${query}%`),
+        state: state_value,
+        user_id: current_user.id,
+      },
+      {
+        order_number: ILike(`%${query}%`),
+        state: state_value,
+        user_id: current_user.id,
+      },
+      {
+        pr_number: ILike(`%${query}%`),
+        state: state_value,
+        user_id: current_user.id,
+      },
+      {
+        reference_number: ILike(`%${query}%`),
+        state: state_value,
+        user_id: current_user.id,
+      },
+    ];
+  } else {
+    where = [
+      { customer_order_number: ILike(`%${query}%`), state: state_value },
+      { order_number: ILike(`%${query}%`), state: state_value },
+      { pr_number: ILike(`%${query}%`), state: state_value },
+      { reference_number: ILike(`%${query}%`), state: state_value },
+    ];
+  }
+
+  return where;
 };
 
 export const showStoragePlan = async (id: number) => {
@@ -165,7 +220,10 @@ export const createStoragePlan = async (data, user_id: number) => {
   }
   if (data.customer_order_number) {
     const customer_order_number_count = await repository.count({
-      where: { customer_order_number: data.customer_order_number },
+      where: {
+        customer_order_number: data.customer_order_number,
+        state: Not(states.entry_plan.cancelled.value),
+      },
     });
     if (customer_order_number_count > 0 && data.rejected_boxes !== true) {
       return { message: 'customer order number already exists' };
@@ -290,9 +348,7 @@ export const changeStoragePlanState = async (id: number, state) => {
   return result;
 };
 
-export const filterStoragePlan = async (
-  query: string,
-) => {
+export const filterStoragePlan = async (query: string) => {
   let where: FindOptionsWhere<StoragePlan> | FindOptionsWhere<StoragePlan>[] = [
     { customer_order_number: query },
     { order_number: query },
@@ -326,9 +382,9 @@ export const filterStoragePlan = async (
   return data;
 };
 
-export const getStoragePlansbyIds = async(ids: number[]) => {
+export const getStoragePlansbyIds = async (ids: number[]) => {
   const storage_plans = await AppDataSource.manager.find(StoragePlan, {
-    where: {id: In(ids)}
+    where: { id: In(ids) },
   });
-  return storage_plans
-}
+  return storage_plans;
+};
