@@ -37,7 +37,7 @@ export const listOutputPlan = async (
   number_of_rows: number,
   state: string,
   query: string,
-  current_user: any,
+  current_user: any
 ) => {
   let where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] = [
     { output_number: ILike(`%${query}%`), state: state },
