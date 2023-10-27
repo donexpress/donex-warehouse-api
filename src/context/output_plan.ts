@@ -114,6 +114,7 @@ export const listOutputPlan = async (
         state: states.output_plan[el.state],
         destination_ref: destination,
         packing_lists,
+        operation_instructions,
       });
     } else {
       mod_package_list.push({
@@ -652,6 +653,16 @@ export const cleanOutputPlan = async () => {
   for (let i = 0; i < result.length; i++) {
     const el = result[i];
     const packing_lists = await getPackingListByCaseNumbers(el.case_numbers);
+    packing_lists.forEach((pl) => {
+      if (pl && pl.package_shelf && pl.package_shelf.created_at) {
+        const date = pl.dispatched_time
+          ? pl.dispatched_time
+          : new Date().toISOString();
+        const storage_date = pl.package_shelf.created_at;
+        const storage_time = calcDate(date, storage_date);
+        pl['storage_time'] = storage_time.total_days;
+      }
+    });
     mod_package_list.push({
       ...el,
       packing_lists,
