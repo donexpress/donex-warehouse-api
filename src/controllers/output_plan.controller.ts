@@ -43,8 +43,7 @@ export const index = async (req: Request, res: Response) => {
       number_of_rows,
       state == undefined ? '' : String(state),
       query == undefined ? '' : String(query),
-      current_user,
-      filter == undefined ? '' : filter
+      current_user
     );
 
     res.json(outpu_plans);
