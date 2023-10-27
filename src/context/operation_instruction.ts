@@ -62,7 +62,13 @@ export const listOI = async (
   const count_user = await countUser();
   const users = await listUser(1, count_user, '');
   const count_op = await countOutputPlan();
-  const output_plans = await listOutputPlan(1, count_op, state, '', current_user); // TODO check this
+  const output_plans = await listOutputPlan(
+    1,
+    count_op,
+    state,
+    '',
+    current_user
+  ); // TODO check this
   const mod_operation_instructions = [];
   for (let i = 0; i < operation_instructions.length; i++) {
     const element = operation_instructions[i];
@@ -130,7 +136,6 @@ export const countAllOI = async (
   query = ''
 ): Promise<Object> => {
   const repository = AppDataSource.getRepository(OperationInstruction);
-  const total = await countOI();
 
   const pending = await getCountByStateAndOutputId(
     repository,
@@ -157,6 +162,8 @@ export const countAllOI = async (
     output_id,
     current_user
   );
+
+  const total = pending + processed + processing + cancelled;
 
   const result = {
     total,

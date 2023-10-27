@@ -23,6 +23,7 @@ import * as FileController from './file.controller';
 import * as ShelfPackageController from './shelf_package.controller';
 import * as OperationInstructionController from './operation_instruction.controller'
 import * as AppendixController from './appendix.controller'
+import * as ManifestController from './manifest.controller'
 
 export {
   DepartmentController,
@@ -49,5 +50,6 @@ export {
   FileController,
   ShelfPackageController,
   OperationInstructionController,
-  AppendixController
+  AppendixController,
+  ManifestController
 };

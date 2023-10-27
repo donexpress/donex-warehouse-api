@@ -7,13 +7,17 @@ export const upload_file = async (req: Request, res: Response) => {
   if (contentLength >= 5 * 1024 * 1024) {
     res.status(413).send('Upload exceeds max size');
   }
-  const result = upload(req, (urls: any) => {
-    if(urls === null)  {
-      return res.status(422).json(urls)
-    }else  {
-      return res.json(urls)
-    }
-  },true)
+  await upload(
+    req,
+    (urls: any) => {
+      if (urls === null) {
+        return res.status(422).json(urls);
+      } else {
+        return res.json(urls);
+      }
+    },
+    true
+  );
 };
 
 export const remove_file = async (req: Request, res: Response) => {
