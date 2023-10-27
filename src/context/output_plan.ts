@@ -114,6 +114,7 @@ export const listOutputPlan = async (
         state: states.output_plan[el.state],
         destination_ref: destination,
         packing_lists,
+        operation_instructions
       });
     } else {
       mod_package_list.push({
