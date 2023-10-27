@@ -19,7 +19,7 @@ export const create = async (req: Request, res: Response) => {
     }
     const contentLength = parseInt(req.headers['content-length'], 10);
     if (contentLength >= 5 * 1024 * 1024) {
-      return res.status(413).send('Upload exceeds max size');
+      return res.status(413).send('Upload exceeds max size.');
     }
     await upload(
       req,
