@@ -44,7 +44,7 @@ export const index = async (req: Request, res: Response) => {
       state == undefined ? '' : String(state),
       query == undefined ? '' : String(query),
       current_user,
-      filter
+      filter == undefined ? '' : filter
     );
 
     res.json(outpu_plans);
