@@ -442,7 +442,11 @@ export const getAddresses = () => {
   return addresses;
 };
 
-export const getOutputPlanByFilter = async (filter: OutputPlanFilter) => {
+export const getOutputPlanByFilter = async (
+  current_page: number,
+  number_of_rows: number,
+  filter: OutputPlanFilter
+) => {
   let where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] = {};
   if (filter.initialDate) {
     const date = new Date(filter.initialDate);
@@ -460,6 +464,8 @@ export const getOutputPlanByFilter = async (filter: OutputPlanFilter) => {
     where = { ...where, destination: In(filter.location) };
   }
   const result = await AppDataSource.manager.find(OutputPlan, {
+    take: number_of_rows,
+    skip: (current_page - 1) * number_of_rows,
     where,
   });
   const users = await AppDataSource.manager.find(User);
@@ -637,7 +643,7 @@ export const pullBoxes = async ({
 
 export const cleanOutputPlan = async () => {
   const result = await AppDataSource.manager.find(OutputPlan, {
-    where: {state: Not(states.output_plan.cancelled.value)},
+    where: { state: Not(states.output_plan.cancelled.value) },
     order: {
       id: 'DESC',
     },
@@ -651,5 +657,5 @@ export const cleanOutputPlan = async () => {
       packing_lists,
     });
   }
- return mod_package_list
+  return mod_package_list;
 };

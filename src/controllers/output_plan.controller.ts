@@ -150,7 +150,13 @@ export const addresses = (req: Request, res: Response) => {
 };
 
 export const getByFilter = async (req: Request, res: Response) => {
-  res.send(await getOutputPlanByFilter(req.body));
+  const current_page = req.query.current_page
+      ? Number(req.query.current_page)
+      : 1;
+    const number_of_rows = req.query.number_of_rows
+      ? Number(req.query.number_of_rows)
+      : await countOutputPlan();
+  res.send(await getOutputPlanByFilter(current_page, number_of_rows, req.body));
 };
 
 export const changeState = async (req: Request, res: Response) => {
