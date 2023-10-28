@@ -51,8 +51,19 @@ export const findByWaybillId = async (waybill_id: string) => {
   });
 };
 
-export const countManifest = async (waybill_id) => {
-  return AppDataSource.manager.count(Manifest, { where: { waybill_id } });
+export const findByTrackingAndCarrier = async (
+  tracking_number: string,
+  carrier: string
+) => {
+  return await AppDataSource.manager.findOne(Manifest, {
+    where: { tracking_number, carrier },
+  });
+};
+
+export const countManifest = async (waybill_id: string, carrier: string) => {
+  return AppDataSource.manager.count(Manifest, {
+    where: { waybill_id, carrier },
+  });
 };
 
 export const createManifest = async (
