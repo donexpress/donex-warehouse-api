@@ -61,5 +61,12 @@ export const addresses = {
       value: 'mxrc02',
       position: 2,
     },
+    {
+      name: 'Mx 03, 06 (Mx0306)',
+      es_name: 'Mx 03, 06 (Mx0306)',
+      zh_name: 'Mx 03, 06 (Mx0306)',
+      value: 'mxrc02',
+      position: 3,
+    }
   ],
 };
