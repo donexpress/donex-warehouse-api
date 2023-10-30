@@ -13,6 +13,7 @@ import {
 } from './packing_list';
 import states from '../config/states';
 import { getCountByState, getStates } from '../helpers/states';
+import { removeNullProperties } from '../helpers';
 
 export const listStoragePlan = async (
   current_page: number,
@@ -212,6 +213,14 @@ export const showStoragePlan = async (id: number) => {
   }
   return { ...storage_plan, packing_list, warehouse, user };
 };
+
+export const showCleanStoragePlan = async (id: number) => {
+  const storage_plan = await AppDataSource.manager.findOne(StoragePlan, {
+    where: { id },
+  });
+  return removeNullProperties(storage_plan);
+};
+
 
 export const createStoragePlan = async (data, user_id: number) => {
   const repository = await AppDataSource.getRepository(StoragePlan);

@@ -11,6 +11,7 @@ router.get(
 router.get('/api/v1/storage_plan/count', StoragePlanController.count);
 router.get('/api/v1/storage_plan/states', StoragePlanController.listStates);
 router.get('/api/v1/storage_plan/:id', StoragePlanController.show);
+router.get('/api/v1/storage_plan/:id/no_dependencies', StoragePlanController.no_dependencies);
 router.post(
   '/api/v1/storage_plan',
   verifyTokenPresent,
