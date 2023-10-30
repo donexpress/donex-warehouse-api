@@ -7,6 +7,7 @@ import {
   createStoragePlanMulti,
   listStoragePlan,
   removeStoragePlan,
+  showCleanStoragePlan,
   showStoragePlan,
   updateStoragePlan,
 } from '../context/storage_plan';
@@ -49,6 +50,20 @@ export const index = async (req: Request, res: Response) => {
 export const show = async (req: Request, res: Response) => {
   try {
     const result = await showStoragePlan(Number(req.params.id));
+    if (!result) {
+      res.status(404).json(result);
+    } else {
+      res.json(result);
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(500).send(e);
+  }
+};
+
+export const no_dependencies = async (req: Request, res: Response) => {
+  try {
+    const result = await showCleanStoragePlan(Number(req.params.id));
     if (!result) {
       res.status(404).json(result);
     } else {
