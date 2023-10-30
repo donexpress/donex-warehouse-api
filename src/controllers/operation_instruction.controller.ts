@@ -34,11 +34,13 @@ export const index = async (req: Request, res: Response) => {
       : await countOI();
 
     const state = req.query.state;
+    const query = req.query.query;
     const current_user = getCurrentUser(req);
     const operation_instruction = await listOI(
       current_page,
       number_of_rows,
       String(state),
+      query === undefined ? '' : String(query),
       current_user
     );
     res.json(operation_instruction);

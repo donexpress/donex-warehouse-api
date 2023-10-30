@@ -18,40 +18,51 @@ export const listOI = async (
   current_page: number,
   number_of_rows: number,
   state: string | '',
+  query_name: string,
   current_user: any
 ) => {
   let query = {};
+  let where:
+    | FindOptionsWhere<OperationInstruction>
+    | FindOptionsWhere<OperationInstruction>[] = [
+    { number_delivery: ILike(`%${query_name}%`) },
+  ];
   if (state === 'all') {
-    const where:
-      | FindOptionsWhere<OperationInstruction>
-      | FindOptionsWhere<OperationInstruction>[] = {};
     if (current_user.customer_number) {
-      where.user_id = current_user.id;
+      where = [
+        { number_delivery: ILike(`%${query_name}%`), user_id: current_user.id },
+      ];
+    } else {
+      where = [{ number_delivery: ILike(`%${query_name}%`) }];
     }
-    query = {
-      take: number_of_rows,
-      skip: (current_page - 1) * number_of_rows,
-      where,
-      order: {
-        created_at: 'DESC',
-      },
-    };
   } else {
-    const where:
-      | FindOptionsWhere<OperationInstruction>
-      | FindOptionsWhere<OperationInstruction>[] = { state };
     if (current_user.customer_number) {
-      where.user_id = current_user.id;
+      where = [
+        {
+          number_delivery: ILike(`%${query_name}%`),
+          user_id: current_user.id,
+          state: state,
+        },
+      ];
+    } else {
+      where = [
+        {
+          number_delivery: ILike(`%${query_name}%`),
+          state: state,
+        },
+      ];
     }
-    query = {
-      take: number_of_rows,
-      skip: (current_page - 1) * number_of_rows,
-      where,
-      order: {
-        created_at: 'DESC',
-      },
-    };
   }
+
+  query = {
+    take: number_of_rows,
+    skip: (current_page - 1) * number_of_rows,
+    where,
+    order: {
+      created_at: 'DESC',
+    },
+  };
+
   const operation_instructions = await AppDataSource.manager.find(
     OperationInstruction,
     query
