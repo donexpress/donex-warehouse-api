@@ -81,6 +81,14 @@ export const createParamsManifest = (value, carrier) => {
   return { manifest_data, shipper_data, consignee_data };
 };
 
+export const removeNullProperties = <T>(obj: T): T => {
+  Object.keys(obj).forEach(key => {
+    if (obj[key] === null) {
+      delete obj[key];
+    }
+  });
+  return obj
+}
 export const calcDate = (date1: string, date2: string) => {
   /*
    * calcDate() : Calculates the difference between two dates
