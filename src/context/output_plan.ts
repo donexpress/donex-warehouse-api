@@ -55,11 +55,6 @@ export const listOutputPlan = async (
     { case_numbers: ArrayContains([query]), state: state, ...fl },
     { reference_number: ILike(`%${query}%`), state: state, ...fl },
   ];
-  
-  // if (filter.location) {
-  //   where = { ...where, destination: In(filter.location) };
-  // delivered_time: Between(start_date.toISOString(),final_date.toISOString())
-  // }
 
   if (current_user.customer_number) {
     where = [
@@ -91,7 +86,6 @@ export const listOutputPlan = async (
       id: 'DESC',
     },
   });
-  console.log(result)
   const users = await AppDataSource.manager.find(User);
   const warehouses = await AppDataSource.manager.find(AOSWarehouse);
   const oper_inst = await AppDataSource.manager.find(OperationInstruction);
@@ -243,33 +237,35 @@ export const countOutputPlan = async (current_user?) => {
 
 export const countAllOutputPlan = async (
   current_user: any,
-  query
+  query,
+  filter: OutputPlanFilter
 ): Promise<Object> => {
   const repository = AppDataSource.getRepository(OutputPlan);
   const total = await countOutputPlan(current_user);
   const pending = await getCountByState(
     repository,
-    await getWhere(current_user, query, states.output_plan.pending.value)
+    await getWhere(current_user, query, states.output_plan.pending.value, filter)
   );
   const to_be_processed = await getCountByState(
     repository,
     await getWhere(
       current_user,
       query,
-      states.output_plan.to_be_processed.value
+      states.output_plan.to_be_processed.value,
+      filter
     )
   );
   const processing = await getCountByState(
     repository,
-    await getWhere(current_user, query, states.output_plan.processing.value)
+    await getWhere(current_user, query, states.output_plan.processing.value,filter)
   );
   const dispatched = await getCountByState(
     repository,
-    await getWhere(current_user, query, states.output_plan.dispatched.value)
+    await getWhere(current_user, query, states.output_plan.dispatched.value,filter)
   );
   const cancelled = await getCountByState(
     repository,
-    await getWhere(current_user, query, states.output_plan.cancelled.value)
+    await getWhere(current_user, query, states.output_plan.cancelled.value, filter)
   );
 
   const result = {
@@ -283,9 +279,22 @@ export const countAllOutputPlan = async (
   return result;
 };
 
-export const getWhere = async (current_user, query, state_value) => {
+export const getWhere = async (current_user, query, state_value, filter: OutputPlanFilter) => {
+  const fl = {destination: In(filter.location)};
+  if (filter.initialDate) {
+    const start_date = new Date(filter.initialDate);
+    let final_date = new Date(filter.initialDate);
+    if (filter.finalDate) {
+      final_date = new Date(filter.finalDate);
+    }
+    final_date.setDate(final_date.getDate() + 1);
+    fl['delivered_time'] = Between(start_date.toISOString(),final_date.toISOString())
+  }
+
+
   let where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] = {
     state: state_value,
+    ...fl
   };
   if (current_user.customer_number) {
     where = [
@@ -293,25 +302,29 @@ export const getWhere = async (current_user, query, state_value) => {
         output_number: ILike(`%${query}%`),
         state: state_value,
         user_id: current_user.id,
+        ...fl
       },
       {
         case_numbers: ArrayContains([query]),
         state: state_value,
         user_id: current_user.id,
+        ...fl
       },
       {
         reference_number: ILike(`%${query}%`),
         state: state_value,
         user_id: current_user.id,
+        ...fl
       },
     ];
   } else {
     where = [
-      { output_number: ILike(`%${query}%`), state: state_value },
-      { case_numbers: ArrayContains([query]), state: state_value },
-      { reference_number: ILike(`%${query}%`), state: state_value },
+      { output_number: ILike(`%${query}%`), state: state_value, ...fl },
+      { case_numbers: ArrayContains([query]), state: state_value, ...fl },
+      { reference_number: ILike(`%${query}%`), state: state_value, ...fl },
     ];
   }
+
 
   return where;
 };
@@ -425,7 +438,6 @@ export const updateOutputPlan = async (id: number, data) => {
     exitPlan.state === 'dispatched'
   ) {
     const output_plan = await showOutputPlan(id);
-    console.log(output_plan.case_numbers);
     await returnDispatchedBulkBoxes(output_plan.case_numbers);
   } else if (data.state === 'dispatched') {
     const output_plan = await showOutputPlan(id);
@@ -526,7 +538,6 @@ export const returnBoxes = async (id: number, data) => {
   const output_plan = await showOutputPlan(id);
   data.updated_at = new Date().toISOString();
   if (output_plan.state === 'dispatched') {
-    console.log(data);
     await returnDispatchedBulkBoxes(data.case_numbers);
   }
   data.case_numbers = output_plan.case_numbers.filter(

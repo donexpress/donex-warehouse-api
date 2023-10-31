@@ -88,9 +88,17 @@ export const count = async (req: Request, res: Response) => {
   try {
     const current_user = getCurrentUser(req);
     const query = req.query.query;
+    const initialDate = req.query.initialDate;
+    const finalDate = req.query.finalDate;
+    const location = req.query.location;
     const count = await countAllOutputPlan(
       current_user,
-      query == undefined ? '' : String(query)
+      query == undefined ? '' : String(query),
+      {
+        initialDate: initialDate == undefined ? '' : String(initialDate),
+        finalDate: finalDate == undefined ? '' : String(finalDate),
+        location: location == undefined ? '' : JSON.parse(String(location)),
+      }
     );
     res.json(count);
   } catch (e) {
