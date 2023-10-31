@@ -40,7 +40,7 @@ export const listOutputPlan = async (
   current_user: any,
   filter: OutputPlanFilter
 ) => {
-  const fl = {destination: In(filter.location)}
+  const fl = filter.location.length !== Object.keys(destinations).length ? {destination: In(filter.location)}: {}
   if (filter.initialDate) {
     const start_date = new Date(filter.initialDate);
     let final_date = new Date(filter.initialDate);
@@ -280,7 +280,7 @@ export const countAllOutputPlan = async (
 };
 
 export const getWhere = async (current_user, query, state_value, filter: OutputPlanFilter) => {
-  const fl = {destination: In(filter.location)};
+  const fl = filter.location.length !== Object.keys(destinations).length ? {destination: In(filter.location)}: {};
   if (filter.initialDate) {
     const start_date = new Date(filter.initialDate);
     let final_date = new Date(filter.initialDate);
