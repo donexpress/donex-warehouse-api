@@ -212,6 +212,7 @@ export const showStoragePlan = async (id: number) => {
   if (storage_plan.user_id) {
     user = await showUser(storage_plan.user_id);
   }
+  await removeNullProperties(storage_plan);
   return { ...storage_plan, packing_list, warehouse, user };
 };
 
