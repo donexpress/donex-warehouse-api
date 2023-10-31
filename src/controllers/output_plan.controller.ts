@@ -35,15 +35,22 @@ export const index = async (req: Request, res: Response) => {
     const query = req.query.query;
     const state = req.query.state;
     const filter = req.body.filter;
+    const initialDate = req.query.initialDate;
+    const finalDate = req.query.finalDate;
+    const location = req.query.location;
     //let outpu_plans = [];
     const current_user = getCurrentUser(req);
-
     const outpu_plans = await listOutputPlan(
       current_page,
       number_of_rows,
       state == undefined ? '' : String(state),
       query == undefined ? '' : String(query),
-      current_user
+      current_user,
+      {
+        initialDate: initialDate == undefined ? '' : String(initialDate),
+        finalDate: finalDate == undefined ? '' : String(finalDate),
+        location: location == undefined ? '' : JSON.parse(String(location)),
+      }
     );
 
     res.json(outpu_plans);
@@ -151,11 +158,11 @@ export const addresses = (req: Request, res: Response) => {
 
 export const getByFilter = async (req: Request, res: Response) => {
   const current_page = req.query.current_page
-      ? Number(req.query.current_page)
-      : 1;
-    const number_of_rows = req.query.number_of_rows
-      ? Number(req.query.number_of_rows)
-      : await countOutputPlan();
+    ? Number(req.query.current_page)
+    : 1;
+  const number_of_rows = req.query.number_of_rows
+    ? Number(req.query.number_of_rows)
+    : await countOutputPlan();
   res.send(await getOutputPlanByFilter(current_page, number_of_rows, req.body));
 };
 
