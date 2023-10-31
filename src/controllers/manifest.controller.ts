@@ -58,8 +58,8 @@ export const create_do = async (
                 errors.push(manifest);
               }
             } else if (action === 'update_customer') {
-              const tracking_number = value[0];
-              const shipping_cost = value[1];
+              const tracking_number = value[1];
+              const shipping_cost = value[2];
               const manifest = await findByTracking(tracking_number);
 
               const update_manifest = await updateManifest(manifest, {
