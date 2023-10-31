@@ -95,7 +95,7 @@ export const listStoragePlan = async (
       storage_state,
     });
   }
-  return data;
+  return await removeNullProperties(data);
 };
 
 export const findStoragePlanByOrderNumber = async (order_number: string) => {
