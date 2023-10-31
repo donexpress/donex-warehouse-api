@@ -9,13 +9,13 @@ router.post(
   //guardianMw(['ADMIN', 'FINANCE']),
   ManifestController.create
 );
-router.put(
-  '/api/v1/manifest_client',
+router.patch(
+  '/api/v1/manifest_customer',
   verifyTokenPresent,
   //guardianMw(['ADMIN', 'FINANCE']),
-  ManifestController.update_client_do
+  ManifestController.update_customer_do
 );
-router.put(
+router.patch(
   '/api/v1/manifest_supplier',
   verifyTokenPresent,
   //guardianMw(['ADMIN', 'FINANCE']),

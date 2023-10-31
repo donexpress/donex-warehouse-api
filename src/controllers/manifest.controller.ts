@@ -17,7 +17,7 @@ import { Manifest } from '../models/manifest.model';
 export const create = async (req: Request, res: Response) => {
   return await create_do(req, res, 'create');
 };
-export const update_client_do = async (req: Request, res: Response) => {
+export const update_customer_do = async (req: Request, res: Response) => {
   return await create_do(req, res, 'update_customer');
 };
 export const update_supplier_do = async (req: Request, res: Response) => {
@@ -61,20 +61,18 @@ export const create_do = async (
               const tracking_number = value[1];
               const shipping_cost = value[2];
               const manifest = await findByTracking(tracking_number);
-
               const update_manifest = await updateManifest(manifest, {
                 shipping_cost: shipping_cost,
               });
-
               if (update_manifest instanceof Manifest) {
                 manifests.push(update_manifest);
               } else {
                 errors.push(update_manifest);
               }
             } else if (action === 'update_supplier') {
-              const tracking_number = value[0];
-              const sale_price = value[1];
-              const invoice_weight = value[2];
+              const tracking_number = value[1];
+              const sale_price = value[2];
+              const invoice_weight = value[3];
               const manifest = await findByTrackingAndCarrier(
                 tracking_number,
                 carrier
