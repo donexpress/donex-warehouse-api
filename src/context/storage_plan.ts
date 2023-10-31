@@ -87,6 +87,7 @@ export const listStoragePlan = async (
       const array_states = getStates(states.entry_plan);
       storage_state = array_states.find((s) => s.value === storage_plan.state);
     }
+    await removeNullProperties(storage_plan);
     data.push({
       ...storage_plan,
       warehouse,
@@ -95,7 +96,7 @@ export const listStoragePlan = async (
       storage_state,
     });
   }
-  return await removeNullProperties(data);
+  return data;
 };
 
 export const findStoragePlanByOrderNumber = async (order_number: string) => {
@@ -220,7 +221,6 @@ export const showCleanStoragePlan = async (id: number) => {
   });
   return removeNullProperties(storage_plan);
 };
-
 
 export const createStoragePlan = async (data, user_id: number) => {
   const repository = await AppDataSource.getRepository(StoragePlan);
