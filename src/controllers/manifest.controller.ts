@@ -38,7 +38,6 @@ export const create_do = async (
         } else {
           let errors = [];
           let manifests = [];
-          let data_process = null;
           const carrier = String(req.query.carrier);
           var worksheetsBody = await xslx(urls.url);
           for (let i = 0; i < worksheetsBody.data.length; i++) {
@@ -98,18 +97,18 @@ export const create_do = async (
           }
 
           await removeFile(urls.name);
-          if (data_process.manifests.length === worksheetsBody.data.length) {
+          if (manifests.length === worksheetsBody.data.length) {
             const count = await countManifest(
-              data_process.manifests[0].waybill_id,
+              manifests[0].waybill_id,
               carrier
             );
             const body = {
               count,
-              waybill_id: data_process.manifests[0].waybill_id,
+              waybill_id: manifests[0].waybill_id,
             };
             return res.json(body);
           } else {
-            return res.status(402).send(data_process.errors);
+            return res.status(402).send(errors);
           }
         }
       },
