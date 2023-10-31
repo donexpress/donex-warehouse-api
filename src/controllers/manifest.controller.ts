@@ -9,6 +9,7 @@ import {
   countManifest,
   findByTrackingAndCarrier,
   updateManifest,
+  findByTracking,
 } from '../context/manifest';
 import carriers_type from '../config/carriers';
 import { Manifest } from '../models/manifest.model';
@@ -59,10 +60,7 @@ export const create_do = async (
             } else if (action === 'update_customer') {
               const tracking_number = value[0];
               const shipping_cost = value[1];
-              const manifest = await findByTrackingAndCarrier(
-                tracking_number,
-                carrier
-              );
+              const manifest = await findByTracking(tracking_number);
 
               const update_manifest = await updateManifest(manifest, {
                 shipping_cost: shipping_cost,
@@ -85,7 +83,7 @@ export const create_do = async (
               const update_manifest = await updateManifest(manifest, {
                 sale_price: sale_price,
                 invoice_weight: invoice_weight,
-                paid: true
+                paid: true,
               });
 
               if (update_manifest instanceof Manifest) {
@@ -98,12 +96,9 @@ export const create_do = async (
 
           await removeFile(urls.name);
           if (manifests.length === worksheetsBody.data.length) {
-            const count = await countManifest(
-              manifests[0].waybill_id,
-              carrier
-            );
-            const body = {
-              count,
+            let body = {};
+            body = {
+              count: manifests.length,
               waybill_id: manifests[0].waybill_id,
             };
             return res.json(body);
