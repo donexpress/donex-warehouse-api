@@ -1,7 +1,7 @@
 const carriers = {
   RP: {
     name: 'RedPack',
-    value: 'RedPack',
+    value: 'RP',
     position: 1,
   },
   CSM: {
