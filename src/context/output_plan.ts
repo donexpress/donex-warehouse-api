@@ -37,13 +37,29 @@ export const listOutputPlan = async (
   number_of_rows: number,
   state: string,
   query: string,
-  current_user: any
+  current_user: any,
+  filter: OutputPlanFilter
 ) => {
+  const fl = {destination: In(filter.location)}
+  if (filter.initialDate) {
+    const start_date = new Date(filter.initialDate);
+    let final_date = new Date(filter.initialDate);
+    if (filter.finalDate) {
+      final_date = new Date(filter.finalDate);
+    }
+    final_date.setDate(final_date.getDate() + 1);
+    fl['delivered_time'] = Between(start_date.toISOString(),final_date.toISOString())
+  }
   let where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] = [
-    { output_number: ILike(`%${query}%`), state: state },
-    { case_numbers: ArrayContains([query]), state: state },
-    { reference_number: ILike(`%${query}%`), state: state },
+    { output_number: ILike(`%${query}%`), state: state, ...fl},
+    { case_numbers: ArrayContains([query]), state: state, ...fl },
+    { reference_number: ILike(`%${query}%`), state: state, ...fl },
   ];
+  
+  // if (filter.location) {
+  //   where = { ...where, destination: In(filter.location) };
+  // delivered_time: Between(start_date.toISOString(),final_date.toISOString())
+  // }
 
   if (current_user.customer_number) {
     where = [
@@ -51,16 +67,19 @@ export const listOutputPlan = async (
         output_number: ILike(`%${query}%`),
         state: state,
         user_id: current_user.id,
+        ...fl
       },
       {
         case_numbers: ArrayContains([query]),
         state: state,
         user_id: current_user.id,
+        ...fl
       },
       {
         reference_number: ILike(`%${query}%`),
         state: state,
         user_id: current_user.id,
+        ...fl
       },
     ];
   }
@@ -72,6 +91,7 @@ export const listOutputPlan = async (
       id: 'DESC',
     },
   });
+  console.log(result)
   const users = await AppDataSource.manager.find(User);
   const warehouses = await AppDataSource.manager.find(AOSWarehouse);
   const oper_inst = await AppDataSource.manager.find(OperationInstruction);
@@ -667,6 +687,60 @@ export const cleanOutputPlan = async () => {
       ...el,
       packing_lists,
     });
+  }
+  return mod_package_list;
+};
+
+export const listOutputPlanRequired = async (
+  state: string,
+  current_user: any,
+) => {
+  let where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] = {state}
+
+  if (current_user.customer_number) {
+    where = {
+        state: state,
+        user_id: current_user.id,
+      }
+  }
+  const result = await AppDataSource.manager.find(OutputPlan, {
+    where,
+    order: {
+      id: 'DESC',
+    },
+  });
+
+  const mod_package_list = [];
+  for (let i = 0; i < result.length; i++) {
+    const el = result[i];
+    let user = null;
+    let destination = destinations[el.destination];
+
+    const packing_lists = [];
+    for (let i = 0; i < el.case_numbers.length; i++) {
+      const element = el.case_numbers[i];
+      const res = await getPackingListByCaseNumber(element);
+      if (res) {
+        packing_lists.push(res);
+      }
+    }
+
+    if (el.state) {
+      mod_package_list.push({
+        ...el,
+        user,
+        state: states.output_plan[el.state],
+        destination_ref: destination,
+        packing_lists,
+      });
+    } else {
+      mod_package_list.push({
+        ...el,
+        user,
+        destination_ref: destination,
+        packing_lists,
+      });
+    }
   }
   return mod_package_list;
 };

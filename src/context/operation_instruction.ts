@@ -11,7 +11,7 @@ import {
   showAOSWarehouse,
 } from './aos_warehouse';
 import { countUser, listUser, showUser } from './user';
-import { countOutputPlan, listOutputPlan, showOutputPlan } from './output_plan';
+import { countOutputPlan, listOutputPlan, listOutputPlanRequired, showOutputPlan } from './output_plan';
 import { getCountByState } from '../helpers/states';
 
 export const listOI = async (
@@ -61,14 +61,7 @@ export const listOI = async (
   const warehouses = await listAOSWarehouse(1, count_aos, '');
   const count_user = await countUser();
   const users = await listUser(1, count_user, '');
-  const count_op = await countOutputPlan();
-  const output_plans = await listOutputPlan(
-    1,
-    count_op,
-    state,
-    '',
-    current_user
-  ); // TODO check this
+  const output_plans = await listOutputPlanRequired(state, current_user); // TODO check this
   const mod_operation_instructions = [];
   for (let i = 0; i < operation_instructions.length; i++) {
     const element = operation_instructions[i];
