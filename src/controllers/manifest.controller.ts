@@ -103,7 +103,7 @@ export const create_do = async (
               action === 'update_supplier' ? null : manifests[0].waybill_id,
             errors: errors,
             manifest_paid_count: manifest_paid.length,
-            manifest_paid
+            manifest_paid,
           };
 
           return res.json(body);
