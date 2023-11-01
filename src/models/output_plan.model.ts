@@ -9,7 +9,7 @@ import {
 import { Staff } from './staff.model';
 import { IsOptional } from 'class-validator';
 
-@Index(['output_number'])
+@Index(['output_number', 'state', 'reference_number'])
 @Entity({ name: 'output_plans' })
 export class OutputPlan {
   @PrimaryGeneratedColumn()
