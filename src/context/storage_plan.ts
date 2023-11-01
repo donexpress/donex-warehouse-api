@@ -221,7 +221,6 @@ export const showCleanStoragePlan = async (id: number) => {
   return removeNullProperties(storage_plan);
 };
 
-
 export const createStoragePlan = async (data, user_id: number) => {
   const repository = await AppDataSource.getRepository(StoragePlan);
   if (data.delivered_time === '') {

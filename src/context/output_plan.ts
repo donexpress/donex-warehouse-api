@@ -30,7 +30,7 @@ import { addresses, destinations } from '../config/destination';
 import { OutputPlanFilter } from '../types/OutputPlanFilter';
 import { filterStoragePlan } from './storage_plan';
 import { PackingList } from '../models/packing_list.model';
-import { calcDate } from '../helpers';
+import { calcDate, removeNullProperties } from '../helpers';
 
 export const listOutputPlan = async (
   current_page: number,

@@ -1,7 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, Index, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  Index,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { IsBoolean, IsOptional } from 'class-validator';
 
-@Index(['number_delivery', 'warehouse_id'])
+@Index(['number_delivery', 'warehouse_id', 'state', 'output_plan_id'])
 @Entity({ name: 'operation_instructions' })
 export class OperationInstruction {
   @PrimaryGeneratedColumn()
@@ -57,7 +64,7 @@ export class OperationInstruction {
 
   @IsBoolean()
   @Column({
-    default: false
+    default: false,
   })
   client_display: boolean;
 

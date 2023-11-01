@@ -34,11 +34,13 @@ export const index = async (req: Request, res: Response) => {
       : await countOI();
 
     const state = req.query.state;
+    const query = req.query.query;
     const current_user = getCurrentUser(req);
     const operation_instruction = await listOI(
       current_page,
       number_of_rows,
       String(state),
+      query === undefined ? '' : String(query),
       current_user
     );
     res.json(operation_instruction);
@@ -89,7 +91,12 @@ export const count = async (req: Request, res: Response) => {
   try {
     const output_id = req.query.output_plan_id;
     const current_user = getCurrentUser(req);
-    const count = await countAllOI(Number(output_id), current_user);
+    const query = req.query.query;
+    const count = await countAllOI(
+      Number(output_id),
+      current_user,
+      query === undefined ? '' : String(query)
+    );
     res.json(count);
   } catch (e) {
     console.log(e);

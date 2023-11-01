@@ -9,52 +9,26 @@ import {
   countManifest,
   findByTrackingAndCarrier,
   updateManifest,
+  findByTracking,
 } from '../context/manifest';
 import carriers_type from '../config/carriers';
 import { Manifest } from '../models/manifest.model';
 
 export const create = async (req: Request, res: Response) => {
-  try {
-    await parseHeader(req, res);
-    await upload(
-      req,
-      async (urls: any) => {
-        if (urls === null) {
-          return res.status(422).json(urls);
-        } else {
-          const carrier = String(req.query.carrier);
-          var worksheetsBody = await xslx(urls.url);
-          const data_process = await action_do(
-            'create',
-            worksheetsBody,
-            carrier
-          );
-
-          await removeFile(urls.name);
-          if (data_process.manifests.length === worksheetsBody.data.length) {
-            const count = await countManifest(
-              data_process.manifests[0].waybill_id,
-              carrier
-            );
-            const body = {
-              count,
-              waybill_id: data_process.manifests[0].waybill_id,
-            };
-            return res.json(body);
-          } else {
-            return res.status(402).send(data_process.errors);
-          }
-        }
-      },
-      true
-    );
-  } catch (error) {
-    console.log(error);
-    res.status(500).send(error);
-  }
+  return await create_do(req, res, 'create');
+};
+export const update_customer_do = async (req: Request, res: Response) => {
+  return await create_do(req, res, 'update_customer');
+};
+export const update_supplier_do = async (req: Request, res: Response) => {
+  return await create_do(req, res, 'update_supplier');
 };
 
-export const update_client = async (req: Request, res: Response) => {
+export const create_do = async (
+  req: Request,
+  res: Response,
+  action: string
+) => {
   try {
     await parseHeader(req, res);
     await upload(
@@ -63,23 +37,71 @@ export const update_client = async (req: Request, res: Response) => {
         if (urls === null) {
           return res.status(422).json(urls);
         } else {
+          let errors = [];
+          let manifests = [];
           const carrier = String(req.query.carrier);
           var worksheetsBody = await xslx(urls.url);
-          const data_process = await action_do(
-            'update_client',
-            worksheetsBody,
-            carrier
-          );
+          for (let i = 0; i < worksheetsBody.data.length; i++) {
+            const value = await getValues(worksheetsBody.data[i]);
+            if (action === 'create') {
+              const manifest_obj = await createParamsManifest(value, carrier);
+
+              const manifest = await createManifest(
+                manifest_obj.manifest_data,
+                manifest_obj.shipper_data,
+                manifest_obj.consignee_data
+              );
+
+              if (manifest instanceof Manifest) {
+                manifests.push(manifest);
+              } else {
+                errors.push(manifest);
+              }
+            } else if (action === 'update_customer') {
+              const tracking_number = value[1];
+              const shipping_cost = value[2];
+              const manifest = await findByTracking(tracking_number);
+              const update_manifest = await updateManifest(manifest, {
+                shipping_cost: shipping_cost,
+              });
+              if (update_manifest instanceof Manifest) {
+                manifests.push(update_manifest);
+              } else {
+                errors.push(update_manifest);
+              }
+            } else if (action === 'update_supplier') {
+              const tracking_number = value[1];
+              const sale_price = value[2];
+              const invoice_weight = value[3];
+              const manifest = await findByTrackingAndCarrier(
+                tracking_number,
+                carrier
+              );
+
+              const update_manifest = await updateManifest(manifest, {
+                sale_price: sale_price,
+                invoice_weight: invoice_weight,
+                paid: true,
+              });
+
+              if (update_manifest instanceof Manifest) {
+                manifests.push(update_manifest);
+              } else {
+                errors.push(update_manifest);
+              }
+            }
+          }
 
           await removeFile(urls.name);
-          if (data_process.manifests.length === worksheetsBody.data.length) {
-            const count = data_process.manifests.length;
-            const body = {
-              count,
+          if (manifests.length === worksheetsBody.data.length) {
+            let body = {};
+            body = {
+              count: manifests.length,
+              waybill_id: manifests[0].waybill_id,
             };
             return res.json(body);
           } else {
-            return res.status(402).send(data_process.errors);
+            return res.status(402).send(errors);
           }
         }
       },
@@ -116,16 +138,14 @@ export const action_do = async (action, worksheetsBody, carrier) => {
       const shipping_cost = value[1];
       const manifest = await findByTrackingAndCarrier(tracking_number, carrier);
 
-      if (manifest.shipping_cost === 0) {
-        const update_manifest = await updateManifest(manifest, {
-          shipping_cost: shipping_cost,
-        });
+      const update_manifest = await updateManifest(manifest, {
+        shipping_cost: shipping_cost,
+      });
 
-        if (update_manifest instanceof Manifest) {
-          manifests.push(update_manifest);
-        } else {
-          errors.push(update_manifest);
-        }
+      if (update_manifest instanceof Manifest) {
+        manifests.push(update_manifest);
+      } else {
+        errors.push(update_manifest);
       }
     }
   }

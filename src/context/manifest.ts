@@ -108,8 +108,11 @@ export const updateManifest = async (
   manifest: Manifest,
   params: Partial<Manifest>
 ): Promise<Manifest | ValidationError[]> => {
-  const update_manifest = { ...manifest, ...params };
-  return await validateContext(AppDataSource, update_manifest);
+  await AppDataSource.manager
+    .getRepository(Manifest)
+    .update(manifest.id, params);
+
+  return manifest;
 };
 
 export const manifestByState = async () => {};
