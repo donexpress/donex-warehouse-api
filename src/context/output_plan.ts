@@ -107,7 +107,7 @@ export const listOutputPlan = async (
     for (let i = 0; i < el.case_numbers.length; i++) {
       const element = el.case_numbers[i];
       const res = await getPackingListByCaseNumber(element);
-      if (res && res.package_shelf && res.package_shelf[0].created_at) {
+      if (res && res.package_shelf && res.package_shelf[0] && res.package_shelf[0].created_at) {
         const date = res.dispatched_time
           ? res.dispatched_time
           : new Date().toISOString();
