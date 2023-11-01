@@ -11,7 +11,12 @@ import {
   showAOSWarehouse,
 } from './aos_warehouse';
 import { countUser, listUser, showUser } from './user';
-import { countOutputPlan, listOutputPlan, listOutputPlanRequired, showOutputPlan } from './output_plan';
+import {
+  countOutputPlan,
+  listOutputPlan,
+  listOutputPlanRequired,
+  showOutputPlan,
+} from './output_plan';
 import { getCountByState } from '../helpers/states';
 
 export const listOI = async (
@@ -145,26 +150,30 @@ export const countAllOI = async (
     repository,
     states.operation_instruction.pending.value,
     output_id,
-    current_user
+    current_user,
+    query
   );
   const processed = await getCountByStateAndOutputId(
     repository,
     states.operation_instruction.processed.value,
     output_id,
-    current_user
+    current_user,
+    query
   );
   const processing = await getCountByStateAndOutputId(
     repository,
     states.operation_instruction.processing.value,
     output_id,
-    current_user
+    current_user,
+    query
   );
 
   const cancelled = await getCountByStateAndOutputId(
     repository,
     states.operation_instruction.cancelled.value,
     output_id,
-    current_user
+    current_user,
+    query
   );
 
   const total = pending + processed + processing + cancelled;
@@ -299,15 +308,16 @@ const getCountByStateAndOutputId = async (
   repository,
   state_value,
   output_plan_id,
-  current_user
+  current_user,
+  query: string = ''
 ): Promise<number> => {
   let where:
     | FindOptionsWhere<OperationInstruction>
-    | FindOptionsWhere<OperationInstruction>[] = {};
+    | FindOptionsWhere<OperationInstruction>[] = { state: state_value };
   if (output_plan_id) {
     where = { state: state_value, output_plan_id: output_plan_id };
   } else {
-    where = { state: state_value };
+    where = { state: state_value, number_delivery: ILike(`%${query}%`) };
   }
   if (current_user.customer_number) {
     where.user_id = current_user.id;
