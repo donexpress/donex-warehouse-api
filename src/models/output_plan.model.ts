@@ -144,6 +144,12 @@ export class OutputPlan {
   reference_number: string;
 
   @Column({
+    type: 'boolean',
+    nullable: true
+  })
+  relabel: boolean;
+
+  @Column({
     type: 'json',
     nullable: true,
     default: [],
