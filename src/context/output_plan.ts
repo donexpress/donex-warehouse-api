@@ -107,6 +107,14 @@ export const listOutputPlan = async (
     for (let i = 0; i < el.case_numbers.length; i++) {
       const element = el.case_numbers[i];
       const res = await getPackingListByCaseNumber(element);
+      if (res && res.package_shelf && res.package_shelf[0].created_at) {
+        const date = res.dispatched_time
+          ? res.dispatched_time
+          : new Date().toISOString();
+        const storage_date = res.package_shelf[0].created_at;
+        const storage_time = calcDate(date, storage_date);
+        res['storage_time'] = storage_time.total_days;
+      }
       if (res) {
         packing_lists.push(res);
       }
@@ -125,7 +133,7 @@ export const listOutputPlan = async (
         ...el,
         user,
         warehouse,
-        state: states.output_plan[el.state],
+        state: states.output_plan[el.state].value,
         destination_ref: destination,
         packing_lists,
         operation_instructions,
@@ -188,6 +196,14 @@ export const getOutputPlanByState = async (
     for (let i = 0; i < el.case_numbers.length; i++) {
       const element = el.case_numbers[i];
       const res = await getPackingListByCaseNumber(element);
+      if (res && res.package_shelf && res.package_shelf.created_at) {
+        const date = res.dispatched_time
+          ? res.dispatched_time
+          : new Date().toISOString();
+        const storage_date = res.package_shelf.created_at;
+        const storage_time = calcDate(date, storage_date);
+        res['storage_time'] = storage_time.total_days;
+      }
       if (res) {
         packing_lists.push(res);
       }
