@@ -70,13 +70,10 @@ export const create_do = async (
                 errors.push(update_manifest);
               }
             } else if (action === 'update_supplier') {
-              const tracking_number = value[1];
-              const sale_price = value[2];
-              const invoice_weight = value[3];
-              const manifest = await findByTrackingAndCarrier(
-                tracking_number,
-                carrier
-              );
+              const tracking_number = value[0];
+              const sale_price = value[3];
+              const invoice_weight = value[1];
+              const manifest = await findByTracking(tracking_number);
 
               const update_manifest = await updateManifest(manifest, {
                 sale_price: sale_price,
@@ -97,7 +94,8 @@ export const create_do = async (
             let body = {};
             body = {
               count: manifests.length,
-              waybill_id: manifests[0].waybill_id,
+              waybill_id:
+                action === 'update_supplier' ? null : manifests[0].waybill_id,
             };
             return res.json(body);
           } else {
