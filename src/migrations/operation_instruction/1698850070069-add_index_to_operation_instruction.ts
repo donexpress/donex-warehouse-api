@@ -10,6 +10,13 @@ export class AddIndexToOperationInstruction1698850070069
         columnNames: ['state'],
       })
     );
+
+    await queryRunner.createIndex(
+      'operation_instructions',
+      new TableIndex({
+        columnNames: ['output_plan_id'],
+      })
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
@@ -17,6 +24,13 @@ export class AddIndexToOperationInstruction1698850070069
       'operation_instructions',
       new TableIndex({
         columnNames: ['state'],
+      })
+    );
+
+    await queryRunner.dropIndex(
+      'operation_instructions',
+      new TableIndex({
+        columnNames: ['output_plan_id'],
       })
     );
   }

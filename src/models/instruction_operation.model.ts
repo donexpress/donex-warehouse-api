@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { IsBoolean, IsOptional } from 'class-validator';
 
-@Index(['number_delivery', 'warehouse_id', 'state'])
+@Index(['number_delivery', 'warehouse_id', 'state', 'output_plan_id'])
 @Entity({ name: 'operation_instructions' })
 export class OperationInstruction {
   @PrimaryGeneratedColumn()
