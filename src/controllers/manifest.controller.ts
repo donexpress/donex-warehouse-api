@@ -39,10 +39,13 @@ export const create_do = async (
         } else {
           let errors = [];
           let manifests = [];
+          let manifest_paid = [];
           const carrier = String(req.query.carrier);
           var worksheetsBody = await xslx(urls.url);
           for (let i = 0; i < worksheetsBody.data.length; i++) {
             const value = await getValues(worksheetsBody.data[i]);
+            await removeFile(urls.name);
+
             if (action === 'create') {
               const manifest_obj = await createParamsManifest(value, carrier);
 
@@ -74,33 +77,36 @@ export const create_do = async (
               const sale_price = value[3];
               const invoice_weight = value[1];
               const manifest = await findByTracking(tracking_number);
-
-              const update_manifest = await updateManifest(manifest, {
-                sale_price: sale_price,
-                invoice_weight: invoice_weight,
-                paid: true,
-              });
-
-              if (update_manifest instanceof Manifest) {
-                manifests.push(update_manifest);
-              } else {
-                errors.push(update_manifest);
+              if (manifest instanceof Manifest) {
+                if (manifest.paid) {
+                  manifest_paid.push(manifest);
+                } else {
+                  const update_manifest = await updateManifest(manifest, {
+                    sale_price: sale_price,
+                    invoice_weight: invoice_weight,
+                    paid: true,
+                  });
+                  if (update_manifest instanceof Manifest) {
+                    manifests.push(update_manifest);
+                  } else {
+                    errors.push(update_manifest);
+                  }
+                }
               }
             }
           }
 
-          await removeFile(urls.name);
-          if (manifests.length === worksheetsBody.data.length) {
-            let body = {};
-            body = {
-              count: manifests.length,
-              waybill_id:
-                action === 'update_supplier' ? null : manifests[0].waybill_id,
-            };
-            return res.json(body);
-          } else {
-            return res.status(402).send(errors);
-          }
+          let body = {};
+          body = {
+            manifest_count: manifests.length,
+            waybill_id:
+              action === 'update_supplier' ? null : manifests[0].waybill_id,
+            errors: errors,
+            manifest_paid_count: manifest_paid.length,
+            manifest_paid
+          };
+
+          return res.json(body);
         }
       },
       true
