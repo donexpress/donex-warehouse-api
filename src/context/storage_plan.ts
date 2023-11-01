@@ -87,7 +87,6 @@ export const listStoragePlan = async (
       const array_states = getStates(states.entry_plan);
       storage_state = array_states.find((s) => s.value === storage_plan.state);
     }
-    await removeNullProperties(storage_plan);
     data.push({
       ...storage_plan,
       warehouse,
@@ -212,7 +211,6 @@ export const showStoragePlan = async (id: number) => {
   if (storage_plan.user_id) {
     user = await showUser(storage_plan.user_id);
   }
-  await removeNullProperties(storage_plan);
   return { ...storage_plan, packing_list, warehouse, user };
 };
 
