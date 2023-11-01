@@ -7,7 +7,7 @@ export class AddRelabelColumnOnOutputPlan1698863608690 implements MigrationInter
           new TableColumn({
             name: 'relabel',
             type: 'boolean',
-            isNullable: true
+            default: false
           }),
         ]);
       }
@@ -17,7 +17,7 @@ export class AddRelabelColumnOnOutputPlan1698863608690 implements MigrationInter
           new TableColumn({
             name: 'relabel',
             type: 'boolean',
-            isNullable: true
+            default: false
           })
         ]);
       }

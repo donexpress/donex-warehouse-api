@@ -145,7 +145,7 @@ export class OutputPlan {
 
   @Column({
     type: 'boolean',
-    nullable: true
+    default: false
   })
   relabel: boolean;
 
