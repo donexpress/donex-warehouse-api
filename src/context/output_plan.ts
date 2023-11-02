@@ -448,16 +448,18 @@ export const updateOutputPlan = async (id: number, data) => {
   }
   data.updated_at = new Date().toISOString();
   const result = await repository.update({ id }, data);
+  const output_plan = await repository.findOne({where: {id}})
   if (
     data.state &&
     data.state !== exitPlan.state &&
     exitPlan.state === 'dispatched'
   ) {
-    const output_plan = await showOutputPlan(id);
     await returnDispatchedBulkBoxes(output_plan.case_numbers);
   } else if (data.state === 'dispatched') {
-    const output_plan = await showOutputPlan(id);
     await dispatchBulkBoxes(output_plan.case_numbers);
+  } 
+  else if(data.state === 'processing') {
+    await returnDispatchedBulkBoxes(output_plan.case_numbers);
   }
   if (
     data.case_numbers !== undefined &&
