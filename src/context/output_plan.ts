@@ -40,7 +40,10 @@ export const listOutputPlan = async (
   current_user: any,
   filter: OutputPlanFilter
 ) => {
-  const fl = filter.location.length !== Object.keys(destinations).length ? {destination: In(filter.location)}: {}
+  const fl =
+    filter.location.length !== Object.keys(destinations).length
+      ? { destination: In(filter.location) }
+      : {};
   if (filter.initialDate) {
     const start_date = new Date(filter.initialDate);
     let final_date = new Date(filter.initialDate);
@@ -48,10 +51,13 @@ export const listOutputPlan = async (
       final_date = new Date(filter.finalDate);
     }
     final_date.setDate(final_date.getDate() + 1);
-    fl['delivered_time'] = Between(start_date.toISOString(),final_date.toISOString())
+    fl['delivered_time'] = Between(
+      start_date.toISOString(),
+      final_date.toISOString()
+    );
   }
   let where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] = [
-    { output_number: ILike(`%${query}%`), state: state, ...fl},
+    { output_number: ILike(`%${query}%`), state: state, ...fl },
     { case_numbers: ArrayContains([query]), state: state, ...fl },
     { reference_number: ILike(`%${query}%`), state: state, ...fl },
   ];
@@ -62,19 +68,19 @@ export const listOutputPlan = async (
         output_number: ILike(`%${query}%`),
         state: state,
         user_id: current_user.id,
-        ...fl
+        ...fl,
       },
       {
         case_numbers: ArrayContains([query]),
         state: state,
         user_id: current_user.id,
-        ...fl
+        ...fl,
       },
       {
         reference_number: ILike(`%${query}%`),
         state: state,
         user_id: current_user.id,
-        ...fl
+        ...fl,
       },
     ];
   }
@@ -107,7 +113,12 @@ export const listOutputPlan = async (
     for (let i = 0; i < el.case_numbers.length; i++) {
       const element = el.case_numbers[i];
       const res = await getPackingListByCaseNumber(element);
-      if (res && res.package_shelf && res.package_shelf[0] && res.package_shelf[0].created_at) {
+      if (
+        res &&
+        res.package_shelf &&
+        res.package_shelf[0] &&
+        res.package_shelf[0].created_at
+      ) {
         const date = res.dispatched_time
           ? res.dispatched_time
           : new Date().toISOString();
@@ -260,7 +271,12 @@ export const countAllOutputPlan = async (
   const total = await countOutputPlan(current_user);
   const pending = await getCountByState(
     repository,
-    await getWhere(current_user, query, states.output_plan.pending.value, filter)
+    await getWhere(
+      current_user,
+      query,
+      states.output_plan.pending.value,
+      filter
+    )
   );
   const to_be_processed = await getCountByState(
     repository,
@@ -273,15 +289,30 @@ export const countAllOutputPlan = async (
   );
   const processing = await getCountByState(
     repository,
-    await getWhere(current_user, query, states.output_plan.processing.value,filter)
+    await getWhere(
+      current_user,
+      query,
+      states.output_plan.processing.value,
+      filter
+    )
   );
   const dispatched = await getCountByState(
     repository,
-    await getWhere(current_user, query, states.output_plan.dispatched.value,filter)
+    await getWhere(
+      current_user,
+      query,
+      states.output_plan.dispatched.value,
+      filter
+    )
   );
   const cancelled = await getCountByState(
     repository,
-    await getWhere(current_user, query, states.output_plan.cancelled.value, filter)
+    await getWhere(
+      current_user,
+      query,
+      states.output_plan.cancelled.value,
+      filter
+    )
   );
 
   const result = {
@@ -295,8 +326,16 @@ export const countAllOutputPlan = async (
   return result;
 };
 
-export const getWhere = async (current_user, query, state_value, filter: OutputPlanFilter) => {
-  const fl = filter.location.length !== Object.keys(destinations).length ? {destination: In(filter.location)}: {};
+export const getWhere = async (
+  current_user,
+  query,
+  state_value,
+  filter: OutputPlanFilter
+) => {
+  const fl =
+    filter.location.length !== Object.keys(destinations).length
+      ? { destination: In(filter.location) }
+      : {};
   if (filter.initialDate) {
     const start_date = new Date(filter.initialDate);
     let final_date = new Date(filter.initialDate);
@@ -304,13 +343,15 @@ export const getWhere = async (current_user, query, state_value, filter: OutputP
       final_date = new Date(filter.finalDate);
     }
     final_date.setDate(final_date.getDate() + 1);
-    fl['delivered_time'] = Between(start_date.toISOString(),final_date.toISOString())
+    fl['delivered_time'] = Between(
+      start_date.toISOString(),
+      final_date.toISOString()
+    );
   }
-
 
   let where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] = {
     state: state_value,
-    ...fl
+    ...fl,
   };
   if (current_user.customer_number) {
     where = [
@@ -318,19 +359,19 @@ export const getWhere = async (current_user, query, state_value, filter: OutputP
         output_number: ILike(`%${query}%`),
         state: state_value,
         user_id: current_user.id,
-        ...fl
+        ...fl,
       },
       {
         case_numbers: ArrayContains([query]),
         state: state_value,
         user_id: current_user.id,
-        ...fl
+        ...fl,
       },
       {
         reference_number: ILike(`%${query}%`),
         state: state_value,
         user_id: current_user.id,
-        ...fl
+        ...fl,
       },
     ];
   } else {
@@ -340,7 +381,6 @@ export const getWhere = async (current_user, query, state_value, filter: OutputP
       { reference_number: ILike(`%${query}%`), state: state_value, ...fl },
     ];
   }
-
 
   return where;
 };
@@ -397,23 +437,25 @@ export const showOutputPlan = async (id: number) => {
 export const createOutputPlan = async (data: any) => {
   const repository = await AppDataSource.getRepository(OutputPlan);
   const date = new Date();
-  const month = date.getMonth() > 9 ? date.getMonth() : `0${date.getMonth()}`;
-  const count = await countOutputPlan();
-  let number = '';
-  for (let i = 0; i < 6 - (count + 1).toString().length; i++) {
-    number += '0';
-  }
-  data.output_number = `DEWMXO${date.getFullYear()}${month}${
-    date.getDate() <= 9 ? `0${date.getDate()}` : date.getDate()
-  }${number}${count + 1}`;
+  const month =
+    date.getMonth() + 1 > 9 ? date.getMonth() + 1 : `0${date.getMonth() + 1}`;
+  data.output_number = '';
   data.state = states.output_plan.pending.value;
   data.amount = 0;
   data.box_amount = 0;
   data.delivered_quantity = 0;
   data.output_boxes = 0;
   data.palets_amount = 0;
-  const result = repository.create(data);
-  return await validateContext(AppDataSource, result);
+  const result = await repository.create(data);
+  const validated = await validateContext(AppDataSource, result);
+  if (validated instanceof OutputPlan) {
+    const on = `DEWMXO${date.getFullYear()}${month}${
+      date.getDate() <= 9 ? `0${date.getDate()}` : date.getDate()
+    }${validated.id.toString().padStart(6, '0')}`;
+    await repository.update({ id: validated.id }, { output_number: on });
+    validated.output_number = on;
+  }
+  return validated;
 };
 
 export const updateOutputPlan = async (id: number, data) => {
@@ -448,7 +490,7 @@ export const updateOutputPlan = async (id: number, data) => {
   }
   data.updated_at = new Date().toISOString();
   const result = await repository.update({ id }, data);
-  const output_plan = await repository.findOne({where: {id}})
+  const output_plan = await repository.findOne({ where: { id } });
   if (
     data.state &&
     data.state !== exitPlan.state &&
@@ -457,8 +499,7 @@ export const updateOutputPlan = async (id: number, data) => {
     await returnDispatchedBulkBoxes(output_plan.case_numbers);
   } else if (data.state === 'dispatched') {
     await dispatchBulkBoxes(output_plan.case_numbers);
-  } 
-  else if(data.state === 'processing') {
+  } else if (data.state === 'processing') {
     await returnDispatchedBulkBoxes(output_plan.case_numbers);
   }
   if (
@@ -722,15 +763,17 @@ export const cleanOutputPlan = async () => {
 
 export const listOutputPlanRequired = async (
   state: string,
-  current_user: any,
+  current_user: any
 ) => {
-  let where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] = {state}
+  let where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] = {
+    state,
+  };
 
   if (current_user.customer_number) {
     where = {
-        state: state,
-        user_id: current_user.id,
-      }
+      state: state,
+      user_id: current_user.id,
+    };
   }
   const result = await AppDataSource.manager.find(OutputPlan, {
     where,

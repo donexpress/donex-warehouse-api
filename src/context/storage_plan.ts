@@ -238,15 +238,17 @@ export const createStoragePlan = async (data, user_id: number) => {
     }
   }
   const date = new Date();
-  const month = date.getMonth() > 9 ? date.getMonth() : `0${date.getMonth()}`;
+  const month =
+    date.getMonth() + 1 > 9 ? date.getMonth() + 1 : `0${date.getMonth() + 1}`;
   const count = await countStoragePlan();
-  let number = '';
-  for (let i = 0; i < 6 - (count + 1).toString().length; i++) {
-    number += '0';
-  }
-  data.order_number = `DEWMXI${date.getFullYear()}${month}${date.getDate()}${number}${
-    count + 1
-  }`;
+  data.order_number = '';
+  // let number = '';
+  // for (let i = 0; i < 6 - (count + 1).toString().length; i++) {
+  //   number += '0';
+  // }
+  // data.order_number = `DEWMXI${date.getFullYear()}${month}${date.getDate()}${number}${
+  //   count + 1
+  // }`;
   if (!data.user_id) {
     data.user_id = user_id;
   }
@@ -254,7 +256,15 @@ export const createStoragePlan = async (data, user_id: number) => {
     data.is_images = true;
   }
   const result = repository.create(data);
-  return await validateContext(AppDataSource, result);
+  const validated = await validateContext(AppDataSource, result);
+  if(validated instanceof StoragePlan) {
+    const on = `DEWMXI${date.getFullYear()}${month}${
+      date.getDate() <= 9 ? `0${date.getDate()}` : date.getDate()
+    }${validated.id.toString().padStart(6, '0')}`;
+    await repository.update({ id: validated.id }, { order_number: on });
+    validated.order_number = on;
+  }
+  return validated
 };
 
 export const updateStoragePlan = async (id: number, data) => {

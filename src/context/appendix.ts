@@ -20,7 +20,8 @@ export const listAppendix = async (
   const mod_appendages = [];
   for (let i = 0; i < appendages.length; i++) {
     const appendix = appendages[i];
-    mod_appendages.push({ ...appendix, user: await showUser(appendix.id) });
+    console.log("USER_ID: ", appendix.user_id)
+    mod_appendages.push({ ...appendix, user: await showUser(appendix.user_id)});
   }
   return mod_appendages;
 };
@@ -59,7 +60,7 @@ export const getAppendagesByOutputPlan = async(id: number) => {
   const mod_appendages = []
   for (let i = 0; i < appendages.length; i++) {
     const appendix = appendages[i];
-    const user = await showUser(appendix.id)
+    const user = await showUser(appendix.user_id)
     mod_appendages.push({...appendix, user})    
   }
   return mod_appendages
