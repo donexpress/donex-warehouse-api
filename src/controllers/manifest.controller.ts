@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { removeFile } from '../context/file';
 import { upload } from '../helpers/file';
 import { getEntries, xslx } from '../helpers/xlsx';
-import { createParamsManifest, getValues } from '../helpers';
+import { manifestParams, getValues } from '../helpers';
 import {
   createManifest,
   findManifest,
@@ -47,7 +47,7 @@ export const create_do = async (
             await removeFile(urls.name);
 
             if (action === 'create') {
-              const manifest_obj = await createParamsManifest(value, carrier);
+              const manifest_obj = await manifestParams(value, carrier);
 
               const manifest = await createManifest(
                 manifest_obj.manifest_data,
@@ -124,7 +124,7 @@ export const action_do = async (action, worksheetsBody, carrier) => {
     const value = await getValues(worksheetsBody.data[i]);
 
     if (action === 'create') {
-      const manifest_obj = await createParamsManifest(value, carrier);
+      const manifest_obj = await manifestParams(value, carrier);
 
       const manifest = await createManifest(
         manifest_obj.manifest_data,
