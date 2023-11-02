@@ -10,6 +10,8 @@ import {
   findByTrackingAndCarrier,
   updateManifest,
   findByTracking,
+  findByWaybillId,
+  removeManifest,
 } from '../context/manifest';
 import carriers_type from '../config/carriers';
 import { Manifest } from '../models/manifest.model';
@@ -42,9 +44,9 @@ export const create_do = async (
           let manifest_paid = [];
           const carrier = String(req.query.carrier);
           var worksheetsBody = await xslx(urls.url);
+          await removeFile(urls.name);
           for (let i = 0; i < worksheetsBody.data.length; i++) {
             const value = await getValues(worksheetsBody.data[i]);
-            await removeFile(urls.name);
 
             if (action === 'create') {
               const manifest_obj = await manifestParams(value, carrier);
@@ -175,7 +177,7 @@ export const listCarriers = (req: Request, res: Response) => {
   res.send({ carriers: getEntries(carriers_type.carriers) });
 };
 
-export const parseHeader = (req: Request, res: Response) => {
+const parseHeader = (req: Request, res: Response) => {
   const carrier = String(req.query.carrier);
   if (carrier === undefined || carrier === '') {
     return res.status(422).send('the carrier is not empty');
@@ -184,4 +186,12 @@ export const parseHeader = (req: Request, res: Response) => {
   if (contentLength >= 5 * 1024 * 1024) {
     return res.status(413).send('Upload exceeds max size.');
   }
+};
+
+export const remove = async (req: Request, res: Response) => {
+  const waybill_id = req.query.waybill_id;
+  const manifest = await findByWaybillId(String(waybill_id));
+  await removeManifest(manifest);
+
+  res.sendStatus(201);
 };

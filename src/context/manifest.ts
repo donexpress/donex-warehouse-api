@@ -115,4 +115,6 @@ export const updateManifest = async (
   return manifest;
 };
 
-export const manifestByState = async () => {};
+export const removeManifest = async (manifests: Manifest[]) => {
+  await AppDataSource.getRepository(Manifest).remove(manifests);
+};
