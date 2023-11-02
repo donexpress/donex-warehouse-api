@@ -26,7 +26,7 @@ export const getValues = (obj) => {
   return obj_array;
 };
 
-export const createParamsManifest = (value, carrier) => {
+export const manifestParams = (value, carrier) => {
   let manifest_data = {
     waybill_id: value[0],
     bag_code: value[1],

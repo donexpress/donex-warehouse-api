@@ -34,4 +34,18 @@ router.get(
   ManifestController.find
 );
 
+router.delete(
+  '/api/v1/manifest',
+  verifyTokenPresent,
+  //guardianMw(['ADMIN', 'FINANCE']),
+  ManifestController.remove
+);
+
+router.get(
+  '/api/v1/sum',
+  verifyTokenPresent,
+  //guardianMw(['ADMIN', 'FINANCE']),
+  ManifestController.sum
+);
+
 export default router;

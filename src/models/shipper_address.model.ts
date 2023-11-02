@@ -103,6 +103,7 @@ export class ShipperAddress {
 
   @OneToOne((type) => Manifest, (manifest) => manifest.id, {
     nullable: true,
+    onDelete: 'CASCADE'
   })
   manifest: Manifest;
 }

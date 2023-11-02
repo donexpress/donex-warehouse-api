@@ -168,6 +168,7 @@ export class Manifest {
     (shipperAddress) => shipperAddress.manifest_id,
     {
       nullable: true,
+      onDelete: 'CASCADE'
     }
   )
   @JoinColumn({ name: 'id', referencedColumnName: 'manifest_id' })
@@ -178,6 +179,7 @@ export class Manifest {
     (consigneeAddress) => consigneeAddress.manifest_id,
     {
       nullable: true,
+      onDelete: 'CASCADE'
     }
   )
   @JoinColumn({ name: 'id', referencedColumnName: 'manifest_id' })

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { removeFile } from '../context/file';
 import { upload } from '../helpers/file';
 import { getEntries, xslx } from '../helpers/xlsx';
-import { createParamsManifest, getValues } from '../helpers';
+import { manifestParams, getValues } from '../helpers';
 import {
   createManifest,
   findManifest,
@@ -10,6 +10,9 @@ import {
   findByTrackingAndCarrier,
   updateManifest,
   findByTracking,
+  findByWaybillId,
+  removeManifest,
+  sumManifest,
 } from '../context/manifest';
 import carriers_type from '../config/carriers';
 import { Manifest } from '../models/manifest.model';
@@ -42,12 +45,12 @@ export const create_do = async (
           let manifest_paid = [];
           const carrier = String(req.query.carrier);
           var worksheetsBody = await xslx(urls.url);
+          await removeFile(urls.name);
           for (let i = 0; i < worksheetsBody.data.length; i++) {
             const value = await getValues(worksheetsBody.data[i]);
-            await removeFile(urls.name);
 
             if (action === 'create') {
-              const manifest_obj = await createParamsManifest(value, carrier);
+              const manifest_obj = await manifestParams(value, carrier);
 
               const manifest = await createManifest(
                 manifest_obj.manifest_data,
@@ -117,46 +120,6 @@ export const create_do = async (
   }
 };
 
-export const action_do = async (action, worksheetsBody, carrier) => {
-  let errors = [];
-  let manifests = [];
-  for (let i = 0; i < worksheetsBody.data.length; i++) {
-    const value = await getValues(worksheetsBody.data[i]);
-
-    if (action === 'create') {
-      const manifest_obj = await createParamsManifest(value, carrier);
-
-      const manifest = await createManifest(
-        manifest_obj.manifest_data,
-        manifest_obj.shipper_data,
-        manifest_obj.consignee_data
-      );
-
-      if (manifest instanceof Manifest) {
-        manifests.push(manifest);
-      } else {
-        errors.push(manifest);
-      }
-    } else if (action === 'update_client') {
-      const tracking_number = value[0];
-      const shipping_cost = value[1];
-      const manifest = await findByTrackingAndCarrier(tracking_number, carrier);
-
-      const update_manifest = await updateManifest(manifest, {
-        shipping_cost: shipping_cost,
-      });
-
-      if (update_manifest instanceof Manifest) {
-        manifests.push(update_manifest);
-      } else {
-        errors.push(update_manifest);
-      }
-    }
-  }
-
-  return { manifests, errors };
-};
-
 export const find = async (req: Request, res: Response) => {
   const waybill = String(req.query.waybill_id);
   const carrier = String(req.query.carrier);
@@ -171,11 +134,20 @@ export const find = async (req: Request, res: Response) => {
   return res.json(manifest);
 };
 
+export const sum = async (req: Request, res: Response) => {
+  const waybill_id = req.query.waybill_id;
+  const carrier = req.query.carrier;
+
+  const sum = await sumManifest(waybill_id, carrier);
+
+  return res.json(sum);
+};
+
 export const listCarriers = (req: Request, res: Response) => {
   res.send({ carriers: getEntries(carriers_type.carriers) });
 };
 
-export const parseHeader = (req: Request, res: Response) => {
+const parseHeader = (req: Request, res: Response) => {
   const carrier = String(req.query.carrier);
   if (carrier === undefined || carrier === '') {
     return res.status(422).send('the carrier is not empty');
@@ -184,4 +156,12 @@ export const parseHeader = (req: Request, res: Response) => {
   if (contentLength >= 5 * 1024 * 1024) {
     return res.status(413).send('Upload exceeds max size.');
   }
+};
+
+export const remove = async (req: Request, res: Response) => {
+  const waybill_id = req.query.waybill_id;
+  const manifest = await findByWaybillId(String(waybill_id));
+  await removeManifest(manifest);
+
+  res.sendStatus(200);
 };
