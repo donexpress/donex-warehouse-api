@@ -12,6 +12,7 @@ import {
   findByTracking,
   findByWaybillId,
   removeManifest,
+  sumManifest,
 } from '../context/manifest';
 import carriers_type from '../config/carriers';
 import { Manifest } from '../models/manifest.model';
@@ -119,46 +120,6 @@ export const create_do = async (
   }
 };
 
-export const action_do = async (action, worksheetsBody, carrier) => {
-  let errors = [];
-  let manifests = [];
-  for (let i = 0; i < worksheetsBody.data.length; i++) {
-    const value = await getValues(worksheetsBody.data[i]);
-
-    if (action === 'create') {
-      const manifest_obj = await manifestParams(value, carrier);
-
-      const manifest = await createManifest(
-        manifest_obj.manifest_data,
-        manifest_obj.shipper_data,
-        manifest_obj.consignee_data
-      );
-
-      if (manifest instanceof Manifest) {
-        manifests.push(manifest);
-      } else {
-        errors.push(manifest);
-      }
-    } else if (action === 'update_client') {
-      const tracking_number = value[0];
-      const shipping_cost = value[1];
-      const manifest = await findByTrackingAndCarrier(tracking_number, carrier);
-
-      const update_manifest = await updateManifest(manifest, {
-        shipping_cost: shipping_cost,
-      });
-
-      if (update_manifest instanceof Manifest) {
-        manifests.push(update_manifest);
-      } else {
-        errors.push(update_manifest);
-      }
-    }
-  }
-
-  return { manifests, errors };
-};
-
 export const find = async (req: Request, res: Response) => {
   const waybill = String(req.query.waybill_id);
   const carrier = String(req.query.carrier);
@@ -171,6 +132,15 @@ export const find = async (req: Request, res: Response) => {
   const params = req.query;
   const manifest = await findManifest(current_page, number_of_rows, params);
   return res.json(manifest);
+};
+
+export const sum = async (req: Request, res: Response) => {
+  const waybill_id = req.query.waybill_id;
+  const carrier = req.query.carrier;
+
+  const sum = await sumManifest(waybill_id, carrier);
+
+  return res.json(sum);
 };
 
 export const listCarriers = (req: Request, res: Response) => {

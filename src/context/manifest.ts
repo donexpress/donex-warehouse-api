@@ -104,6 +104,30 @@ export const createConsigneeAddress = async (consignee_addreses) => {
   await validateContext(AppDataSource, consignee_data);
 };
 
+export const sumManifest = async (waybill_id, carrier) => {
+  const sum_cost = await AppDataSource.getRepository(Manifest).sum(
+    'shipping_cost',
+    {
+      waybill_id,
+      carrier,
+    }
+  );
+
+  const sum_sale_price = await AppDataSource.getRepository(Manifest).sum(
+    'sale_price',
+    {
+      waybill_id,
+      carrier,
+    }
+  );
+
+  return {
+    shipping_cost: sum_cost,
+    sale_price: sum_sale_price,
+    difference_sum: sum_cost - sum_sale_price
+  };
+};
+
 export const updateManifest = async (
   manifest: Manifest,
   params: Partial<Manifest>
