@@ -193,5 +193,5 @@ export const remove = async (req: Request, res: Response) => {
   const manifest = await findByWaybillId(String(waybill_id));
   await removeManifest(manifest);
 
-  res.sendStatus(201);
+  res.sendStatus(200);
 };
