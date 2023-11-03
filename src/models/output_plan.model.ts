@@ -150,6 +150,12 @@ export class OutputPlan {
   relabel: boolean;
 
   @Column({
+    type: 'varchar',
+    nullable: true
+  })
+  client_box_number: string;
+
+  @Column({
     type: 'json',
     nullable: true,
     default: [],
