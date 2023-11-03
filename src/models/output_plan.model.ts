@@ -151,7 +151,7 @@ export class OutputPlan {
 
   @Column({
     type: 'varchar',
-    default: true
+    nullable: true
   })
   client_box_number: string;
 

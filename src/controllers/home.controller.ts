@@ -54,12 +54,3 @@ export const counts = async (req: Request, res: Response) => {
     regional_division_count
   });
 };
-export const self = async (req: Request, res: Response) => {
-  try {
-    const count = await getCurrentUser(req);
-    res.json({ count });
-  } catch (e) {
-    console.log(e);
-    res.status(500).send(e);
-  }
-};
