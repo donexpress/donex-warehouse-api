@@ -11,6 +11,7 @@ import { Staff } from '../models/staff.model';
 import { UpdateResult } from 'typeorm';
 import { getStates } from '../helpers/states';
 import states from '../config/states';
+import { getCurrentUser } from '../middlewares';
 
 export const index = async (req: Request, res: Response) => {
   try {

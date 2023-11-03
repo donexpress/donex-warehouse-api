@@ -3,6 +3,7 @@ import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { Appendix } from '../models/appendix.model';
 import { showUser } from './user';
+import { showStaff } from './staff';
 
 export const listAppendix = async (
   current_page: number,
@@ -21,7 +22,13 @@ export const listAppendix = async (
   for (let i = 0; i < appendages.length; i++) {
     const appendix = appendages[i];
     console.log("USER_ID: ", appendix.user_id)
-    mod_appendages.push({ ...appendix, user: await showUser(appendix.user_id)});
+    let user = null
+    if(appendix.is_owner_admin) {
+      user = await showStaff(appendix.user_id)
+    } else {
+      user = await showUser(appendix.user_id)
+    }
+    mod_appendages.push({ ...appendix, user });
   }
   return mod_appendages;
 };
@@ -34,7 +41,13 @@ export const showAppendix = async (id: number) => {
   const appendix = await AppDataSource.manager.findOne(Appendix, {
     where: { id },
   });
-  return { ...appendix, user: await showUser(appendix.id) };
+   let user = null
+    if(appendix.is_owner_admin) {
+      user = await showStaff(appendix.user_id)
+    } else {
+      user = await showUser(appendix.user_id)
+    }
+  return { ...appendix, user};
 };
 
 export const createAppendix = async (appendix_data: any) => {
@@ -60,7 +73,12 @@ export const getAppendagesByOutputPlan = async(id: number) => {
   const mod_appendages = []
   for (let i = 0; i < appendages.length; i++) {
     const appendix = appendages[i];
-    const user = await showUser(appendix.user_id)
+    let user = null
+    if(appendix.is_owner_admin) {
+      user = await showStaff(appendix.user_id)
+    } else {
+      user = await showUser(appendix.user_id)
+    }
     mod_appendages.push({...appendix, user})    
   }
   return mod_appendages
@@ -72,7 +90,12 @@ export const getAppendagesByOperationInstruction = async(id: number) => {
   const mod_appendages = []
   for (let i = 0; i < appendages.length; i++) {
     const appendix = appendages[i];
-    const user = await showUser(appendix.id)
+    let user = null
+    if(appendix.is_owner_admin) {
+      user = await showStaff(appendix.user_id)
+    } else {
+      user = await showUser(appendix.user_id)
+    }
     mod_appendages.push({...appendix, user})    
   }
   return mod_appendages

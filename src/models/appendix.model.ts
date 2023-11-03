@@ -58,6 +58,14 @@ export class Appendix {
   deleted: boolean;
 
   @Column({
+    type: "boolean",
+    nullable: false,
+    default: false
+  })
+
+  is_owner_admin: boolean;
+
+  @Column({
     type: 'json',
     nullable: true,
     default: [],
