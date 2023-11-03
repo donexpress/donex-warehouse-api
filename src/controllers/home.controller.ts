@@ -13,6 +13,7 @@ import { countStoragePlan } from '../context/storage_plan';
 import { countOutputPlan } from '../context/output_plan';
 import { countLineClassification } from '../context/line_classification';
 import { countRegionalDivision } from '../context/regional_division';
+import { getCurrentUser } from '../middlewares';
 
 export const country = async (req: Request, res: Response) => {
   const countryCodes = Object.keys(countries.countries);
@@ -52,4 +53,13 @@ export const counts = async (req: Request, res: Response) => {
     line_clasification_count,
     regional_division_count
   });
+};
+export const self = async (req: Request, res: Response) => {
+  try {
+    const count = await getCurrentUser(req);
+    res.json({ count });
+  } catch (e) {
+    console.log(e);
+    res.status(500).send(e);
+  }
 };
