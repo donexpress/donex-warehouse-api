@@ -11,22 +11,7 @@ export const findManifest = async (
   number_of_rows: number,
   params
 ) => {
-  const where: FindOptionsWhere<Manifest> | FindOptionsWhere<Manifest>[] = {
-    waybill_id: params.waybill_id,
-    carrier: params.carrier,
-  };
-
-  if (params.tracking_number) {
-    where.tracking_number = params.tracking_number;
-  }
-
-  if (params.paid) {
-    where.paid = params.paid;
-  }
-
-  if (params.client_reference) {
-    where.client_reference = params.client_reference;
-  }
+  const where = await getWhere(params);
 
   return await AppDataSource.manager.find(Manifest, {
     take: number_of_rows,
@@ -69,14 +54,18 @@ export const findByWaybillAndCarrier = async (
   });
 };
 
-export const countManifestWaybillAndCarrier = async (waybill_id: string, carrier: string) => {
+export const countManifestWaybillAndCarrier = async (
+  waybill_id: string,
+  carrier: string
+) => {
   return AppDataSource.manager.count(Manifest, {
     where: { waybill_id, carrier },
   });
 };
 
-export const countManifest = async () => {
-  return AppDataSource.manager.count(Manifest);
+export const countManifest = async (params) => {
+  const where = await getWhere(params);
+  return AppDataSource.manager.count(Manifest, { where });
 };
 
 export const createManifest = async (
@@ -137,7 +126,7 @@ export const sumManifest = async (waybill_id, carrier) => {
   return {
     shipping_cost: sum_cost,
     sale_price: sum_sale_price,
-    difference_sum: sum_cost - sum_sale_price
+    difference_sum: sum_cost - sum_sale_price,
   };
 };
 
@@ -152,6 +141,34 @@ export const updateManifest = async (
   return manifest;
 };
 
+export const selectByWaybill = async () => {
+  return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
+  .select('DISTINCT manifests.waybill_id', 'waybill_id')
+    .orderBy('manifests.waybill_id')
+    .getRawMany();
+};
+
 export const removeManifest = async (manifests: Manifest[]) => {
   await AppDataSource.getRepository(Manifest).remove(manifests);
+};
+
+export const getWhere = (params) => {
+  const where: FindOptionsWhere<Manifest> | FindOptionsWhere<Manifest>[] = {
+    waybill_id: params.waybill_id,
+    carrier: params.carrier,
+  };
+
+  if (params.tracking_number) {
+    where.tracking_number = params.tracking_number;
+  }
+
+  if (params.paid) {
+    where.paid = params.paid;
+  }
+
+  if (params.client_reference) {
+    where.client_reference = params.client_reference;
+  }
+
+  return where;
 };

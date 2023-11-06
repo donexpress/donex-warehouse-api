@@ -15,6 +15,7 @@ import {
   sumManifest,
   findByWaybillAndCarrier,
   countManifestWaybillAndCarrier,
+  selectByWaybill,
 } from '../context/manifest';
 import carriers_type from '../config/carriers';
 import { Manifest } from '../models/manifest.model';
@@ -166,8 +167,13 @@ export const listCarriers = (req: Request, res: Response) => {
 };
 
 export const count = async (req: Request, res: Response) => {
-  const count = await countManifest();
-  res.json({count});
+  const count = await countManifest(req.query.params);
+  res.json({ count });
+};
+
+export const byWaybill = async (req: Request, res: Response) => {
+  const waybill = await selectByWaybill();
+  res.json(waybill);
 };
 
 const parseHeader = (req: Request, res: Response) => {
