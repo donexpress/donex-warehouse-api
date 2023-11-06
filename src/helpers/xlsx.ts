@@ -43,6 +43,7 @@ export const jsonToExcel = async (manifest) => {
     'TOTAL DECLARE',
     'CURRENCY',
     'ITEM TITLE',
+    'ITEM DESCRIPTION',
     'QUANTITY',
     'PIECES',
     'SHIPPING COST',
@@ -68,7 +69,11 @@ export const jsonToExcel = async (manifest) => {
   });
   worksheet['!cols'] = wscols;
 
-  XLSX.writeFile(workbook, `manifest_${Math.floor(millis / 1000)}.xlsx`, {
+  let filepath = `src/upload/manifest_${Math.floor(millis / 1000)}.xlsx`;
+
+  XLSX.writeFile(workbook, filepath, {
     compression: true,
   });
+
+  return filepath;
 };

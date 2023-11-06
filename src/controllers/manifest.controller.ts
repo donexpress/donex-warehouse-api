@@ -19,6 +19,7 @@ import {
 } from '../context/manifest';
 import carriers_type from '../config/carriers';
 import { Manifest } from '../models/manifest.model';
+import fs from 'fs';
 
 export const create = async (req: Request, res: Response) => {
   return await create_do(req, res, 'create');
@@ -173,11 +174,16 @@ export const jsonToxlsx = async (req: Request, res: Response) => {
     String(carrier)
   );
 
-  const xlsx = await jsonToExcel(manifest);
-  console.log(xlsx);
-  return;
+  const filepath = await jsonToExcel(manifest);
 
-  return res.send(xlsx).status(200);
+  return res.download(filepath, function (error) {
+    if (error) {
+      console.log(error);
+    }
+    fs.unlink(filepath, function () {
+      console.log('File was deleted');
+    });
+  });
 };
 
 export const sum = async (req: Request, res: Response) => {
