@@ -54,27 +54,17 @@ export const create_do = async (
 
             if (action === 'create') {
               const manifest_obj = await manifestParams(value, carrier);
-              const manifest_save = await findByWaybillAndCarrier(
-                value[0],
-                carrier
+
+              const manifest = await createManifest(
+                manifest_obj.manifest_data,
+                manifest_obj.shipper_data,
+                manifest_obj.consignee_data
               );
 
-              if (manifest_save.length > 0) {
-                return res
-                  .status(403)
-                  .send('This manifest has already been stored ');
+              if (manifest instanceof Manifest) {
+                manifests.push(manifest);
               } else {
-                const manifest = await createManifest(
-                  manifest_obj.manifest_data,
-                  manifest_obj.shipper_data,
-                  manifest_obj.consignee_data
-                );
-
-                if (manifest instanceof Manifest) {
-                  manifests.push(manifest);
-                } else {
-                  errors.push(manifest);
-                }
+                errors.push(manifest);
               }
             } else if (action === 'update_customer') {
               const tracking_number = value[1];
