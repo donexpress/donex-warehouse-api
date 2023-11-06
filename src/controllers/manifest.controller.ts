@@ -61,7 +61,7 @@ export const create_do = async (
                 carrier
               );
 
-              if (manifest_save.length < 0) {
+              if (manifest_save.length > 0) {
                 return res
                   .status(403)
                   .send(
