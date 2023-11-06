@@ -62,7 +62,7 @@ export const create_do = async (
               if (manifest_save.length > 0) {
                 return res
                   .status(403)
-                  .send('This manifest has already been stored');
+                  .send('This manifest has already been stored ');
               } else {
                 const manifest = await createManifest(
                   manifest_obj.manifest_data,
