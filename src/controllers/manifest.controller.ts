@@ -168,22 +168,31 @@ export const find = async (req: Request, res: Response) => {
 export const jsonToxlsx = async (req: Request, res: Response) => {
   const waybill_id = req.query.waybill_id;
   const carrier = req.query.carrier;
+  let manifest = null;
 
-  const manifest = await findByWaybillAndCarrier(
-    String(waybill_id),
-    String(carrier)
-  );
+  if (carrier !== undefined || carrier !== '') {
+    manifest = await findByWaybillAndCarrier(
+      String(waybill_id),
+      String(carrier)
+    );
+  } else {
+    manifest = await findByWaybillId(String(waybill_id));
+  }
 
-  const filepath = await jsonToExcel(manifest);
+  if (manifest !== null) {
+    const filepath = await jsonToExcel(manifest);
 
-  return res.download(filepath, function (error) {
-    if (error) {
-      console.log(error);
-    }
-    fs.unlink(filepath, function () {
-      console.log('File was deleted');
+    return res.download(filepath, function (error) {
+      if (error) {
+        console.log(error);
+      }
+      fs.unlink(filepath, function () {
+        console.log('File was deleted');
+      });
     });
-  });
+  } else {
+    return res.sendStatus(404);
+  }
 };
 
 export const sum = async (req: Request, res: Response) => {
