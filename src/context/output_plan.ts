@@ -30,8 +30,11 @@ import { addresses, destinations } from '../config/destination';
 import { OutputPlanFilter } from '../types/OutputPlanFilter';
 import { filterStoragePlan } from './storage_plan';
 import { PackingList } from '../models/packing_list.model';
-import { calcDate, removeNullProperties, splitLastOccurrence } from '../helpers';
-import { getCurrentUser } from '../middlewares';
+import {
+  calcDate,
+  removeNullProperties,
+  splitLastOccurrence,
+} from '../helpers';
 
 export const listOutputPlan = async (
   current_page: number,
@@ -381,12 +384,19 @@ export const getWhere = async (
         user_id: current_user.id,
         ...fl,
       },
+      {
+        client_box_number: ILike(`%${query}%`),
+        state: state_value,
+        user_id: current_user.id,
+        ...fl,
+      },
     ];
   } else {
     where = [
       { output_number: ILike(`%${query}%`), state: state_value, ...fl },
       { case_numbers: ArrayContains([query]), state: state_value, ...fl },
       { reference_number: ILike(`%${query}%`), state: state_value, ...fl },
+      { client_box_number: ILike(`%${query}%`), state: state_value, ...fl },
     ];
   }
 
@@ -613,7 +623,7 @@ export const returnBoxes = async (id: number, data) => {
   data.case_numbers = output_plan.case_numbers.filter(
     (el) => !data.case_numbers.find((cn) => cn === el)
   );
-  data.client_box_number = getCustomerOrderNumber(output_plan.packing_lists)
+  data.client_box_number = getCustomerOrderNumber(output_plan.packing_lists);
   const result = await repository.update({ id }, data);
   return result;
 };
@@ -737,7 +747,7 @@ export const pullBoxes = async ({
     current.output_boxes = box_amount;
     current.box_amount = box_amount;
   }
-  current.client_box_number = getCustomerOrderNumber(packing_lists)
+  current.client_box_number = getCustomerOrderNumber(packing_lists);
   const result = await respository.update({ id }, current);
   if (Object.keys(error_type).length > 0) {
     return error_type;
@@ -830,16 +840,18 @@ export const listOutputPlanRequired = async (
   return mod_package_list;
 };
 
-export const getCustomerOrderNumber = (packing_lists: PackingList[]): string => {
+export const getCustomerOrderNumber = (
+  packing_lists: PackingList[]
+): string => {
   const numbers: string[] = [];
 
   packing_lists?.forEach((pl, index) => {
     if (pl.box_number) {
-      const tmpn = splitLastOccurrence(pl.box_number, "U")[0];
+      const tmpn = splitLastOccurrence(pl.box_number, 'U')[0];
       if (!numbers.find((el) => el === tmpn)) {
         numbers.push(tmpn);
       }
     }
   });
-  return numbers.join(", ");
+  return numbers.join(', ');
 };

@@ -48,4 +48,18 @@ router.get(
   ManifestController.sum
 );
 
+router.get(
+  '/api/v1/excel',
+  verifyTokenPresent,
+  //guardianMw(['ADMIN', 'FINANCE']),
+  ManifestController.jsonToxlsx
+);
+
+router.get(
+  '/api/v1/count',
+  verifyTokenPresent,
+  //guardianMw(['ADMIN', 'FINANCE']),
+  ManifestController.count
+);
+
 export default router;

@@ -28,3 +28,47 @@ export const getEntries = (states) => {
   }
   return states_array;
 };
+
+export const jsonToExcel = async (manifest) => {
+  const excelHeader = [
+    'MANIFEST ID',
+    'MWB',
+    'BAG CODE',
+    'BAG ID',
+    'TRACKING',
+    'CLIENT REF. NO',
+    'NAME',
+    'WEIGTH',
+    'UNIT OF',
+    'TOTAL DECLARE',
+    'CURRENCY',
+    'ITEM TITLE',
+    'QUANTITY',
+    'PIECES',
+    'SHIPPING COST',
+    'SALE PRICE',
+    'INVOICE WEIGHT',
+    'STATE',
+    'PAID',
+    'PAYMENT VOUCHER',
+    'BILL STATE',
+    'CARRIER',
+    'CREATED AT',
+    'UPDATED AT',
+  ];
+  const worksheet = XLSX.utils.json_to_sheet(manifest);
+  const workbook = XLSX.utils.book_new();
+  const millis = Date.now();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'manifest');
+  XLSX.utils.sheet_add_aoa(worksheet, [excelHeader], { origin: 'A1' });
+
+  let wscols = [];
+  excelHeader.map((arr) => {
+    wscols.push({ wch: arr.length + 5 });
+  });
+  worksheet['!cols'] = wscols;
+
+  XLSX.writeFile(workbook, `manifest_${Math.floor(millis / 1000)}.xlsx`, {
+    compression: true,
+  });
+};

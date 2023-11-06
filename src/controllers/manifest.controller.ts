@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { removeFile } from '../context/file';
 import { upload } from '../helpers/file';
-import { getEntries, xslx } from '../helpers/xlsx';
+import { getEntries, jsonToExcel, xslx } from '../helpers/xlsx';
 import { manifestParams, getValues } from '../helpers';
 import {
   createManifest,
@@ -13,6 +13,8 @@ import {
   findByWaybillId,
   removeManifest,
   sumManifest,
+  findByWaybillAndCarrier,
+  countManifestWaybillAndCarrier,
 } from '../context/manifest';
 import carriers_type from '../config/carriers';
 import { Manifest } from '../models/manifest.model';
@@ -128,10 +130,26 @@ export const find = async (req: Request, res: Response) => {
     : 1;
   const number_of_rows = req.query.number_of_rows
     ? Number(req.query.number_of_rows)
-    : await countManifest(waybill, carrier);
+    : await countManifestWaybillAndCarrier(waybill, carrier);
   const params = req.query;
   const manifest = await findManifest(current_page, number_of_rows, params);
   return res.json(manifest);
+};
+
+export const jsonToxlsx = async (req: Request, res: Response) => {
+  const waybill_id = req.query.waybill_id;
+  const carrier = req.query.carrier;
+
+  const manifest = await findByWaybillAndCarrier(
+    String(waybill_id),
+    String(carrier)
+  );
+
+  const xlsx = await jsonToExcel(manifest);
+  console.log(xlsx);
+  return;
+
+  return res.send(xlsx).status(200);
 };
 
 export const sum = async (req: Request, res: Response) => {
@@ -145,6 +163,11 @@ export const sum = async (req: Request, res: Response) => {
 
 export const listCarriers = (req: Request, res: Response) => {
   res.send({ carriers: getEntries(carriers_type.carriers) });
+};
+
+export const count = async (req: Request, res: Response) => {
+  const count = await countManifest();
+  res.json({count});
 };
 
 const parseHeader = (req: Request, res: Response) => {
