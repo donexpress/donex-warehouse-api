@@ -45,6 +45,7 @@ export const create_do = async (
         } else {
           let errors = [];
           let manifests = [];
+          let waybill_id = null;
           let manifest_paid = [];
           const carrier = String(req.query.carrier);
           var worksheetsBody = await xslx(urls.url);
@@ -63,6 +64,7 @@ export const create_do = async (
 
               if (manifest instanceof Manifest) {
                 manifests.push(manifest);
+                waybill_id = value[0].waybill_id;
               } else {
                 errors.push(manifest);
               }
@@ -106,7 +108,7 @@ export const create_do = async (
           body = {
             manifest_count: manifests.length,
             waybill_id:
-              action === 'update_supplier' ? null : manifests[0].waybill_id,
+              action === 'update_supplier' ? null : waybill_id,
             errors: errors,
             manifest_paid_count: manifest_paid.length,
             manifest_paid,
