@@ -63,7 +63,7 @@ export const create_do = async (
 
               if (manifest_save.length > 0) {
                 return res
-                  .status(403)
+                  .status(409)
                   .send(
                     'The manifest you are trying to create is already registered'
                   );
