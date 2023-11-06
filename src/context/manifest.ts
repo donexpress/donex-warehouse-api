@@ -65,7 +65,7 @@ export const countManifestWaybillAndCarrier = async (
 
 export const countManifest = async (params) => {
   const where = await getWhere(params);
-  return AppDataSource.manager.count(Manifest, { where });
+  return AppDataSource.manager.count(Manifest, { where: where });
 };
 
 export const createManifest = async (
