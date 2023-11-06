@@ -15,6 +15,7 @@ import {
   sumManifest,
   findByWaybillAndCarrier,
   countManifestWaybillAndCarrier,
+  selectByWaybill,
 } from '../context/manifest';
 import carriers_type from '../config/carriers';
 import { Manifest } from '../models/manifest.model';
@@ -53,17 +54,27 @@ export const create_do = async (
 
             if (action === 'create') {
               const manifest_obj = await manifestParams(value, carrier);
-
-              const manifest = await createManifest(
-                manifest_obj.manifest_data,
-                manifest_obj.shipper_data,
-                manifest_obj.consignee_data
+              const manifest_save = await findByWaybillAndCarrier(
+                value[0],
+                carrier
               );
 
-              if (manifest instanceof Manifest) {
-                manifests.push(manifest);
+              if (manifest_save.length > 0) {
+                return res
+                  .status(403)
+                  .send('This manifest has already been stored ');
               } else {
-                errors.push(manifest);
+                const manifest = await createManifest(
+                  manifest_obj.manifest_data,
+                  manifest_obj.shipper_data,
+                  manifest_obj.consignee_data
+                );
+
+                if (manifest instanceof Manifest) {
+                  manifests.push(manifest);
+                } else {
+                  errors.push(manifest);
+                }
               }
             } else if (action === 'update_customer') {
               const tracking_number = value[1];
@@ -166,8 +177,15 @@ export const listCarriers = (req: Request, res: Response) => {
 };
 
 export const count = async (req: Request, res: Response) => {
-  const count = await countManifest();
-  res.json({count});
+  const count = await countManifest(
+    req.query.params === undefined ? '' : req.query.params
+  );
+  res.json({ count });
+};
+
+export const byWaybill = async (req: Request, res: Response) => {
+  const waybill = await selectByWaybill();
+  res.json(waybill);
 };
 
 const parseHeader = (req: Request, res: Response) => {

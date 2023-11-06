@@ -62,4 +62,11 @@ router.get(
   ManifestController.count
 );
 
+router.get(
+  '/api/v1/byWaybill',
+  verifyTokenPresent,
+  //guardianMw(['ADMIN', 'FINANCE']),
+  ManifestController.byWaybill
+);
+
 export default router;
