@@ -167,7 +167,9 @@ export const listCarriers = (req: Request, res: Response) => {
 };
 
 export const count = async (req: Request, res: Response) => {
-  const count = await countManifest(req.query.params);
+  const count = await countManifest(
+    req.query.params === undefined ? '' : req.query.params
+  );
   res.json({ count });
 };
 

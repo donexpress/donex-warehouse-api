@@ -143,7 +143,7 @@ export const updateManifest = async (
 
 export const selectByWaybill = async () => {
   return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
-  .select('DISTINCT manifests.waybill_id', 'waybill_id')
+    .select('DISTINCT manifests.waybill_id', 'waybill_id')
     .orderBy('manifests.waybill_id')
     .getRawMany();
 };
@@ -153,10 +153,15 @@ export const removeManifest = async (manifests: Manifest[]) => {
 };
 
 export const getWhere = (params) => {
-  const where: FindOptionsWhere<Manifest> | FindOptionsWhere<Manifest>[] = {
-    waybill_id: params.waybill_id,
-    carrier: params.carrier,
-  };
+  const where: FindOptionsWhere<Manifest> | FindOptionsWhere<Manifest>[] = {};
+
+  if (params.waybill_id) {
+    where.waybill_id = params.waybill_id;
+  }
+
+  if (params.carrier) {
+    where.carrier = params.carrier;
+  }
 
   if (params.tracking_number) {
     where.tracking_number = params.tracking_number;
