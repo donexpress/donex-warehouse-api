@@ -108,7 +108,8 @@ export const count = async (req: Request, res: Response) => {
 };
 
 export const create = async (req: Request, res: Response) => {
-  const new_output_plan = await createOutputPlan(req.body);
+  const current_user = getCurrentUser(req)
+  const new_output_plan = await createOutputPlan(req.body, current_user);
   if (new_output_plan instanceof OutputPlan) {
     res.status(201).json(new_output_plan);
   } else {

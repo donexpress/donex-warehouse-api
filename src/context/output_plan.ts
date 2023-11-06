@@ -31,6 +31,7 @@ import { OutputPlanFilter } from '../types/OutputPlanFilter';
 import { filterStoragePlan } from './storage_plan';
 import { PackingList } from '../models/packing_list.model';
 import { calcDate, removeNullProperties, splitLastOccurrence } from '../helpers';
+import { getCurrentUser } from '../middlewares';
 
 export const listOutputPlan = async (
   current_page: number,
@@ -441,7 +442,10 @@ export const showOutputPlan = async (id: number) => {
   }
 };
 
-export const createOutputPlan = async (data: any) => {
+export const createOutputPlan = async (data: any, current_user: any) => {
+  if(!data.user_id) {
+    data.user_id = current_user.id
+  }
   const repository = await AppDataSource.getRepository(OutputPlan);
   const date = new Date();
   const month =
