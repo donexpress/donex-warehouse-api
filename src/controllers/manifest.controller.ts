@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { removeFile } from '../context/file';
+import { removeFile, uploadFileToStore } from '../context/file';
 import { upload } from '../helpers/file';
 import { getEntries, jsonToExcel, xslx } from '../helpers/xlsx';
 import { manifestParams, getValues } from '../helpers';
@@ -170,26 +170,24 @@ export const jsonToxlsx = async (req: Request, res: Response) => {
   const carrier = req.query.carrier;
   let manifest = null;
 
-  if (carrier !== undefined || carrier !== '') {
+  if (carrier === undefined) {
+    manifest = await findByWaybillId(String(waybill_id));
+  } else {
     manifest = await findByWaybillAndCarrier(
       String(waybill_id),
       String(carrier)
     );
-  } else {
-    manifest = await findByWaybillId(String(waybill_id));
   }
 
   if (manifest !== null) {
     const filepath = await jsonToExcel(manifest);
 
-    return res.download(filepath, function (error) {
-      if (error) {
-        console.log(error);
-      }
-      fs.unlink(filepath, function () {
-        console.log('File was deleted');
-      });
-    });
+    const urls = await uploadFileToStore(filepath, 'xlsx');
+    console.log(urls);
+
+    res.json(urls);
+    fs.unlink(filepath, () => {});
+
   } else {
     return res.sendStatus(404);
   }

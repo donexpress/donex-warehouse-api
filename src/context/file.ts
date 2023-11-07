@@ -6,7 +6,7 @@ export const uploadFileToStore = async (
   extension: string,
   name: string | null = null
 ) => {
-  const bucket = 'warehouse-sav01ok';
+  const bucket = process.env.ENVIRONMENT === "PROD" ? 'warehouse-sav01ok' : "warehouse-stg";
   let tmp_extension: string = extension
   if(extension === "vnd.openxmlformats-officedocument.wordprocessingml.document") {
     tmp_extension = 'docx'
@@ -55,7 +55,7 @@ export const uploadFileToStore = async (
 };
 
 export const removeFile = async(filename: string) => {
-  const bucket = 'warehouse-sav01ok';
+  const bucket = process.env.ENVIRONMENT === "PROD" ? 'warehouse-sav01ok' : "warehouse-stg";
   const store = new oss({
     region: 'oss-us-west-1',
     accessKeyId: process.env.ALIYUN_PUBLIC_KEY || 'LTAIGmg7WXMnXaOi',
