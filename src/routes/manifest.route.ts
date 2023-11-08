@@ -38,10 +38,7 @@ router.delete(
   '/api/v1/manifest',
   verifyTokenPresent,
   //guardianMw(['ADMIN', 'FINANCE']),
-  ManifestController.remove,
-  function (req: Request, res: Response) {
-    req.setTimeout(500000);
-  }
+  ManifestController.remove
 );
 
 router.get(
