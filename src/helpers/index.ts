@@ -46,6 +46,7 @@ export const manifestParams = (value, carrier) => {
     item_description: '',
     payment_voucher: '',
     bill_state: '',
+    sale_price: value[25] === '' ? 0 : value[25],
   };
 
   let shipper_data = {
@@ -82,13 +83,13 @@ export const manifestParams = (value, carrier) => {
 };
 
 export const removeNullProperties = <T>(obj: T): T => {
-  Object.keys(obj).forEach(key => {
+  Object.keys(obj).forEach((key) => {
     if (obj[key] === null) {
       delete obj[key];
     }
   });
-  return obj
-}
+  return obj;
+};
 export const calcDate = (date1: string, date2: string) => {
   /*
    * calcDate() : Calculates the difference between two dates
