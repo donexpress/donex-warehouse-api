@@ -148,6 +148,15 @@ export const selectByWaybill = async () => {
     .getRawMany();
 };
 
+export const listManifest = async (): Promise<Manifest[] | []> => {
+  return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
+    .distinctOn(['manifests.waybill_id'])
+    .select(['manifests.waybill_id', 'manifests.payment_voucher'])
+    .orderBy('manifests.waybill_id')
+    .getRawMany();
+};
+
+
 export const removeManifest = async (manifests: Manifest[]) => {
   await AppDataSource.getRepository(Manifest).remove(manifests);
 };

@@ -16,6 +16,7 @@ import {
   findByWaybillAndCarrier,
   countManifestWaybillAndCarrier,
   selectByWaybill,
+  listManifest,
 } from '../context/manifest';
 import carriers_type from '../config/carriers';
 import { Manifest } from '../models/manifest.model';
@@ -97,10 +98,10 @@ export const create_do = async (
               }
             } else if (action === 'update_customer') {
               const tracking_number = value[1];
-              const shipping_cost = value[2];
+              const sale_price = value[2];
               const manifest = await findByTracking(tracking_number);
               const update_manifest = await updateManifest(manifest, {
-                shipping_cost: shipping_cost,
+                sale_price: sale_price,
               });
               if (update_manifest instanceof Manifest) {
                 manifests.push(update_manifest);
@@ -109,7 +110,7 @@ export const create_do = async (
               }
             } else if (action === 'update_supplier') {
               const tracking_number = value[0];
-              const sale_price = value[3];
+              const shipping_cost = value[3];
               const invoice_weight = value[1];
               const manifest = await findByTracking(tracking_number);
               if (manifest instanceof Manifest) {
@@ -117,9 +118,8 @@ export const create_do = async (
                   manifest_paid.push(manifest);
                 } else {
                   const update_manifest = await updateManifest(manifest, {
-                    sale_price: sale_price,
+                    shipping_cost: shipping_cost,
                     invoice_weight: invoice_weight,
-                    paid: true,
                   });
                   if (update_manifest instanceof Manifest) {
                     manifests.push(update_manifest);
@@ -183,11 +183,9 @@ export const jsonToxlsx = async (req: Request, res: Response) => {
     const filepath = await jsonToExcel(manifest);
 
     const urls = await uploadFileToStore(filepath, 'xlsx');
-    console.log(urls);
 
     res.json(urls);
     fs.unlink(filepath, () => {});
-
   } else {
     return res.sendStatus(404);
   }
@@ -216,6 +214,11 @@ export const count = async (req: Request, res: Response) => {
 export const byWaybill = async (req: Request, res: Response) => {
   const waybill = await selectByWaybill();
   res.json(waybill);
+};
+
+export const list = async (req: Request, res: Response) => {
+  const waybills = await listManifest();
+  res.json(waybills);
 };
 
 const parseHeader = (req: Request, res: Response) => {
