@@ -38,8 +38,6 @@ AppDataSource.initialize()
   })
   .catch((error) => console.log(error));
 
-const server = app.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`Service running on port: ${PORT}`);
 });
-
-server.setTimeout(500000);

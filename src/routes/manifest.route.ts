@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { ManifestController } from '../controllers';
 import { guardianMw, verifyTokenPresent } from '../middlewares';
 const router = express.Router();
@@ -38,7 +38,10 @@ router.delete(
   '/api/v1/manifest',
   verifyTokenPresent,
   //guardianMw(['ADMIN', 'FINANCE']),
-  ManifestController.remove
+  ManifestController.remove,
+  function (req: Request, res: Response) {
+    req.setTimeout(500000);
+  }
 );
 
 router.get(
