@@ -94,6 +94,7 @@ export const create_do = async (
                   const update_manifest = await updateManifest(manifest, {
                     shipping_cost: shipping_cost,
                     invoice_weight: invoice_weight,
+                    paid: true
                   });
                   if (update_manifest instanceof Manifest) {
                     manifests.push(update_manifest);
@@ -126,15 +127,13 @@ export const create_do = async (
 };
 
 export const find = async (req: Request, res: Response) => {
-  const waybill = String(req.query.waybill_id);
-  const carrier = String(req.query.carrier);
+  const params = req.query;
   const current_page = req.query.current_page
     ? Number(req.query.current_page)
     : 1;
   const number_of_rows = req.query.number_of_rows
     ? Number(req.query.number_of_rows)
-    : await countManifestWaybillAndCarrier(waybill, carrier);
-  const params = req.query;
+    : await countManifest(params);
   const manifest = await findManifest(current_page, number_of_rows, params);
   return res.json(manifest);
 };
