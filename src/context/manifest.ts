@@ -157,12 +157,22 @@ export const listManifest = async (): Promise<Manifest[] | []> => {
 };
 
 export const removeManifest = async (manifests: Manifest[]) => {
-  manifests.forEach(async (manifest) => {
-    await AppDataSource.getRepository(ConsigneeAddress).delete(manifest.id);
-    await AppDataSource.getRepository(ShipperAddress).delete(manifest.id);
-  });
+  await AppDataSource.manager.transaction(
+    async (transactionalEntityManager) => {
+      manifests.forEach(async (manifest) => {
+        await transactionalEntityManager
+          .getRepository(ConsigneeAddress)
+          .delete(manifest.id);
+        await transactionalEntityManager
+          .getRepository(ShipperAddress)
+          .delete(manifest.id);
+      });
 
-  await AppDataSource.getRepository(Manifest).remove(manifests);
+      await transactionalEntityManager
+        .getRepository(Manifest)
+        .remove(manifests);
+    }
+  );
 };
 
 export const getWhere = (params) => {
