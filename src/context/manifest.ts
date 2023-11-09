@@ -156,8 +156,12 @@ export const listManifest = async (): Promise<Manifest[] | []> => {
     .getRawMany();
 };
 
-
 export const removeManifest = async (manifests: Manifest[]) => {
+  manifests.forEach(async (manifest) => {
+    await AppDataSource.getRepository(ConsigneeAddress).delete(manifest.id);
+    await AppDataSource.getRepository(ShipperAddress).delete(manifest.id);
+  });
+
   await AppDataSource.getRepository(Manifest).remove(manifests);
 };
 
