@@ -148,7 +148,7 @@ export const selectByWaybill = async () => {
     .getRawMany();
 };
 
-export const listManifest = async (): Promise<Manifest[] | []> => {
+export const listManifests = async (): Promise<Manifest[] | []> => {
   return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
     .distinctOn(['manifests.waybill_id'])
     .select(['manifests.waybill_id', 'manifests.payment_voucher'])
