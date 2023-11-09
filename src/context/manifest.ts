@@ -74,7 +74,7 @@ export const createManifest = async (
   consignee_data
 ) => {
   const repository = await AppDataSource.getRepository(Manifest);
-  const manifest = repository.create(manifest_data);
+  const manifest = await repository.create(manifest_data);
   const manifest_save = await validateContext(AppDataSource, manifest);
 
   if (manifest_save instanceof Manifest) {
