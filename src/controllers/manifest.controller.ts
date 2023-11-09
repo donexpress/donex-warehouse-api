@@ -58,32 +58,6 @@ export const create_do = async (
             if (action === 'create') {
               const manifest_obj = await manifestParams(value, carrier);
 
-              const manifest_save = await findByWaybillAndCarrier(
-                value[0],
-                carrier
-              );
-
-              if (manifest_save.length > 0) {
-                return res
-                  .status(409)
-                  .send(
-                    'The manifest you are trying to create is already registered'
-                  );
-              } else {
-                const manifest = await createManifest(
-                  manifest_obj.manifest_data,
-                  manifest_obj.shipper_data,
-                  manifest_obj.consignee_data
-                );
-
-                if (manifest instanceof Manifest) {
-                  manifests.push(manifest);
-                  waybill_id = value[0].waybill_id;
-                } else {
-                  errors.push(manifest);
-                }
-              }
-
               const manifest = await createManifest(
                 manifest_obj.manifest_data,
                 manifest_obj.shipper_data,
