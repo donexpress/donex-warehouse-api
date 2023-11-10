@@ -94,7 +94,7 @@ export const create_do = async (
                   const update_manifest = await updateManifest(manifest, {
                     shipping_cost: shipping_cost,
                     invoice_weight: invoice_weight,
-                    paid: true
+                    paid: true,
                   });
                   if (update_manifest instanceof Manifest) {
                     manifests.push(update_manifest);
@@ -178,9 +178,7 @@ export const listCarriers = (req: Request, res: Response) => {
 };
 
 export const count = async (req: Request, res: Response) => {
-  const count = await countManifest(
-    req.query === undefined ? '' : req.query
-  );
+  const count = await countManifest(req.query === undefined ? '' : req.query);
   res.json({ count });
 };
 
