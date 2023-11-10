@@ -215,3 +215,11 @@ export const removeStaff = async (id: number) => {
   );
   return staff;
 };
+
+export const showStaffNoDependencies = async (id: number) => {
+  const user = await AppDataSource.manager.findOne(Staff, {
+    where: { id },
+    // relations: ['states', 'roles', 'organizations', 'warehouses'],
+  });
+  return user
+};

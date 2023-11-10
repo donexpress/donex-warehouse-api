@@ -3,7 +3,7 @@ import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { Appendix } from '../models/appendix.model';
 import { showUser } from './user';
-import { showStaff } from './staff';
+import { showStaff, showStaffNoDependencies } from './staff';
 
 export const listAppendix = async (
   current_page: number,
@@ -92,7 +92,7 @@ export const getAppendagesByOperationInstruction = async(id: number) => {
     const appendix = appendages[i];
     let user = null
     if(appendix.is_owner_admin) {
-      user = await showStaff(appendix.user_id)
+      user = await showStaffNoDependencies(appendix.user_id)
     } else {
       user = await showUser(appendix.user_id)
     }
