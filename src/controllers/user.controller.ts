@@ -5,6 +5,7 @@ import {
   listUser,
   removeUser,
   showUser,
+  updatePassword,
   updateUser,
 } from '../context/user';
 import { User } from '../models/user.model';
@@ -106,4 +107,22 @@ export const remove = async (req: Request, res: Response) => {
 
 export const listStates = (req: Request, res: Response) => {
   res.send({ states: getStates(states.user) });
+};
+
+export const changePassword = async (req: Request, res: Response) => {
+  try {
+    const result = await updatePassword(Number(req.params.id), req.body.password);
+    if (result instanceof UpdateResult) {
+      if (result.affected === 0) {
+        res.status(404).json(result);
+      } else {
+        res.status(200).json(result);
+      }
+    } else {
+      res.status(409).json(result);
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(500).send(e);
+  }
 };
