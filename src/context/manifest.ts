@@ -74,7 +74,7 @@ export const createManifest = async (
   consignee_data
 ) => {
   const repository = await AppDataSource.getRepository(Manifest);
-  const manifest = repository.create(manifest_data);
+  const manifest = await repository.create(manifest_data);
   const manifest_save = await validateContext(AppDataSource, manifest);
 
   if (manifest_save instanceof Manifest) {
@@ -126,7 +126,7 @@ export const sumManifest = async (waybill_id, carrier) => {
   return {
     shipping_cost: sum_cost,
     sale_price: sum_sale_price,
-    difference_sum: sum_cost - sum_sale_price,
+    difference_sum: sum_sale_price - sum_cost,
   };
 };
 
@@ -148,8 +148,31 @@ export const selectByWaybill = async () => {
     .getRawMany();
 };
 
+export const listManifests = async (): Promise<Manifest[] | []> => {
+  return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
+    .distinctOn(['manifests.waybill_id'])
+    .select(['manifests.waybill_id', 'manifests.payment_voucher'])
+    .orderBy('manifests.waybill_id')
+    .getRawMany();
+};
+
 export const removeManifest = async (manifests: Manifest[]) => {
-  await AppDataSource.getRepository(Manifest).remove(manifests);
+  await AppDataSource.manager.transaction(
+    async (transactionalEntityManager) => {
+      manifests.forEach(async (manifest) => {
+        await transactionalEntityManager
+          .getRepository(ConsigneeAddress)
+          .delete(manifest.id);
+        await transactionalEntityManager
+          .getRepository(ShipperAddress)
+          .delete(manifest.id);
+      });
+
+      await transactionalEntityManager
+        .getRepository(Manifest)
+        .remove(manifests);
+    }
+  );
 };
 
 export const getWhere = (params) => {

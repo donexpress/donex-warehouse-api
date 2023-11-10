@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { ManifestController } from '../controllers';
 import { guardianMw, verifyTokenPresent } from '../middlewares';
 const router = express.Router();
@@ -67,6 +67,13 @@ router.get(
   verifyTokenPresent,
   //guardianMw(['ADMIN', 'FINANCE']),
   ManifestController.byWaybill
+);
+
+router.get(
+  '/api/v1/list',
+  verifyTokenPresent,
+  //guardianMw(['ADMIN', 'FINANCE']),
+  ManifestController.list
 );
 
 export default router;

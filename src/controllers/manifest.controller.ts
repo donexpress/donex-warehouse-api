@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { removeFile } from '../context/file';
+import { removeFile, uploadFileToStore } from '../context/file';
 import { upload } from '../helpers/file';
 import { getEntries, jsonToExcel, xslx } from '../helpers/xlsx';
 import { manifestParams, getValues } from '../helpers';
@@ -16,9 +16,11 @@ import {
   findByWaybillAndCarrier,
   countManifestWaybillAndCarrier,
   selectByWaybill,
+  listManifests,
 } from '../context/manifest';
 import carriers_type from '../config/carriers';
 import { Manifest } from '../models/manifest.model';
+import fs from 'fs';
 
 export const create = async (req: Request, res: Response) => {
   return await create_do(req, res, 'create');
@@ -45,6 +47,7 @@ export const create_do = async (
         } else {
           let errors = [];
           let manifests = [];
+          let waybill_id = null;
           let manifest_paid = [];
           const carrier = String(req.query.carrier);
           var worksheetsBody = await xslx(urls.url);
@@ -63,15 +66,16 @@ export const create_do = async (
 
               if (manifest instanceof Manifest) {
                 manifests.push(manifest);
+                waybill_id = value[0].waybill_id;
               } else {
                 errors.push(manifest);
               }
             } else if (action === 'update_customer') {
               const tracking_number = value[1];
-              const shipping_cost = value[2];
+              const sale_price = value[2];
               const manifest = await findByTracking(tracking_number);
               const update_manifest = await updateManifest(manifest, {
-                shipping_cost: shipping_cost,
+                sale_price: sale_price,
               });
               if (update_manifest instanceof Manifest) {
                 manifests.push(update_manifest);
@@ -80,7 +84,7 @@ export const create_do = async (
               }
             } else if (action === 'update_supplier') {
               const tracking_number = value[0];
-              const sale_price = value[3];
+              const shipping_cost = value[3];
               const invoice_weight = value[1];
               const manifest = await findByTracking(tracking_number);
               if (manifest instanceof Manifest) {
@@ -88,7 +92,7 @@ export const create_do = async (
                   manifest_paid.push(manifest);
                 } else {
                   const update_manifest = await updateManifest(manifest, {
-                    sale_price: sale_price,
+                    shipping_cost: shipping_cost,
                     invoice_weight: invoice_weight,
                     paid: true,
                   });
@@ -105,8 +109,7 @@ export const create_do = async (
           let body = {};
           body = {
             manifest_count: manifests.length,
-            waybill_id:
-              action === 'update_supplier' ? null : manifests[0].waybill_id,
+            waybill_id: action === 'update_supplier' ? null : waybill_id,
             errors: errors,
             manifest_paid_count: manifest_paid.length,
             manifest_paid,
@@ -124,15 +127,13 @@ export const create_do = async (
 };
 
 export const find = async (req: Request, res: Response) => {
-  const waybill = String(req.query.waybill_id);
-  const carrier = String(req.query.carrier);
+  const params = req.query;
   const current_page = req.query.current_page
     ? Number(req.query.current_page)
     : 1;
   const number_of_rows = req.query.number_of_rows
     ? Number(req.query.number_of_rows)
-    : await countManifestWaybillAndCarrier(waybill, carrier);
-  const params = req.query;
+    : await countManifest(params);
   const manifest = await findManifest(current_page, number_of_rows, params);
   return res.json(manifest);
 };
@@ -140,17 +141,27 @@ export const find = async (req: Request, res: Response) => {
 export const jsonToxlsx = async (req: Request, res: Response) => {
   const waybill_id = req.query.waybill_id;
   const carrier = req.query.carrier;
+  let manifest = null;
 
-  const manifest = await findByWaybillAndCarrier(
-    String(waybill_id),
-    String(carrier)
-  );
+  if (carrier === undefined) {
+    manifest = await findByWaybillId(String(waybill_id));
+  } else {
+    manifest = await findByWaybillAndCarrier(
+      String(waybill_id),
+      String(carrier)
+    );
+  }
 
-  const xlsx = await jsonToExcel(manifest);
-  console.log(xlsx);
-  return;
+  if (manifest !== null) {
+    const filepath = await jsonToExcel(manifest);
 
-  return res.send(xlsx).status(200);
+    const urls = await uploadFileToStore(filepath, 'xlsx');
+
+    res.json(urls);
+    fs.unlink(filepath, () => {});
+  } else {
+    return res.sendStatus(404);
+  }
 };
 
 export const sum = async (req: Request, res: Response) => {
@@ -167,15 +178,18 @@ export const listCarriers = (req: Request, res: Response) => {
 };
 
 export const count = async (req: Request, res: Response) => {
-  const count = await countManifest(
-    req.query.params === undefined ? '' : req.query.params
-  );
+  const count = await countManifest(req.query === undefined ? '' : req.query);
   res.json({ count });
 };
 
 export const byWaybill = async (req: Request, res: Response) => {
   const waybill = await selectByWaybill();
   res.json(waybill);
+};
+
+export const list = async (req: Request, res: Response) => {
+  const waybills = await listManifests();
+  res.json(waybills);
 };
 
 const parseHeader = (req: Request, res: Response) => {
