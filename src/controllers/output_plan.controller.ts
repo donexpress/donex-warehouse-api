@@ -20,7 +20,7 @@ import {
 import { OutputPlan } from '../models/output_plan.model';
 import { getStates } from '../helpers/states';
 import states from '../config/states';
-import { getCurrentUser } from '../middlewares';
+import { fetchcurrentUser, getCurrentUser } from '../middlewares';
 import { UpdateResult } from 'typeorm';
 
 export const index = async (req: Request, res: Response) => {
@@ -62,7 +62,8 @@ export const index = async (req: Request, res: Response) => {
 
 export const cleanIndex = async (req: Request, res: Response) => {
   try {
-    const outpu_plans = await cleanOutputPlan();
+    const user: any = await getCurrentUser(req)
+    const outpu_plans = await cleanOutputPlan(user && user.role_id !== 1 ? user.id: null);
     res.json(outpu_plans);
   } catch (e) {
     console.log(e);

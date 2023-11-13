@@ -755,33 +755,18 @@ export const pullBoxes = async ({
   return result;
 };
 
-export const cleanOutputPlan = async () => {
+export const cleanOutputPlan = async (owner_id: number | null) => {
+  const where: FindOptionsWhere<OutputPlan> = { state: Not(states.output_plan.cancelled.value) }
+  if(owner_id) {
+    where.user_id = owner_id
+  }
   const result = await AppDataSource.manager.find(OutputPlan, {
-    where: { state: Not(states.output_plan.cancelled.value) },
+    where,
     order: {
       id: 'DESC',
     },
   });
-  const mod_package_list = [];
-  for (let i = 0; i < result.length; i++) {
-    const el = result[i];
-    const packing_lists = await getPackingListByCaseNumbers(el.case_numbers);
-    packing_lists.forEach((pl) => {
-      if (pl && pl.package_shelf && pl.package_shelf.created_at) {
-        const date = pl.dispatched_time
-          ? pl.dispatched_time
-          : new Date().toISOString();
-        const storage_date = pl.package_shelf.created_at;
-        const storage_time = calcDate(date, storage_date);
-        pl['storage_time'] = storage_time.total_days;
-      }
-    });
-    mod_package_list.push({
-      ...el,
-      packing_lists,
-    });
-  }
-  return mod_package_list;
+  return result;
 };
 
 export const listOutputPlanRequired = async (

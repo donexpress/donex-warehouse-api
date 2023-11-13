@@ -9,6 +9,11 @@ router.get(
   AOSWarehouseController.index
 );
 router.get('/api/v1/aos_warehouse/count', AOSWarehouseController.count);
+router.get(
+  '/api/v1/aos_warehouse/selectAosWarehouse',
+  verifyTokenPresent,
+  AOSWarehouseController.cleanAosWarehouse
+);
 router.get('/api/v1/aos_warehouse/:id', AOSWarehouseController.show);
 router.post('/api/v1/aos_warehouse', AOSWarehouseController.create);
 router.put(

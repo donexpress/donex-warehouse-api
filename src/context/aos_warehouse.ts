@@ -108,3 +108,17 @@ export const getAosWarehouseByCode = async (code: string): Promise<AOSWarehouse>
     },
   });
 };
+
+
+export const selectAOSWarehouse = async () => {
+  const aos_warehouses = await AppDataSource.manager.find(AOSWarehouse, {
+    select: {
+      id: true,
+      code: true,
+    },
+    order: {
+      id: 'DESC',
+    },
+  });
+  return aos_warehouses;
+};
