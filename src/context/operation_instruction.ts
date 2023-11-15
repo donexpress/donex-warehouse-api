@@ -37,28 +37,37 @@ export const listOI = async (
   if (state === 'all') {
     if (current_user.customer_number) {
       where = [
-        { output_plan_id: In(o_p.map(el => el.id)), user_id: current_user.id, number_delivery: ILike(`%${query_name}%`) },
+        { output_plan_id: In(o_p.map(el => el.id)), user_id: current_user.id },
+        {user_id: current_user.id, number_delivery: ILike(`%${query_name}%`)}
       ];
     } else {
-      where = [{ output_plan_id: In(o_p.map(el => el.id)),number_delivery: ILike(`%${query_name}%`) }];
+      where = [{ output_plan_id: In(o_p.map(el => el.id))},{number_delivery: ILike(`%${query_name}%`)}];
     }
   } else {
     if (current_user.customer_number) {
       where = [
         {
           output_plan_id: In(o_p.map(el => el.id)),
-          number_delivery: ILike(`%${query_name}%`),
           user_id: current_user.id,
           state: state,
         },
+        {
+          number_delivery: ILike(`%${query_name}%`),
+          user_id: current_user.id,
+          state: state,
+        }
       ];
     } else {
       where = [
         {
           output_plan_id: In(o_p.map(el => el.id)),
           state: state,
-          number_delivery: ILike(`%${query_name}%`)
         },
+        {
+          number_delivery: ILike(`%${query_name}%`),
+          state: state,
+
+        }
       ];
     }
   }
@@ -320,14 +329,18 @@ const getCountByStateAndOutputId = async (
     | FindOptionsWhere<OperationInstruction>[] = { state: state_value };
   if (output_plan_id) {
     where = { state: state_value, output_plan_id: output_plan_id };
+    if (current_user.customer_number) {
+        where.user_id = current_user.id;
+      }
   } else {
     const o_p = await AppDataSource.manager.find(OutputPlan, {where: {output_number: ILike(`%${query}%`)}})
-
-    where = { state: state_value, output_plan_id: In(o_p.map(el => el.id)), number_delivery: ILike(`%${query}%`) };
+    if (current_user.customer_number) {
+      where = [{ state: state_value, output_plan_id: In(o_p.map(el => el.id)), user_id: current_user.id }, {number_delivery: ILike(`%${query}%`), state: state_value, user_id: current_user.id}];
+    } else {
+    where = [{ state: state_value, output_plan_id: In(o_p.map(el => el.id)) }, {number_delivery: ILike(`%${query}%`), state: state_value}];
+    }
   }
-  if (current_user.customer_number) {
-    where.user_id = current_user.id;
-  }
+  
   return await repository.count({
     where,
   });
