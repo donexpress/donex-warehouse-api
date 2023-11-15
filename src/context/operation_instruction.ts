@@ -33,7 +33,6 @@ export const listOI = async (
     | FindOptionsWhere<OperationInstruction>[] = [
     { number_delivery: ILike(`%${query_name}%`) },
   ];
-  console.log("QUERY: ", query_name)
   const o_p = await AppDataSource.manager.find(OutputPlan, {where: {output_number: ILike(`%${query_name}%`)}})
   if (state === 'all') {
     if (current_user.customer_number) {
@@ -320,7 +319,9 @@ const getCountByStateAndOutputId = async (
   if (output_plan_id) {
     where = { state: state_value, output_plan_id: output_plan_id };
   } else {
-    where = { state: state_value, number_delivery: ILike(`%${query}%`) };
+    const o_p = await AppDataSource.manager.find(OutputPlan, {where: {output_number: ILike(`%${query}%`)}})
+
+    where = { state: state_value, output_plan_id: In(o_p.map(el => el.id)) };
   }
   if (current_user.customer_number) {
     where.user_id = current_user.id;
