@@ -50,7 +50,10 @@ export const showAppendix = async (id: number) => {
   return { ...appendix, user};
 };
 
-export const createAppendix = async (appendix_data: any) => {
+export const createAppendix = async (appendix_data: any, current_user: any) => {
+  if(appendix_data.is_owner_admin) {
+    appendix_data.user_id = current_user.id
+  }
   const repository = await AppDataSource.getRepository(Appendix);
   const result = repository.create(appendix_data);
   return await validateContext(AppDataSource, result);
@@ -93,6 +96,7 @@ export const getAppendagesByOperationInstruction = async(id: number) => {
     let user = null
     if(appendix.is_owner_admin) {
       user = await showStaffNoDependencies(appendix.user_id)
+      console.log(appendix.user_id)
     } else {
       user = await showUser(appendix.user_id)
     }

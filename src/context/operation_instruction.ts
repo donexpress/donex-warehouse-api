@@ -1,4 +1,4 @@
-import { FindOptionsWhere, ILike, UpdateResult } from 'typeorm';
+import { FindOptionsWhere, ILike, In, UpdateResult } from 'typeorm';
 import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { OperationInstruction } from '../models/instruction_operation.model';
@@ -18,6 +18,7 @@ import {
   showOutputPlan,
 } from './output_plan';
 import { getCountByState } from '../helpers/states';
+import { OutputPlan } from '../models/output_plan.model';
 
 export const listOI = async (
   current_page: number,
@@ -32,19 +33,21 @@ export const listOI = async (
     | FindOptionsWhere<OperationInstruction>[] = [
     { number_delivery: ILike(`%${query_name}%`) },
   ];
+  console.log("QUERY: ", query_name)
+  const o_p = await AppDataSource.manager.find(OutputPlan, {where: {output_number: ILike(`%${query_name}%`)}})
   if (state === 'all') {
     if (current_user.customer_number) {
       where = [
-        { number_delivery: ILike(`%${query_name}%`), user_id: current_user.id },
+        { output_plan_id: In(o_p.map(el => el.id)), user_id: current_user.id },
       ];
     } else {
-      where = [{ number_delivery: ILike(`%${query_name}%`) }];
+      where = [{ output_plan_id: In(o_p.map(el => el.id)) }];
     }
   } else {
     if (current_user.customer_number) {
       where = [
         {
-          number_delivery: ILike(`%${query_name}%`),
+          output_plan_id: In(o_p.map(el => el.id)),
           user_id: current_user.id,
           state: state,
         },
@@ -52,7 +55,7 @@ export const listOI = async (
     } else {
       where = [
         {
-          number_delivery: ILike(`%${query_name}%`),
+          output_plan_id: In(o_p.map(el => el.id)),
           state: state,
         },
       ];
