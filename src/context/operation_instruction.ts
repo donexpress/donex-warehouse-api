@@ -37,16 +37,17 @@ export const listOI = async (
   if (state === 'all') {
     if (current_user.customer_number) {
       where = [
-        { output_plan_id: In(o_p.map(el => el.id)), user_id: current_user.id },
+        { output_plan_id: In(o_p.map(el => el.id)), user_id: current_user.id, number_delivery: ILike(`%${query_name}%`) },
       ];
     } else {
-      where = [{ output_plan_id: In(o_p.map(el => el.id)) }];
+      where = [{ output_plan_id: In(o_p.map(el => el.id)),number_delivery: ILike(`%${query_name}%`) }];
     }
   } else {
     if (current_user.customer_number) {
       where = [
         {
           output_plan_id: In(o_p.map(el => el.id)),
+          number_delivery: ILike(`%${query_name}%`),
           user_id: current_user.id,
           state: state,
         },
@@ -56,6 +57,7 @@ export const listOI = async (
         {
           output_plan_id: In(o_p.map(el => el.id)),
           state: state,
+          number_delivery: ILike(`%${query_name}%`)
         },
       ];
     }
@@ -321,7 +323,7 @@ const getCountByStateAndOutputId = async (
   } else {
     const o_p = await AppDataSource.manager.find(OutputPlan, {where: {output_number: ILike(`%${query}%`)}})
 
-    where = { state: state_value, output_plan_id: In(o_p.map(el => el.id)) };
+    where = { state: state_value, output_plan_id: In(o_p.map(el => el.id)), number_delivery: ILike(`%${query}%`) };
   }
   if (current_user.customer_number) {
     where.user_id = current_user.id;
