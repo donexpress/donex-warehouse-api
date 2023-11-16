@@ -124,8 +124,8 @@ export const sumManifest = async (waybill_id, carrier) => {
   );
 
   return {
-    shipping_cost: sum_cost,
-    sale_price: sum_sale_price,
+    shipping_cost: sum_cost === null ? 0 : sum_cost,
+    sale_price: sum_sale_price === null ? 0 : sum_sale_price,
     difference_sum: sum_cost - sum_sale_price,
   };
 };
