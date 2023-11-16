@@ -126,7 +126,7 @@ export const sumManifest = async (waybill_id, carrier) => {
   return {
     shipping_cost: sum_cost,
     sale_price: sum_sale_price,
-    difference_sum: sum_sale_price - sum_cost,
+    difference_sum: sum_cost - sum_sale_price,
   };
 };
 
