@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { countAppendix, createAppendix, getAppendagesByOperationInstruction, getAppendagesByOutputPlan, listAppendix, removeAppendix, showAppendix, updateAppendix } from '../context/appendix';
 import { Appendix } from '../models/appendix.model';
+import { getCurrentUser } from '../middlewares';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -49,7 +50,8 @@ export const count = async (req: Request, res: Response) => {
 };
 
 export const create = async (req: Request, res: Response) => {
-  const aosWarehouse = await createAppendix(req.body);
+  const current_user = getCurrentUser(req)
+  const aosWarehouse = await createAppendix(req.body, current_user);
   if (aosWarehouse instanceof Appendix) {
     res.status(201).json(aosWarehouse);
   } else {

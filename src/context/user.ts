@@ -275,3 +275,15 @@ export const removeUser = async (id: number) => {
   );
   return user;
 };
+
+export const updatePassword = async(id: number, password: string) => {
+  const repository = await AppDataSource.getRepository(User);
+  const usr_password = bcrypt.hashSync(
+    password,
+    isNaN(Number(process.env.PASSWORD_SALT))
+      ? 10
+      : Number(process.env.PASSWORD_SALT)
+  );
+  const result = await repository.update({ id }, {password: usr_password});
+  return result
+}

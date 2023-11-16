@@ -4,6 +4,7 @@ import {
   createAOSWarehouse,
   listAOSWarehouse,
   removeAOSWarehouse,
+  selectAOSWarehouse,
   showAOSWarehouse,
   updateAOSWarehouse,
 } from '../context/aos_warehouse';
@@ -89,6 +90,16 @@ export const remove = async (req: Request, res: Response) => {
     } else {
       res.status(200).json(result);
     }
+  } catch (e) {
+    res.status(500).send(e);
+  }
+};
+
+
+export const cleanAosWarehouse = async (req: Request, res: Response) => {
+  try {
+    const organization = await selectAOSWarehouse();
+    res.json(organization);
   } catch (e) {
     res.status(500).send(e);
   }
