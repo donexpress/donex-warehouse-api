@@ -31,15 +31,16 @@ export const showShelf = async (id: number) => {
 
 export const findShelfByWarehouseId = async(id: number) => {
   const shelfs = await AppDataSource.manager.find(Shelf, {where: {warehouse_id: id}})
-  const package_shelf = await AppDataSource.manager.find(ShelfPackages)
-  const mod_shelfs = []
-  for (let i = 0; i < shelfs.length; i++) {
-    const shelf = shelfs[i];
-    const packages = await getDataByShelfId(shelf.id)
-    mod_shelfs.push({...shelf, packages})
+  // const package_shelf = await AppDataSource.manager.find(ShelfPackages)
+  // const mod_shelfs = []
+  // for (let i = 0; i < shelfs.length; i++) {
+  //   const shelf = shelfs[i];
+  //   const packages = await getDataByShelfId(shelf.id)
+  //   mod_shelfs.push({...shelf, packages})
     
-  }
-  return mod_shelfs
+  // }
+  // return mod_shelfs
+  return shelfs;
 }
 
 export const createShelf = async (data) => {
