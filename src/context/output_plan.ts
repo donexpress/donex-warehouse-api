@@ -806,13 +806,13 @@ export const listOutputPlanRequired = async (
     let destination = destinations[el.destination];
 
     const packing_lists = [];
-    for (let i = 0; i < el.case_numbers.length; i++) {
-      const element = el.case_numbers[i];
-      const res = await getPackingListByCaseNumber(element);
-      if (res) {
-        packing_lists.push(res);
-      }
-    }
+    // for (let i = 0; i < el.case_numbers.length; i++) {
+    //   const element = el.case_numbers[i];
+    //   const res = await getPackingListByCaseNumber(element);
+    //   if (res) {
+    //     packing_lists.push(res);
+    //   }
+    // }
 
     if (el.state) {
       mod_package_list.push({
