@@ -805,7 +805,7 @@ export const listOutputPlanRequired = async (
     let user = null;
     let destination = destinations[el.destination];
 
-    const packing_lists = [];
+    const packing_lists =  await getPackingListByCaseNumbers(el.case_numbers)
     // for (let i = 0; i < el.case_numbers.length; i++) {
     //   const element = el.case_numbers[i];
     //   const res = await getPackingListByCaseNumber(element);
