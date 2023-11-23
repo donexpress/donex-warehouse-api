@@ -49,14 +49,26 @@ export const create_do = async (
           let manifests = [];
           let waybill_id = null;
           let manifest_paid = [];
+          let waybill_not_paid = [];
           const carrier = String(req.query.carrier);
+          const mwb = String(req.query.mwb);
+          const customer_code = String(req.query.customer_code);
+          const force = Boolean(req.query.force) || false;
+          const waybills = await findByWaybillAndCarrier(mwb, carrier);
+          if (waybills.length > 0 && force !== true) {
+            return res.status(205).send('This manifest is already stored');
+          }
           var worksheetsBody = await xslx(urls.url);
           await removeFile(urls.name);
           for (let i = 0; i < worksheetsBody.data.length; i++) {
             const value = await getValues(worksheetsBody.data[i]);
 
             if (action === 'create') {
-              const manifest_obj = await manifestParams(value, carrier);
+              const manifest_obj = await manifestParams(
+                value,
+                carrier,
+                customer_code
+              );
 
               const manifest = await createManifest(
                 manifest_obj.manifest_data,
@@ -84,7 +96,7 @@ export const create_do = async (
               }
             } else if (action === 'update_supplier') {
               const tracking_number = value[0];
-              const shipping_cost = value[3];
+              const shipping_cost = value[2];
               const invoice_weight = value[1];
               const manifest = await findByTracking(tracking_number);
               if (manifest instanceof Manifest) {
@@ -102,6 +114,8 @@ export const create_do = async (
                     errors.push(update_manifest);
                   }
                 }
+              } else {
+                waybill_not_paid.push(tracking_number);
               }
             }
           }
@@ -113,6 +127,8 @@ export const create_do = async (
             errors: errors,
             manifest_paid_count: manifest_paid.length,
             manifest_paid,
+            manifest_not_pay:
+              action === 'update_supplier' ? waybill_not_paid : [],
           };
 
           return res.json(body);
