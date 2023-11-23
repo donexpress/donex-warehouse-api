@@ -26,13 +26,13 @@ export const getValues = (obj) => {
   return obj_array;
 };
 
-export const manifestParams = (value, carrier) => {
+export const manifestParams = (value, carrier, customer_code) => {
   let manifest_data = {
     waybill_id: value[0],
     bag_code: value[1],
     bag_id: value[2],
     tracking_number: value[3],
-    client_reference: value[4],
+    client_reference: customer_code, //value[4]
     weigth: value[19],
     unit_weigth: value[20],
     total_declare: value[21],
@@ -45,7 +45,7 @@ export const manifestParams = (value, carrier) => {
     manifest_name: '',
     item_description: '',
     payment_voucher: '',
-    bill_state: '',
+    bill_state: 'unpaid',
     sale_price: value[25] === '' ? 0 : value[25],
   };
 
