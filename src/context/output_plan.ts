@@ -535,6 +535,8 @@ export const updateOutputPlan = async (id: number, data) => {
 
 export const removeOutputPlan = async (id: number) => {
   const repository = await AppDataSource.getRepository(OutputPlan);
+  const operation_instruction_repository = await AppDataSource.getRepository(OperationInstruction)
+  await operation_instruction_repository.delete({output_plan_id: id})
   const result = await repository.delete({ id });
   return result;
 };
@@ -805,14 +807,14 @@ export const listOutputPlanRequired = async (
     let user = null;
     let destination = destinations[el.destination];
 
-    const packing_lists = [];
-    for (let i = 0; i < el.case_numbers.length; i++) {
-      const element = el.case_numbers[i];
-      const res = await getPackingListByCaseNumber(element);
-      if (res) {
-        packing_lists.push(res);
-      }
-    }
+    const packing_lists =  await getPackingListByCaseNumbers(el.case_numbers)
+    // for (let i = 0; i < el.case_numbers.length; i++) {
+    //   const element = el.case_numbers[i];
+    //   const res = await getPackingListByCaseNumber(element);
+    //   if (res) {
+    //     packing_lists.push(res);
+    //   }
+    // }
 
     if (el.state) {
       mod_package_list.push({
