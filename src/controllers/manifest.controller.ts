@@ -49,6 +49,7 @@ export const create_do = async (
           let manifests = [];
           let waybill_id = null;
           let manifest_paid = [];
+          let waybill_not_paid = [];
           const carrier = String(req.query.carrier);
           var worksheetsBody = await xslx(urls.url);
           await removeFile(urls.name);
@@ -84,7 +85,7 @@ export const create_do = async (
               }
             } else if (action === 'update_supplier') {
               const tracking_number = value[0];
-              const shipping_cost = value[3];
+              const shipping_cost = value[2];
               const invoice_weight = value[1];
               const manifest = await findByTracking(tracking_number);
               if (manifest instanceof Manifest) {
@@ -102,6 +103,8 @@ export const create_do = async (
                     errors.push(update_manifest);
                   }
                 }
+              }else {
+                waybill_not_paid.push(tracking_number)
               }
             }
           }
@@ -113,6 +116,7 @@ export const create_do = async (
             errors: errors,
             manifest_paid_count: manifest_paid.length,
             manifest_paid,
+            manifest_not_pay: action === 'update_supplier' ? waybill_not_paid : []
           };
 
           return res.json(body);
