@@ -776,12 +776,21 @@ export const listOutputPlanRequired = async (
   let where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] = {
     state,
   };
+  if(state === 'all') {
+    where = {}
+  }
 
   if (current_user.customer_number) {
-    where = {
-      state: state,
-      user_id: current_user.id,
-    };
+    if(state === "all") {
+      where = {
+        user_id: current_user.id,
+      };
+    } else {
+      where = {
+        state: state,
+        user_id: current_user.id,
+      };
+    }
   }
   const result = await AppDataSource.manager.find(OutputPlan, {
     where,
