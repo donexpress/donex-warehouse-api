@@ -22,6 +22,11 @@ router.post(
   verifyTokenPresent,
   StoragePlanController.createMulti
 );
+router.post(
+  '/api/v1/storage_plan/:id/auto_assign',
+  verifyTokenPresent,
+  StoragePlanController.auto_assign
+);
 router.put(
   '/api/v1/storage_plan/:id',
   verifyTokenPresent,

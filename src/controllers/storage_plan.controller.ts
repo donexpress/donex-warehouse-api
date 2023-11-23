@@ -5,6 +5,7 @@ import {
   countStoragePlan,
   createStoragePlan,
   createStoragePlanMulti,
+  full_assign,
   listStoragePlan,
   removeStoragePlan,
   showCleanStoragePlan,
@@ -197,3 +198,8 @@ export const changeState = async (req: Request, res: Response) => {
     res.status(500).send(e);
   }
 };
+
+export const auto_assign = async(req: Request, res: Response) => {
+  const result = await full_assign(Number(req.params.id))
+  res.status(result.state).send({success: result.exist_empty})
+}

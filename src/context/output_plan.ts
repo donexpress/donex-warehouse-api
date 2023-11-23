@@ -535,6 +535,8 @@ export const updateOutputPlan = async (id: number, data) => {
 
 export const removeOutputPlan = async (id: number) => {
   const repository = await AppDataSource.getRepository(OutputPlan);
+  const operation_instruction_repository = await AppDataSource.getRepository(OperationInstruction)
+  await operation_instruction_repository.delete({output_plan_id: id})
   const result = await repository.delete({ id });
   return result;
 };
