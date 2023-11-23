@@ -45,7 +45,7 @@ export const manifestParams = (value, carrier, customer_code) => {
     manifest_name: '',
     item_description: '',
     payment_voucher: '',
-    bill_state: 'unpaid',
+    bill_state: 'pending',
     sale_price: value[25] === '' ? 0 : value[25],
   };
 

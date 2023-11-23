@@ -48,8 +48,8 @@ export const create_do = async (
           let errors = [];
           let manifests = [];
           let waybill_id = null;
-          let manifest_paid = [];
-          let waybill_not_paid = [];
+          let manifest_charged = [];
+          let tracking_number_charged = [];
           const carrier = String(req.query.carrier);
           const mwb = String(req.query.mwb);
           const customer_code = String(req.query.customer_code);
@@ -98,15 +98,17 @@ export const create_do = async (
               const tracking_number = value[0];
               const shipping_cost = value[2];
               const invoice_weight = value[1];
+              const bill_code = String(req.query.bill_code);
               const manifest = await findByTracking(tracking_number);
               if (manifest instanceof Manifest) {
-                if (manifest.paid) {
-                  manifest_paid.push(manifest);
+                if (manifest.bill_state === 'charged') {
+                  manifest_charged.push(manifest);
                 } else {
                   const update_manifest = await updateManifest(manifest, {
                     shipping_cost: shipping_cost,
                     invoice_weight: invoice_weight,
-                    paid: true,
+                    payment_voucher: bill_code,
+                    bill_state: 'charged',
                   });
                   if (update_manifest instanceof Manifest) {
                     manifests.push(update_manifest);
@@ -115,7 +117,7 @@ export const create_do = async (
                   }
                 }
               } else {
-                waybill_not_paid.push(tracking_number);
+                tracking_number_charged.push(tracking_number);
               }
             }
           }
@@ -123,12 +125,12 @@ export const create_do = async (
           let body = {};
           body = {
             manifest_count: manifests.length,
+            manifest_charged_count: manifest_charged.length,
             waybill_id: action === 'update_supplier' ? null : waybill_id,
+            manifest_charged,
+            tracking_number_charged:
+              action === 'update_supplier' ? tracking_number_charged : [],
             errors: errors,
-            manifest_paid_count: manifest_paid.length,
-            manifest_paid,
-            manifest_not_pay:
-              action === 'update_supplier' ? waybill_not_paid : [],
           };
 
           return res.json(body);
