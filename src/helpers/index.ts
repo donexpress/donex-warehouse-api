@@ -42,7 +42,7 @@ export const manifestParams = (value, carrier, customer_code) => {
     pieces: value[24],
     carrier: carrier,
     state: 'pending',
-    manifest_name: '',
+    manifest_name: value[4],
     item_description: '',
     payment_voucher: '',
     bill_state: 'pending',
@@ -163,4 +163,34 @@ export const calcDate = (date1: string, date2: string) => {
     total_seconds: Math.round(total_secs),
     result: result.trim(),
   };
+};
+
+export const colManifest = () => {
+  return [
+    'MANIFEST ID',
+    'MWB',
+    'BAG CODE',
+    'BAG ID',
+    'TRACKING',
+    'CLIENT REF. NO',
+    'NAME',
+    'WEIGTH',
+    'UNIT OF',
+    'TOTAL DECLARE',
+    'CURRENCY',
+    'ITEM TITLE',
+    'ITEM DESCRIPTION',
+    'QUANTITY',
+    'PIECES',
+    'SHIPPING COST',
+    'SALE PRICE',
+    'INVOICE WEIGHT',
+    'STATE',
+    'PAID',
+    'PAYMENT VOUCHER',
+    'BILL STATE',
+    'CARRIER',
+    'CREATED AT',
+    'UPDATED AT',
+  ];
 };

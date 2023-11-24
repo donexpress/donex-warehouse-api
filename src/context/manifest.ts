@@ -123,8 +123,16 @@ export const sumManifest = async (waybill_id, carrier) => {
     }
   );
 
+  const count_manifest = await AppDataSource.getRepository(Manifest).count({
+    where: {
+      waybill_id,
+      carrier,
+    },
+  });
+
   return {
     shipping_cost: sum_cost === null ? 0 : sum_cost,
+    count_manifest: count_manifest,
     sale_price: sum_sale_price === null ? 0 : sum_sale_price,
     difference_sum: sum_cost - sum_sale_price,
   };

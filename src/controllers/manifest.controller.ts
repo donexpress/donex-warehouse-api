@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { removeFile, uploadFileToStore } from '../context/file';
 import { upload } from '../helpers/file';
 import { getEntries, jsonToExcel, xslx } from '../helpers/xlsx';
-import { manifestParams, getValues } from '../helpers';
+import { manifestParams, getValues, colManifest } from '../helpers';
 import {
   createManifest,
   findManifest,
@@ -171,7 +171,8 @@ export const jsonToxlsx = async (req: Request, res: Response) => {
   }
 
   if (manifest !== null) {
-    const filepath = await jsonToExcel(manifest);
+    const excelHeader = await colManifest();
+    const filepath = await jsonToExcel(manifest, excelHeader);
 
     const urls = await uploadFileToStore(filepath, 'xlsx');
 
