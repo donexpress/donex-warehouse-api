@@ -135,7 +135,7 @@ export const create_do = async (
               }
             }
             const manifests_code = await listManifests(bill_code);
-            if (manifests_code instanceof Manifest) {
+            if (manifests_code.length > 0) {
               const excelHeader = await colPartialManifest();
               const filepath = await jsonToExcel(manifests_code, excelHeader);
 
