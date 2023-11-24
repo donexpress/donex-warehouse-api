@@ -70,10 +70,10 @@ router.get(
 );
 
 router.get(
-  '/api/v1/list',
+  '/api/v1/supplier_invoice',
   verifyTokenPresent,
   //guardianMw(['ADMIN', 'FINANCE']),
-  ManifestController.list
+  ManifestController.supplier_invoice
 );
 
 export default router;

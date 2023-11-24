@@ -131,7 +131,12 @@ export const create_do = async (
                   }
                 }
               } else {
-                tracking_number_charged.push(value);
+                const elem = {
+                  tracking_number: value[0],
+                  invoice_weight: value[1],
+                  shipping_cost: value[2],
+                };
+                tracking_number_charged.push(elem);
               }
             }
             const manifests_code = await listManifests(bill_code);
@@ -234,10 +239,15 @@ export const byWaybill = async (req: Request, res: Response) => {
   res.json(waybill);
 };
 
-export const list = async (req: Request, res: Response) => {
-  const bill_code = req.query.bill_code;
+export const supplier_invoice = async (req: Request, res: Response) => {
+  const bill_code = String(req.query.bill_code);
   const waybills = await listManifests(String(bill_code));
-  res.json(waybills);
+  const excelHeader = await colPartialManifest();
+  const filepath = await jsonToExcel(waybills, excelHeader);
+
+  const urls = await uploadFileToStore(filepath, 'xlsx', bill_code);
+  res.json(urls);
+  fs.unlink(filepath, () => {});
 };
 
 const parseHeader = (req: Request, res: Response) => {
