@@ -54,7 +54,7 @@ export const create_do = async (
           let manifests = [];
           let waybill_id = null;
           let manifest_charged = [];
-          let tracking_number_charged = [];
+          let unrecorded_manifests = [];
           let manifests_bill_code = [];
           const carrier = String(req.query.carrier);
           const mwb = String(req.query.mwb);
@@ -136,7 +136,7 @@ export const create_do = async (
                   invoice_weight: value[1],
                   shipping_cost: value[2],
                 };
-                tracking_number_charged.push(elem);
+                unrecorded_manifests.push(elem);
               }
             }
             const manifests_code = await listManifests(bill_code);
@@ -160,8 +160,8 @@ export const create_do = async (
             manifest_charged_count: manifest_charged.length,
             waybill_id: action === 'update_supplier' ? null : waybill_id,
             manifest_charged,
-            tracking_number_charged:
-              action === 'update_supplier' ? tracking_number_charged : [],
+            unrecorded_manifests:
+              action === 'update_supplier' ? unrecorded_manifests : [],
             manifests_bill_code: manifests_bill_code,
             errors: errors,
           };
