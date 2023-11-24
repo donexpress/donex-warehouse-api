@@ -117,7 +117,7 @@ export const create_do = async (
                   }
                 }
               } else {
-                tracking_number_charged.push(tracking_number);
+                tracking_number_charged.push(value);
               }
             }
           }
