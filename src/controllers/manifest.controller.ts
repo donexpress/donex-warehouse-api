@@ -56,39 +56,65 @@ export const create_do = async (
           let manifest_charged = [];
           let unrecorded_manifests = [];
           let manifests_bill_code = [];
-          const carrier = String(req.query.carrier);
-          const mwb = String(req.query.mwb);
-          const customer_code = String(req.query.customer_code);
-          const force = Boolean(req.query.force) || false;
-          const waybills = await findByWaybillAndCarrier(mwb, carrier);
-          if (waybills.length > 0 && force !== true) {
-            return res.status(205).send('This manifest is already stored');
-          }
           var worksheetsBody = await xslx(urls.url);
           await removeFile(urls.name);
           //for (let i = 0; i < worksheetsBody.data.length; i++) {
           //const value = await getValues(worksheetsBody.data[i]);
 
           if (action === 'create') {
-            for (let i = 0; i < worksheetsBody.data.length; i++) {
-              const value = await getValues(worksheetsBody.data[i]);
-              const manifest_obj = await manifestParams(
-                value,
-                carrier,
-                customer_code
-              );
+            const carrier = String(req.query.carrier);
+            const customer_code = String(req.query.customer_code);
+            const mwb = String(req.query.mwb);
+            const force = Boolean(req.query.force) || false;
+            const waybills = await findByWaybillAndCarrier(mwb, carrier);
+            if (waybills.length > 0 && force !== true) {
+              return res.status(205).send('This manifest is already stored');
+            } else if (waybills.length > 0 && force) {
+              for (let i = 0; i < worksheetsBody.data.length; i++) {
+                const value = await getValues(worksheetsBody.data[i]);
+                const manifest_obj = await manifestParams(
+                  value,
+                  carrier,
+                  customer_code
+                );
 
-              const manifest = await createManifest(
-                manifest_obj.manifest_data,
-                manifest_obj.shipper_data,
-                manifest_obj.consignee_data
-              );
+                const manifest = await findByTracking(
+                  manifest_obj.manifest_data.tracking_number
+                );
 
-              if (manifest instanceof Manifest) {
-                manifests.push(manifest);
-                waybill_id = value[0].waybill_id;
-              } else {
-                errors.push(manifest);
+                const manifest_update = await updateManifest(
+                  manifest,
+                  manifest_obj.manifest_data
+                );
+
+                if (manifest_update instanceof Manifest) {
+                  manifests.push(manifest_update);
+                  waybill_id = manifest.waybill_id;
+                } else {
+                  errors.push(manifest_update);
+                }
+              }
+            } else {
+              for (let i = 0; i < worksheetsBody.data.length; i++) {
+                const value = await getValues(worksheetsBody.data[i]);
+                const manifest_obj = await manifestParams(
+                  value,
+                  carrier,
+                  customer_code
+                );
+
+                const manifest = await createManifest(
+                  manifest_obj.manifest_data,
+                  manifest_obj.shipper_data,
+                  manifest_obj.consignee_data
+                );
+
+                if (manifest instanceof Manifest) {
+                  manifests.push(manifest);
+                  waybill_id = value[0].waybill_id;
+                } else {
+                  errors.push(manifest);
+                }
               }
             }
           } else if (action === 'update_customer') {
