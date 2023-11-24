@@ -156,11 +156,18 @@ export const selectByWaybill = async () => {
     .getRawMany();
 };
 
-export const listManifests = async (): Promise<Manifest[] | []> => {
+export const listManifests = async (
+  bill_code: string
+): Promise<Manifest[] | []> => {
   return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
-    .distinctOn(['manifests.waybill_id'])
-    .select(['manifests.waybill_id', 'manifests.payment_voucher'])
-    .orderBy('manifests.waybill_id')
+    .where('manifests.payment_voucher = :bill_code', { bill_code: bill_code })
+    .select([
+      'manifests.waybill_id',
+      'manifests.tracking_number',
+      'manifests.invoice_weight',
+      'manifests.shipping_cost',
+      'manifests.payment_voucher',
+    ])
     .getRawMany();
 };
 

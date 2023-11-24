@@ -194,3 +194,13 @@ export const colManifest = () => {
     'UPDATED AT',
   ];
 };
+
+export const colPartialManifest = () => {
+  return [
+    'MWB',
+    'TRACKING',
+    'SHIPPING COST',
+    'INVOICE WEIGHT',
+    'PAYMENT VOUCHER',
+  ];
+};

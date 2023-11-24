@@ -2,7 +2,12 @@ import { Request, Response } from 'express';
 import { removeFile, uploadFileToStore } from '../context/file';
 import { upload } from '../helpers/file';
 import { getEntries, jsonToExcel, xslx } from '../helpers/xlsx';
-import { manifestParams, getValues, colManifest } from '../helpers';
+import {
+  manifestParams,
+  getValues,
+  colManifest,
+  colPartialManifest,
+} from '../helpers';
 import {
   createManifest,
   findManifest,
@@ -50,6 +55,7 @@ export const create_do = async (
           let waybill_id = null;
           let manifest_charged = [];
           let tracking_number_charged = [];
+          let manifests_bill_code = [];
           const carrier = String(req.query.carrier);
           const mwb = String(req.query.mwb);
           const customer_code = String(req.query.customer_code);
@@ -60,10 +66,12 @@ export const create_do = async (
           }
           var worksheetsBody = await xslx(urls.url);
           await removeFile(urls.name);
-          for (let i = 0; i < worksheetsBody.data.length; i++) {
-            const value = await getValues(worksheetsBody.data[i]);
+          //for (let i = 0; i < worksheetsBody.data.length; i++) {
+          //const value = await getValues(worksheetsBody.data[i]);
 
-            if (action === 'create') {
+          if (action === 'create') {
+            for (let i = 0; i < worksheetsBody.data.length; i++) {
+              const value = await getValues(worksheetsBody.data[i]);
               const manifest_obj = await manifestParams(
                 value,
                 carrier,
@@ -82,7 +90,10 @@ export const create_do = async (
               } else {
                 errors.push(manifest);
               }
-            } else if (action === 'update_customer') {
+            }
+          } else if (action === 'update_customer') {
+            for (let i = 0; i < worksheetsBody.data.length; i++) {
+              const value = await getValues(worksheetsBody.data[i]);
               const tracking_number = value[1];
               const sale_price = value[2];
               const manifest = await findByTracking(tracking_number);
@@ -94,11 +105,14 @@ export const create_do = async (
               } else {
                 errors.push(update_manifest);
               }
-            } else if (action === 'update_supplier') {
+            }
+          } else if (action === 'update_supplier') {
+            const bill_code = String(req.query.bill_code);
+            for (let i = 0; i < worksheetsBody.data.length; i++) {
+              const value = await getValues(worksheetsBody.data[i]);
               const tracking_number = value[0];
               const shipping_cost = value[2];
               const invoice_weight = value[1];
-              const bill_code = String(req.query.bill_code);
               const manifest = await findByTracking(tracking_number);
               if (manifest instanceof Manifest) {
                 if (manifest.bill_state === 'charged') {
@@ -120,7 +134,20 @@ export const create_do = async (
                 tracking_number_charged.push(value);
               }
             }
+            const manifests_code = await listManifests(bill_code);
+            if (manifests_code instanceof Manifest) {
+              const excelHeader = await colPartialManifest();
+              const filepath = await jsonToExcel(manifests_code, excelHeader);
+
+              const urls = await uploadFileToStore(filepath, 'xlsx', bill_code);
+
+              manifests_bill_code.push(urls);
+              fs.unlink(filepath, () => {});
+            } else {
+              errors.push(manifests_code);
+            }
           }
+          //}
 
           let body = {};
           body = {
@@ -130,6 +157,7 @@ export const create_do = async (
             manifest_charged,
             tracking_number_charged:
               action === 'update_supplier' ? tracking_number_charged : [],
+            manifests_bill_code: manifests_bill_code,
             errors: errors,
           };
 
@@ -207,7 +235,8 @@ export const byWaybill = async (req: Request, res: Response) => {
 };
 
 export const list = async (req: Request, res: Response) => {
-  const waybills = await listManifests();
+  const bill_code = req.query.bill_code;
+  const waybills = await listManifests(String(bill_code));
   res.json(waybills);
 };
 
