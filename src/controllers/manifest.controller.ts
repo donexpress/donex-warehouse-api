@@ -50,7 +50,7 @@ export const create_do = async (
         if (urls === null) {
           return res.status(422).json(urls);
         } else {
-          let errors = [];
+          let errors;
           let manifests = [];
           let waybill_id = null;
           let manifest_charged = [];
