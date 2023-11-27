@@ -22,6 +22,7 @@ import {
   countManifestWaybillAndCarrier,
   selectByWaybill,
   listManifests,
+  paidManifest,
 } from '../context/manifest';
 import carriers_type from '../config/carriers';
 import { Manifest } from '../models/manifest.model';
@@ -134,6 +135,7 @@ export const create_do = async (
             }
           } else if (action === 'update_supplier') {
             const bill_code = String(req.query.bill_code);
+            const paid = Boolean(req.query.paid) || false;
             for (let i = 0; i < worksheetsBody.data.length; i++) {
               const value = await getValues(worksheetsBody.data[i]);
               const tracking_number = value[0];
@@ -149,6 +151,7 @@ export const create_do = async (
                     invoice_weight: invoice_weight,
                     payment_voucher: bill_code,
                     bill_state: 'charged',
+                    paid: paid // Only if the client indicates that the data is paid
                   });
                   if (update_manifest instanceof Manifest) {
                     manifests.push(update_manifest);
@@ -175,7 +178,9 @@ export const create_do = async (
               manifests_bill_code.push(urls);
               fs.unlink(filepath, () => {});
             } else {
-              errors.push(manifests_code);
+              errors.push({
+                msg: `No packages were found registered on this invoice: ${bill_code}`,
+              });
             }
           }
           //}
@@ -268,12 +273,16 @@ export const byWaybill = async (req: Request, res: Response) => {
 export const supplier_invoice = async (req: Request, res: Response) => {
   const bill_code = String(req.query.bill_code);
   const waybills = await listManifests(String(bill_code));
-  const excelHeader = await colPartialManifest();
-  const filepath = await jsonToExcel(waybills, excelHeader);
+  if (waybills.length > 0) {
+    const excelHeader = await colPartialManifest();
+    const filepath = await jsonToExcel(waybills, excelHeader);
 
-  const urls = await uploadFileToStore(filepath, 'xlsx', bill_code);
-  res.json(urls);
-  fs.unlink(filepath, () => {});
+    const urls = await uploadFileToStore(filepath, 'xlsx', bill_code);
+    res.json(urls);
+    fs.unlink(filepath, () => {});
+  }else {
+    res.status(404).send();
+  }
 };
 
 const parseHeader = (req: Request, res: Response) => {
@@ -284,6 +293,17 @@ const parseHeader = (req: Request, res: Response) => {
   const contentLength = parseInt(req.headers['content-length'], 10);
   if (contentLength >= 5 * 1024 * 1024) {
     return res.status(413).send('Upload exceeds max size.');
+  }
+};
+
+export const paidUpdate = async (req: Request, res: Response) => {
+  const bill_code = req.query.bill_code;
+  const result = await paidManifest(String(bill_code));
+
+  if (result) {
+    res.status(204).send();
+  } else {
+    res.status(400).send();
   }
 };
 

@@ -4,7 +4,7 @@ import { validateContext } from '../helpers/validate';
 import { Manifest } from '../models/manifest.model';
 import { ConsigneeAddress } from '../models/consignee_address.model';
 import { ShipperAddress } from '../models/shipper_address.model';
-import { Between, FindOptionsWhere } from 'typeorm';
+import { Between, FindOptionsWhere, UpdateResult } from 'typeorm';
 
 export const findManifest = async (
   current_page: number,
@@ -149,6 +149,14 @@ export const updateManifest = async (
   return manifest;
 };
 
+export const paidManifest = async (
+  bill_code: string
+): Promise<UpdateResult | null> => {
+  return await AppDataSource.manager
+    .getRepository(Manifest)
+    .update({ payment_voucher: bill_code }, { paid: true });
+};
+
 export const selectByWaybill = async () => {
   return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
     .select('DISTINCT manifests.waybill_id', 'waybill_id')
@@ -210,6 +218,9 @@ export const getWhere = (params) => {
 
   if (params.client_reference) {
     where.client_reference = params.client_reference;
+  }
+  if (params.bill_code) {
+    where.payment_voucher = params.bill_code;
   }
 
   return where;
