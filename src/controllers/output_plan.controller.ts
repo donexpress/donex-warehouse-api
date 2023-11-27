@@ -5,6 +5,7 @@ import {
   countAllOutputPlan,
   countOutputPlan,
   createOutputPlan,
+  exportOutputPlanXLSX,
   getAddresses,
   getDestinations,
   getOutputPlanByFilter,
@@ -233,3 +234,12 @@ export const pull_boxes = async (req: Request, res: Response) => {
     res.status(500).send(e);
   }
 };
+
+export const export_exit_plan = async(req: Request, res: Response) => {
+  const {type, ids, display_columns} = req.body
+  let url = null
+  if(type === 'xlsx') {
+    url = await exportOutputPlanXLSX(ids, display_columns)
+  }
+  return res.json({url})
+}

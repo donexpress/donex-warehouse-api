@@ -14,6 +14,8 @@ import { countOutputPlan } from '../context/output_plan';
 import { countLineClassification } from '../context/line_classification';
 import { countRegionalDivision } from '../context/regional_division';
 import { getCurrentUser } from '../middlewares';
+import Barcode from 'jsbarcode';
+import Canvas from 'canvas';
 
 export const country = async (req: Request, res: Response) => {
   const countryCodes = Object.keys(countries.countries);
@@ -54,3 +56,18 @@ export const counts = async (req: Request, res: Response) => {
     regional_division_count
   });
 };
+
+export const barcode = async (req: Request, res: Response) => {
+  console.log("CODE: ", req.query.code)
+  const canvas = Canvas.createCanvas(200, 200);
+  // @ts-ignore
+    Barcode(canvas, req.query.code, {
+        format: "CODE128",
+        displayValue: true,
+        fontSize: 18,
+        textMargin: 10
+    })
+    res.type('image/png');
+    const stream = canvas.createPNGStream();
+    stream.pipe(res)
+}
