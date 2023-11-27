@@ -38,6 +38,11 @@ router.post(
   verifyTokenPresent,
   OutputPlanController.pull_boxes
 );
+router.post(
+  '/api/v1/output_plan/export',
+  verifyTokenPresent,
+  OutputPlanController.export_exit_plan
+);
 router.put(
   '/api/v1/output_plan/:id',
   verifyTokenPresent,

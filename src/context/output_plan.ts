@@ -2,6 +2,7 @@ import {
   ArrayContains,
   Between,
   FindOneOptions,
+  FindOptionsSelect,
   FindOptionsWhere,
   ILike,
   In,
@@ -35,6 +36,10 @@ import {
   removeNullProperties,
   splitLastOccurrence,
 } from '../helpers';
+import { jsonToExcel } from '../helpers/xlsx';
+import { uploadFileToStore } from './file';
+import fs from 'fs';
+
 
 export const listOutputPlan = async (
   current_page: number,
@@ -625,6 +630,8 @@ export const returnBoxes = async (id: number, data) => {
   data.case_numbers = output_plan.case_numbers.filter(
     (el) => !data.case_numbers.find((cn) => cn === el)
   );
+  data.box_amount = data.case_numbers.length
+  data.output_boxes = data.case_numbers.length
   data.client_box_number = getCustomerOrderNumber(output_plan.packing_lists);
   const result = await repository.update({ id }, data);
   return result;
@@ -851,3 +858,15 @@ export const getCustomerOrderNumber = (
   });
   return numbers.join(', ');
 };
+
+export const exportOutputPlanXLSX = async (ids: number[], columns: {key: string, value: string}[]) => {
+  const select: FindOptionsSelect<OutputPlan> = {}
+  columns.forEach(column => {
+    select[column.key] = true
+  })
+  const output_plans = await AppDataSource.manager.find(OutputPlan, {where: {id: In(ids)}, select})
+  const filepath = await jsonToExcel(output_plans, columns.map(el => el.value));
+  const url = await uploadFileToStore(filepath, 'xlsx');
+  fs.unlink(filepath, () => {});
+  return url 
+}
