@@ -15,6 +15,7 @@
     "db:revert": "yarn typeorm:conf migration:revert",
     "db:revert:test": "yarn typeorm:conf -c test migration:revert",
     "db:seed": "node dist/seeds/index.js",
+    "db:seed:prod": "node dist/seeds/index.js prod=true",
     "db:seed:test": "node dist/seeds/index.js test=true",
     "db:reset": "npm run db:drop && npm run db:migration:run && npm run db:seed",
     "db:reset:test": "npm run db:drop:test && npm run db:migration:run:test && npm run db:seed:test",

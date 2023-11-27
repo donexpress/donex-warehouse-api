@@ -10,6 +10,7 @@ router.get(
   WarehouseController.index
 );
 router.get('/api/v1/cargo_station/count', WarehouseController.count);
+router.get('/api/v1/cargo_station/states', WarehouseController.listStates);
 router.get('/api/v1/cargo_station/:id', WarehouseController.show);
 router.post(
   '/api/v1/cargo_station',

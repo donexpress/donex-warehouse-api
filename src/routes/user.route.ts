@@ -6,10 +6,10 @@ const router = express.Router();
 router.get(
   '/api/v1/user',
   verifyTokenPresent,
-  verifyTokenPresent,
   UserController.index
 );
 router.get('/api/v1/user/count', UserController.count);
+router.get('/api/v1/user/states', UserController.listStates);
 router.get('/api/v1/user/:id', UserController.show);
 router.post('/api/v1/user', verifyTokenPresent, UserController.create);
 router.put('/api/v1/user/:id', verifyTokenPresent, UserController.update);

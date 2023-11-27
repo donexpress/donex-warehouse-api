@@ -8,7 +8,6 @@ import {
   JoinColumn,
   OneToMany,
 } from 'typeorm';
-import { WarehouseState } from './warehouse_state.model';
 import { Staff } from './staff.model';
 import { User } from './user.model';
 

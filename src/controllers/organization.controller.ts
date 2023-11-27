@@ -55,7 +55,6 @@ export const create = async (req: Request, res: Response) => {
   if (organization instanceof Organization) {
     res.status(201).json(organization);
   } else {
-    console.log(organization);
     res.status(422).json(organization);
   }
 };

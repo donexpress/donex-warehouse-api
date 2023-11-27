@@ -132,6 +132,18 @@ export class OutputPlan {
   state: string;
 
   @Column({
+    type: 'varchar',
+    nullable: true,
+  })
+  destination: string;
+
+  @Column({
+    type: 'varchar',
+    nullable: true,
+  })
+  reference_number: string;
+
+  @Column({
     type: 'json',
     nullable: true,
     default: [],

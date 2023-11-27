@@ -8,6 +8,7 @@ import {
   updateAOSWarehouse,
 } from '../context/aos_warehouse';
 import { AOSWarehouse } from '../models/aos_warehouse.model';
+import { UpdateResult } from 'typeorm';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -26,7 +27,6 @@ export const index = async (req: Request, res: Response) => {
     );
     res.json(organization);
   } catch (e) {
-    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -40,7 +40,6 @@ export const show = async (req: Request, res: Response) => {
       res.json(organization);
     }
   } catch (e) {
-    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -50,7 +49,6 @@ export const count = async (req: Request, res: Response) => {
     const count = await countAOSWarehouse();
     res.json({ count });
   } catch (e) {
-    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -59,6 +57,8 @@ export const create = async (req: Request, res: Response) => {
   const aosWarehouse = await createAOSWarehouse(req.body);
   if (aosWarehouse instanceof AOSWarehouse) {
     res.status(201).json(aosWarehouse);
+  } else if (aosWarehouse.message) {
+    res.status(409).json(aosWarehouse);
   } else {
     res.status(422).json(aosWarehouse);
   }
@@ -67,13 +67,16 @@ export const create = async (req: Request, res: Response) => {
 export const update = async (req: Request, res: Response) => {
   try {
     const result = await updateAOSWarehouse(Number(req.params.id), req.body);
-    if (result.affected === 0) {
-      res.status(404).json(result);
+    if (result instanceof UpdateResult) {
+      if (result.affected === 0) {
+        res.status(404).json(result);
+      } else {
+        res.status(200).json(result);
+      }
     } else {
-      res.status(200).json(result);
+      res.status(409).json(result);
     }
   } catch (e) {
-    console.log(e);
     res.status(500).send(e);
   }
 };
@@ -87,7 +90,6 @@ export const remove = async (req: Request, res: Response) => {
       res.status(200).json(result);
     }
   } catch (e) {
-    console.log(e);
     res.status(500).send(e);
   }
 };

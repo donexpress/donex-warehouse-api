@@ -8,6 +8,9 @@ import {
   updateStaff,
 } from '../context/staff';
 import { Staff } from '../models/staff.model';
+import { UpdateResult } from 'typeorm';
+import { getStates } from '../helpers/states';
+import states from '../config/states';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -18,10 +21,13 @@ export const index = async (req: Request, res: Response) => {
       ? Number(req.query.number_of_rows)
       : await countStaff();
     const query = req.query.query;
-    const users = await listStaff(
+    const state = req.query.state;
+    let users = [];
+    users = await listStaff(
       current_page,
       number_of_rows,
-      query == undefined ? '' : String(query)
+      query == undefined ? '' : String(query),
+      state == undefined ? '' : String(state)
     );
     res.json(users);
   } catch (e) {
@@ -69,10 +75,14 @@ export const create = async (req: Request, res: Response) => {
 export const update = async (req: Request, res: Response) => {
   try {
     const result = await updateStaff(Number(req.params.id), req.body);
-    if (result.affected === 0) {
-      res.status(404).json(result);
+    if (result instanceof UpdateResult) {
+      if (result.affected === 0) {
+        res.status(404).json(result);
+      } else {
+        res.status(200).json(result);
+      }
     } else {
-      res.status(200).json(result);
+      res.status(409).json(result)
     }
   } catch (e) {
     console.log(e);
@@ -92,4 +102,8 @@ export const remove = async (req: Request, res: Response) => {
     console.log(e);
     res.status(500).send(e);
   }
+};
+
+export const listStates = (req: Request, res: Response) => {
+  res.send({ states: getStates(states.staff) });
 };

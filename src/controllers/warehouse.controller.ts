@@ -9,6 +9,9 @@ import {
 } from '../context/warehouse';
 import { Warehouse } from '../models/warehouse.model';
 import { getCurrentUser } from '../middlewares';
+import { UpdateResult } from 'typeorm';
+import { getStates } from '../helpers/states';
+import states from '../config/states';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -18,7 +21,13 @@ export const index = async (req: Request, res: Response) => {
     const number_of_rows = req.query.number_of_rows
       ? Number(req.query.number_of_rows)
       : await countWarehouse();
-    const affiliations = await listWarehouse(current_page, number_of_rows);
+    const state = req.query.state;
+    const affiliations = await listWarehouse(
+      current_page,
+      number_of_rows,
+      state == undefined ? '' : String(state)
+    );
+
     res.json(affiliations);
   } catch (e) {
     console.log(e);
@@ -66,10 +75,14 @@ export const create = async (req: Request, res: Response) => {
 export const update = async (req: Request, res: Response) => {
   try {
     const result = await updateWarehouse(Number(req.params.id), req.body);
-    if (result.affected === 0) {
-      res.status(404).json(result);
+    if (result instanceof UpdateResult) {
+      if (result.affected === 0) {
+        res.status(404).json(result);
+      } else {
+        res.status(200).json(result);
+      }
     } else {
-      res.status(200).json(result);
+      res.status(409).json(result);
     }
   } catch (e) {
     console.log(e);
@@ -89,4 +102,8 @@ export const remove = async (req: Request, res: Response) => {
     console.log(e);
     res.status(500).send(e);
   }
+};
+
+export const listStates = (req: Request, res: Response) => {
+  res.send({ states: getStates(states.warehouse) });
 };

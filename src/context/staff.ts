@@ -2,9 +2,8 @@ import { AppDataSource } from '../config/ormconfig';
 import { Staff } from '../models/staff.model';
 import { Warehouse } from '../models/warehouse.model';
 import bcrypt from 'bcryptjs';
-import { ILike, In } from 'typeorm';
+import { FindOptionsWhere, ILike, In, Not } from 'typeorm';
 import { validate } from 'class-validator';
-import { StaffState } from '../models/staff_state.model';
 import { Role } from '../models/role.model';
 import { Organization } from '../models/organization.model';
 import { StaffWarehouse } from '../models/staff_warehouse.model';
@@ -13,15 +12,26 @@ import { object_state_user } from '../helpers/states';
 export const listStaff = async (
   current_page: number,
   number_of_rows: number,
-  query: string
+  query: string,
+  state: string = ''
 ) => {
+  const skip = ((current_page - 1) * number_of_rows) | 0;
+  const take = number_of_rows | 10;
+  const not_deleted = Not('deleted');
+
+  let where: FindOptionsWhere<Staff> | FindOptionsWhere<Staff>[] = [
+    { english_name: ILike(`%${query}%`), state: not_deleted },
+    { chinesse_name: ILike(`%${query}%`), state: not_deleted },
+  ];
+
+  if (state !== '') {
+    where = { state: state };
+  }
+
   const users = await AppDataSource.manager.find(Staff, {
-    take: number_of_rows,
-    skip: (current_page - 1) * number_of_rows,
-    where: [
-      { english_name: ILike(`%${query}%`) },
-      { chinesse_name: ILike(`%${query}%`) },
-    ],
+    take: take,
+    skip: skip,
+    where,
     order: {
       id: 'DESC',
     },
@@ -66,7 +76,9 @@ export const listStaff = async (
 };
 
 export const countStaff = async () => {
-  return AppDataSource.manager.count(Staff);
+  return await AppDataSource.getRepository(Staff).count({
+    where: { state: Not('deleted') },
+  });
 };
 
 export const showStaff = async (id: number) => {
@@ -160,6 +172,21 @@ export const updateStaff = async (id: number, user_data) => {
   if (user_data.password) {
     delete user_data.password;
   }
+  const username_count = await repository.count({
+    where: { username: user_data.username, id: Not(id) },
+  });
+  if (username_count > 0) {
+    return { message: 'username already exists' };
+  }
+  if (user_data.email) {
+    const email_count = await repository.count({
+      where: { email: user_data.email, id: Not(id) },
+    });
+    if (email_count > 0) {
+      return { message: 'email already exists' };
+    }
+  }
+
   if (user_data.affiliations) {
     const ref = await AppDataSource.getRepository(StaffWarehouse);
     await ref.delete({ staff_id: id });

@@ -1,8 +1,10 @@
 import { Request, Response } from 'express';
 import {
+  changeStoragePlanState,
+  countAllStoragePlan,
   countStoragePlan,
   createStoragePlan,
-  filterByState,
+  createStoragePlanMulti,
   listStoragePlan,
   removeStoragePlan,
   showStoragePlan,
@@ -10,6 +12,14 @@ import {
 } from '../context/storage_plan';
 import { StoragePlan } from '../models/storage_plan.model';
 import { getCurrentUser } from '../middlewares';
+import states from '../config/states';
+import { getStates } from '../helpers/states';
+import { getUserByUsername } from '../context/user';
+import { User } from '../models/user.model';
+import { getAosWarehouseByCode } from '../context/aos_warehouse';
+import { AOSWarehouse } from '../models/aos_warehouse.model';
+import internal from 'stream';
+//import { getFormatExcel } from '../helpers/excel';
 
 export const index = async (req: Request, res: Response) => {
   try {
@@ -21,21 +31,15 @@ export const index = async (req: Request, res: Response) => {
       : await countStoragePlan();
     const query = req.query.query;
     const state = req.query.state;
-    if (!state) {
-      const storage_plans = await listStoragePlan(
-        current_page,
-        number_of_rows,
-        query == undefined ? '' : String(query)
-      );
-      res.json(storage_plans);
-    } else {
-      const storage_plans = await filterByState(
-        current_page,
-        number_of_rows,
-        state == undefined ? 1 : Number(state)
-      );
-      res.json(storage_plans);
-    }
+    const current_user = getCurrentUser(req);
+    const storage_plans = await listStoragePlan(
+      current_page,
+      number_of_rows,
+      query == undefined ? '' : String(query),
+      state == undefined ? '' : String(state),
+      current_user
+    );
+    res.json(storage_plans);
   } catch (e) {
     console.log(e);
     res.status(500).send(e);
@@ -58,8 +62,9 @@ export const show = async (req: Request, res: Response) => {
 
 export const count = async (req: Request, res: Response) => {
   try {
-    const count = await countStoragePlan();
-    res.json({ count });
+    const current_user = getCurrentUser(req);
+    const count = await countAllStoragePlan(current_user);
+    res.json(count);
   } catch (e) {
     console.log(e);
     res.status(500).send(e);
@@ -73,8 +78,55 @@ export const create = async (req: Request, res: Response) => {
   if (result instanceof StoragePlan) {
     res.status(201).json(result);
   } else {
-    console.log(result);
     res.status(422).json(result);
+  }
+};
+
+export const createMulti = async (req: Request, res: Response) => {
+  const current_user = getCurrentUser(req);
+  //@ts-ignore
+  const user_id = parseInt(current_user.id);
+  const storage_plans = req.body;
+  let storage_plan_save = [];
+  for (let i = 0; i < storage_plans.length; i++) {
+    const storage_plan_body = storage_plans[i];
+    storage_plan_body.state = states.entry_plan.to_be_storage.value;
+
+    const username =
+      storage_plan_body.username !== null
+        ? storage_plan_body.username
+        : //@ts-ignore
+          current_user.username;
+    const user = await getUserByUsername(username);
+    const AOWarehouse = await getAosWarehouseByCode(
+      storage_plan_body.warehouse_code
+    );
+    storage_plan_body.user_id = user instanceof User ? user.id : null;
+    storage_plan_body.warehouse_id =
+      AOWarehouse instanceof AOSWarehouse ? AOWarehouse.id : null;
+    storage_plan_body.digits_box_number =
+      storage_plan_body.digits_box_number !== null
+        ? storage_plan_body.digits_box_number
+        : 6;
+    const storage_plan = await createStoragePlanMulti(
+      storage_plan_body,
+      user_id
+    );
+    if (storage_plan instanceof StoragePlan) {
+      storage_plan_save.push(storage_plan);
+    } else {
+      return res
+        .status(422)
+        .send(
+          'An unexpected error has happened in Storage Plan return. Please check it...'
+        );
+    }
+  }
+
+  if (storage_plan_save.length === storage_plans.length) {
+    return res.sendStatus(201);
+  } else {
+    res.status(422).send('An unexpected error has happened. Please check it');
   }
 };
 
@@ -96,6 +148,27 @@ export const remove = async (req: Request, res: Response) => {
   try {
     const result = await removeStoragePlan(Number(req.params.id));
     if (result.affected === 0) {
+      res.status(404).json(result);
+    } else {
+      res.status(200).json(result);
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(500).send(e);
+  }
+};
+
+export const listStates = (req: Request, res: Response) => {
+  res.send({ states: getStates(states.entry_plan) });
+};
+
+export const changeState = async (req: Request, res: Response) => {
+  try {
+    const result = await changeStoragePlanState(
+      Number(req.params.id),
+      req.body.state
+    );
+    if (!result || result.affected === 0) {
       res.status(404).json(result);
     } else {
       res.status(200).json(result);

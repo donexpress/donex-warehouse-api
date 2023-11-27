@@ -1,7 +1,10 @@
 import { Request, Response } from 'express';
 import {
   countPackingList,
+  createBulkPackingList,
   createPackingList,
+  exist_expansion_number,
+  getPackingListByBoxNumber,
   getPackingListByCaseNumber,
   listPackingList,
   removePackingList,
@@ -57,10 +60,13 @@ export const count = async (req: Request, res: Response) => {
 
 export const create = async (req: Request, res: Response) => {
   const result = await createPackingList(req.body);
+  if(result == null) {
+    res.status(409).json(result)
+    return;
+  }
   if (result instanceof PackingList) {
     res.status(201).json(result);
   } else {
-    console.log(result);
     res.status(422).json(result);
   }
 };
@@ -93,7 +99,7 @@ export const remove = async (req: Request, res: Response) => {
   }
 };
 
-export const getByCaseNumber =async (req:Request, res: Response) => {
+export const getByCaseNumber = async (req:Request, res: Response) => {
   try {
     const query = req.query.case_number;
     const result = await getPackingListByCaseNumber(String(query));
@@ -105,5 +111,38 @@ export const getByCaseNumber =async (req:Request, res: Response) => {
   } catch (e) {
     console.log(e);
     res.status(500).send(e);
+  }
+}
+
+export const getByBoxNumber = async (req:Request, res: Response) => {
+  try {
+    const query = req.query.box_number;
+    const result = await getPackingListByBoxNumber(String(query));
+    if (!result) {
+      res.status(404).json(result);
+    } else {
+      res.json(result);
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(500).send(e);
+  }
+}
+
+export const existExpansionNumber =  async (req: Request, res: Response) => {
+  const data: {expansion_number: string, storage_plan_id: number} = req.body;
+  res.send(await exist_expansion_number(data.expansion_number, data.storage_plan_id))
+}
+
+export const bulkCreate = async (req: Request, res: Response) => {
+  const result = await createBulkPackingList(req.body.storage_plan_id, req.body.data);
+  if(result == null) {
+    res.status(409).json(result)
+    return;
+  }
+  if (result.length > 0) {
+    res.status(201).json(result);
+  } else {
+    res.status(422).json(result);
   }
 }

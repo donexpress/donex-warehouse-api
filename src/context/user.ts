@@ -2,59 +2,44 @@ import { AppDataSource } from '../config/ormconfig';
 import { User } from '../models/user.model';
 import { Warehouse } from '../models/warehouse.model';
 import bcrypt from 'bcryptjs';
-import { ILike, In } from 'typeorm';
+import { FindOptionsWhere, ILike, In, IsNull, Not } from 'typeorm';
 import { validate } from 'class-validator';
-import { UserState } from '../models/user_state.model';
 import { Staff } from '../models/staff.model';
 import { PaymentMethod } from '../models/payment_method.model';
 import { UserLevel } from '../models/user_level.model';
 import { object_state_user } from '../helpers/states';
 
-// const user_relations = [
-//   'warehouses',
-//   'warehouses.states',
-//   'regional_divisions',
-//   'subsidiaries',
-//   'finantial_representatives',
-//   'finantial_representatives.states',
-//   'finantial_representatives.organizations',
-//   'finantial_representatives.warehouses',
-//   'client_service_representatives',
-//   'client_service_representatives.states',
-//   'client_service_representatives.organizations',
-//   'client_service_representatives.warehouses',
-//   'sales_representatives',
-//   'sales_representatives.states',
-//   'sales_representatives.organizations',
-//   'sales_representatives.warehouses',
-//   'sales_sources',
-//   'sales_sources.states',
-//   'sales_sources.organizations',
-//   'sales_sources.warehouses',
-//   'payment_methods',
-//   'user_level',
-// ];
-
 export const listUser = async (
   current_page: number,
   number_of_rows: number,
-  query: string
+  query: string,
+  state: string = ''
 ) => {
+  const skip = ((current_page - 1) * number_of_rows) | 0;
+  const take = number_of_rows | 10;
+  const not_deleted = Not('deleted');
+
+  let where: FindOptionsWhere<User> | FindOptionsWhere<User>[] = [
+    { username: ILike(`%${query}%`), state: not_deleted },
+    { nickname: ILike(`%${query}%`), state: not_deleted },
+  ];
+
+  if (state !== '') {
+    where = { state };
+  }
+
   const users = await AppDataSource.manager.find(User, {
-    take: number_of_rows,
-    skip: (current_page - 1) * number_of_rows,
-    where: [
-      { username: ILike(`%${query}%`) },
-      { nickname: ILike(`%${query}%`) },
-    ],
+    take: take,
+    skip: skip,
+    where,
     order: {
       id: 'DESC',
     },
-    // relations: user_relations,
   });
   const staffs = await AppDataSource.manager.find(Staff);
   const payment_methods = await AppDataSource.manager.find(PaymentMethod);
   const user_levels = await AppDataSource.manager.find(UserLevel);
+  const warehouses = await AppDataSource.manager.find(Warehouse);
   const users_mod = users.map((user) => {
     delete user.password;
     let user_state = null;
@@ -100,6 +85,10 @@ export const listUser = async (
     if (user.user_level_id) {
       user_level = user_levels.find((el) => el.id === user.user_level_id);
     }
+    let warehouse = null;
+    if (user.warehouse_id) {
+      warehouse = warehouses.find((el) => el.id === user.warehouse_id);
+    }
     return {
       ...user,
       user_state,
@@ -109,13 +98,26 @@ export const listUser = async (
       sale_sources,
       payment_method,
       user_level,
+      warehouse,
     };
   });
   return users_mod;
 };
 
 export const countUser = async () => {
-  return AppDataSource.manager.count(User);
+  return await AppDataSource.getRepository(User).count({
+    where: { state: Not('deleted') },
+  });
+};
+
+export const getUserByUsername = async (
+  username: string | null
+): Promise<User | null> => {
+  return await AppDataSource.getRepository(User).findOne({
+    where: {
+      username,
+    },
+  });
 };
 
 export const showUser = async (id: number) => {
@@ -245,6 +247,20 @@ export const updateUser = async (id: number, user_data) => {
   const repository = await AppDataSource.getRepository(User);
   if (user_data.password) {
     delete user_data.password;
+  }
+  const username_count = await repository.count({
+    where: { username: user_data.username, id: Not(id) },
+  });
+  if (username_count > 0) {
+    return { message: 'username already exists' };
+  }
+  if (user_data.email) {
+    const email_count = await repository.count({
+      where: { email: user_data.email, id: Not(id) },
+    });
+    if (email_count > 0) {
+      return { message: 'email already exists' };
+    }
   }
   const result = await repository.update({ id }, user_data);
   return result;

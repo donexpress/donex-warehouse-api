@@ -7,7 +7,7 @@ export class StoragePlan {
   id: number;
 
   @Column({
-    nullable: true,
+    nullable: true
   })
   customer_order_number: string;
 
@@ -49,7 +49,7 @@ export class StoragePlan {
   @Column({
     nullable: true,
   })
-  state: number;
+  state: string;
 
   @Column({
     nullable: true,
@@ -108,11 +108,36 @@ export class StoragePlan {
   return: boolean
 
   @Column({
+    nullable: true,
+    type: 'varchar'
+  })
+  reference_number: string;
+
+  @Column({
+    nullable: true,
+    type: 'varchar'
+  })
+  pr_number: string;
+
+  @Column({
     type: 'json',
     nullable: true,
     default: [],
   })
   meta: object[];
+
+  @Column({
+    type: 'json',
+    nullable: true,
+    default: [],
+  })
+  images: object[];
+
+  @Column({
+    default: false,
+    type: 'boolean'
+  })
+  is_images: boolean
 
   @Column({
     type: 'varchar',

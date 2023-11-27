@@ -1,13 +1,11 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
-export class CreateStoragePlanStateTable1693851000395
-  implements MigrationInterface
-{
+export class CreateAppendixTable1694562645142 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner
       .createTable(
         new Table({
-          name: 'storage_plan_states',
+          name: 'appendages',
           columns: [
             {
               name: 'id',
@@ -19,7 +17,31 @@ export class CreateStoragePlanStateTable1693851000395
             {
               name: 'name',
               type: 'varchar',
+            },
+            {
+              name: 'user_id',
+              type: 'integer',
               isNullable: true,
+            },
+            {
+              name: 'output_plan_id',
+              type: 'integer',
+              isNullable: true,
+            },
+            {
+              name: 'function',
+              type: 'varchar',
+              isNullable: true,
+            },
+            {
+              name: 'url',
+              type: 'varchar',
+              isNullable: true,
+            },
+            {
+              name: 'deleted',
+              type: 'boolean',
+              default: false
             },
             {
               name: 'meta',
@@ -40,18 +62,17 @@ export class CreateStoragePlanStateTable1693851000395
         }),
         true
       )
-      .then(() => {
+      .then(() =>
         queryRunner.createIndex(
-          'storage_plan_states',
+          'appendages',
           new TableIndex({
-            columnNames: ['name'],
+            columnNames: ['id', 'user_id'],
           })
-        );
-      });
+        )
+      );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('storage_plan_states');
-
+    await queryRunner.dropTable('appendages');
   }
 }
