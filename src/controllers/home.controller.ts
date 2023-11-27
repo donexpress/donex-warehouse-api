@@ -14,7 +14,7 @@ import { countOutputPlan } from '../context/output_plan';
 import { countLineClassification } from '../context/line_classification';
 import { countRegionalDivision } from '../context/regional_division';
 import { getCurrentUser } from '../middlewares';
-import Barcode from 'jsbarcode';
+const Barcode = require('jsbarcode')
 import Canvas from 'canvas';
 
 export const country = async (req: Request, res: Response) => {
