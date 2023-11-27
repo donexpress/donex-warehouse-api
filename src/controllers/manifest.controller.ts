@@ -22,6 +22,7 @@ import {
   countManifestWaybillAndCarrier,
   selectByWaybill,
   listManifests,
+  paidManifest,
 } from '../context/manifest';
 import carriers_type from '../config/carriers';
 import { Manifest } from '../models/manifest.model';
@@ -54,41 +55,67 @@ export const create_do = async (
           let manifests = [];
           let waybill_id = null;
           let manifest_charged = [];
-          let tracking_number_charged = [];
+          let unrecorded_manifests = [];
           let manifests_bill_code = [];
-          const carrier = String(req.query.carrier);
-          const mwb = String(req.query.mwb);
-          const customer_code = String(req.query.customer_code);
-          const force = Boolean(req.query.force) || false;
-          const waybills = await findByWaybillAndCarrier(mwb, carrier);
-          if (waybills.length > 0 && force !== true) {
-            return res.status(205).send('This manifest is already stored');
-          }
           var worksheetsBody = await xslx(urls.url);
           await removeFile(urls.name);
           //for (let i = 0; i < worksheetsBody.data.length; i++) {
           //const value = await getValues(worksheetsBody.data[i]);
 
           if (action === 'create') {
-            for (let i = 0; i < worksheetsBody.data.length; i++) {
-              const value = await getValues(worksheetsBody.data[i]);
-              const manifest_obj = await manifestParams(
-                value,
-                carrier,
-                customer_code
-              );
+            const carrier = String(req.query.carrier);
+            const customer_code = String(req.query.customer_code);
+            const mwb = String(req.query.mwb);
+            const force = Boolean(req.query.force) || false;
+            const waybills = await findByWaybillAndCarrier(mwb, carrier);
+            if (waybills.length > 0 && force !== true) {
+              return res.status(205).send('This manifest is already stored');
+            } else if (waybills.length > 0 && force) {
+              for (let i = 0; i < worksheetsBody.data.length; i++) {
+                const value = await getValues(worksheetsBody.data[i]);
+                const manifest_obj = await manifestParams(
+                  value,
+                  carrier,
+                  customer_code
+                );
 
-              const manifest = await createManifest(
-                manifest_obj.manifest_data,
-                manifest_obj.shipper_data,
-                manifest_obj.consignee_data
-              );
+                const manifest = await findByTracking(
+                  manifest_obj.manifest_data.tracking_number
+                );
 
-              if (manifest instanceof Manifest) {
-                manifests.push(manifest);
-                waybill_id = value[0].waybill_id;
-              } else {
-                errors.push(manifest);
+                const manifest_update = await updateManifest(
+                  manifest,
+                  manifest_obj.manifest_data
+                );
+
+                if (manifest_update instanceof Manifest) {
+                  manifests.push(manifest_update);
+                  waybill_id = manifest.waybill_id;
+                } else {
+                  errors.push(manifest_update);
+                }
+              }
+            } else {
+              for (let i = 0; i < worksheetsBody.data.length; i++) {
+                const value = await getValues(worksheetsBody.data[i]);
+                const manifest_obj = await manifestParams(
+                  value,
+                  carrier,
+                  customer_code
+                );
+
+                const manifest = await createManifest(
+                  manifest_obj.manifest_data,
+                  manifest_obj.shipper_data,
+                  manifest_obj.consignee_data
+                );
+
+                if (manifest instanceof Manifest) {
+                  manifests.push(manifest);
+                  waybill_id = value[0].waybill_id;
+                } else {
+                  errors.push(manifest);
+                }
               }
             }
           } else if (action === 'update_customer') {
@@ -108,6 +135,7 @@ export const create_do = async (
             }
           } else if (action === 'update_supplier') {
             const bill_code = String(req.query.bill_code);
+            const paid = Boolean(req.query.paid) || false;
             for (let i = 0; i < worksheetsBody.data.length; i++) {
               const value = await getValues(worksheetsBody.data[i]);
               const tracking_number = value[0];
@@ -123,6 +151,7 @@ export const create_do = async (
                     invoice_weight: invoice_weight,
                     payment_voucher: bill_code,
                     bill_state: 'charged',
+                    paid: paid // Only if the client indicates that the data is paid
                   });
                   if (update_manifest instanceof Manifest) {
                     manifests.push(update_manifest);
@@ -136,7 +165,7 @@ export const create_do = async (
                   invoice_weight: value[1],
                   shipping_cost: value[2],
                 };
-                tracking_number_charged.push(elem);
+                unrecorded_manifests.push(elem);
               }
             }
             const manifests_code = await listManifests(bill_code);
@@ -149,7 +178,9 @@ export const create_do = async (
               manifests_bill_code.push(urls);
               fs.unlink(filepath, () => {});
             } else {
-              errors.push(manifests_code);
+              errors.push({
+                msg: `No packages were found registered on this invoice: ${bill_code}`,
+              });
             }
           }
           //}
@@ -160,8 +191,8 @@ export const create_do = async (
             manifest_charged_count: manifest_charged.length,
             waybill_id: action === 'update_supplier' ? null : waybill_id,
             manifest_charged,
-            tracking_number_charged:
-              action === 'update_supplier' ? tracking_number_charged : [],
+            unrecorded_manifests:
+              action === 'update_supplier' ? unrecorded_manifests : [],
             manifests_bill_code: manifests_bill_code,
             errors: errors,
           };
@@ -242,12 +273,16 @@ export const byWaybill = async (req: Request, res: Response) => {
 export const supplier_invoice = async (req: Request, res: Response) => {
   const bill_code = String(req.query.bill_code);
   const waybills = await listManifests(String(bill_code));
-  const excelHeader = await colPartialManifest();
-  const filepath = await jsonToExcel(waybills, excelHeader);
+  if (waybills.length > 0) {
+    const excelHeader = await colPartialManifest();
+    const filepath = await jsonToExcel(waybills, excelHeader);
 
-  const urls = await uploadFileToStore(filepath, 'xlsx', bill_code);
-  res.json(urls);
-  fs.unlink(filepath, () => {});
+    const urls = await uploadFileToStore(filepath, 'xlsx', bill_code);
+    res.json(urls);
+    fs.unlink(filepath, () => {});
+  }else {
+    res.status(404).send();
+  }
 };
 
 const parseHeader = (req: Request, res: Response) => {
@@ -258,6 +293,17 @@ const parseHeader = (req: Request, res: Response) => {
   const contentLength = parseInt(req.headers['content-length'], 10);
   if (contentLength >= 5 * 1024 * 1024) {
     return res.status(413).send('Upload exceeds max size.');
+  }
+};
+
+export const paidUpdate = async (req: Request, res: Response) => {
+  const bill_code = req.query.bill_code;
+  const result = await paidManifest(String(bill_code));
+
+  if (result) {
+    res.status(204).send();
+  } else {
+    res.status(400).send();
   }
 };
 
