@@ -221,6 +221,7 @@ export const find = async (req: Request, res: Response) => {
 
 export const jsonToxlsx = async (req: Request, res: Response) => {
   const manifest = await findManfest(req.query);
+  console.log(manifest);
 
   if (manifest !== null || manifest.length > 0) {
     const excelHeader = await colManifest();
