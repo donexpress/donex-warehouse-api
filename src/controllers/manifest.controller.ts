@@ -23,6 +23,7 @@ import {
   selectByWaybill,
   listManifests,
   paidManifest,
+  findManfest,
 } from '../context/manifest';
 import carriers_type from '../config/carriers';
 import { Manifest } from '../models/manifest.model';
@@ -151,7 +152,7 @@ export const create_do = async (
                     invoice_weight: invoice_weight,
                     payment_voucher: bill_code,
                     bill_state: 'charged',
-                    paid: paid // Only if the client indicates that the data is paid
+                    paid: paid, // Only if the client indicates that the data is paid
                   });
                   if (update_manifest instanceof Manifest) {
                     manifests.push(update_manifest);
@@ -221,18 +222,7 @@ export const find = async (req: Request, res: Response) => {
 };
 
 export const jsonToxlsx = async (req: Request, res: Response) => {
-  const waybill_id = req.query.waybill_id;
-  const carrier = req.query.carrier;
-  let manifest = null;
-
-  if (carrier === undefined) {
-    manifest = await findByWaybillId(String(waybill_id));
-  } else {
-    manifest = await findByWaybillAndCarrier(
-      String(waybill_id),
-      String(carrier)
-    );
-  }
+  const manifest = await findManfest(req.query);
 
   if (manifest !== null) {
     const excelHeader = await colManifest();
@@ -280,7 +270,7 @@ export const supplier_invoice = async (req: Request, res: Response) => {
     const urls = await uploadFileToStore(filepath, 'xlsx', bill_code);
     res.json(urls);
     fs.unlink(filepath, () => {});
-  }else {
+  } else {
     res.status(404).send();
   }
 };
