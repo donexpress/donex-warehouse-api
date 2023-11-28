@@ -200,6 +200,6 @@ export const changeState = async (req: Request, res: Response) => {
 };
 
 export const auto_assign = async(req: Request, res: Response) => {
-  const result = await full_assign(Number(req.params.id))
+  const result = await full_assign(Number(req.params.id), req.body.box_ids)
   res.status(result.state).send({success: result.exist_empty})
 }
