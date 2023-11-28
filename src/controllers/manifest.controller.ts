@@ -12,14 +12,12 @@ import {
   createManifest,
   findManifest,
   countManifest,
-  findByTrackingAndCarrier,
   updateManifest,
   findByTracking,
   findByWaybillId,
   removeManifest,
   sumManifest,
   findByWaybillAndCarrier,
-  countManifestWaybillAndCarrier,
   selectByWaybill,
   listManifests,
   paidManifest,
@@ -224,7 +222,7 @@ export const find = async (req: Request, res: Response) => {
 export const jsonToxlsx = async (req: Request, res: Response) => {
   const manifest = await findManfest(req.query);
 
-  if (manifest !== null) {
+  if (manifest !== null || manifest.length > 0) {
     const excelHeader = await colManifest();
     const filepath = await jsonToExcel(manifest, excelHeader);
 
