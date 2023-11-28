@@ -414,13 +414,19 @@ export const getStoragePlansbyIds = async (ids: number[]) => {
   return storage_plans;
 };
 
-export const full_assign = async(storage_plan_id: number) => {
+export const full_assign = async(storage_plan_id: number, box_ids: number[] | undefined | null) => {
   let exist_empty:boolean = false;
   const storage_plan = await AppDataSource.manager.findOne(StoragePlan, {where: {id: storage_plan_id}})
   if(!storage_plan) {
     return {state: 404, exist_empty}
   }
-  const packages_list = await AppDataSource.manager.find(PackingList, {where:{storage_plan_id: storage_plan.id}})
+  let where: FindOptionsWhere<PackingList> = {}
+  if(box_ids && box_ids.length > 0) {
+    where = {storage_plan_id: storage_plan.id, id: In(box_ids)}
+  } else {
+    where = {storage_plan_id: storage_plan.id}
+  }
+  const packages_list = await AppDataSource.manager.find(PackingList, {where})
   const shelfs = await findShelfByWarehouseId(storage_plan.warehouse_id)
   console.log(!shelfs || ! packages_list)
   if(!shelfs || ! packages_list) {
