@@ -181,7 +181,8 @@ export const create_do = async (
             const manifests_code = await listManifests(bill_code);
             if (manifests_code.length > 0) {
               const concat_manifest = (manifests_code as string[]).concat(
-                ...unrecorded_manifests, ...manifest_charged_code
+                ...unrecorded_manifests,
+                ...manifest_charged_code
               );
               const excelHeader = await colPartialManifest();
               const filepath = await jsonToExcel(concat_manifest, excelHeader);
@@ -203,9 +204,6 @@ export const create_do = async (
             manifest_count: manifests.length,
             manifest_charged_count: manifest_charged.length,
             waybill_id: action === 'update_supplier' ? null : waybill_id,
-            manifest_charged,
-            unrecorded_manifests:
-              action === 'update_supplier' ? unrecorded_manifests : [],
             manifests_bill_code: manifests_bill_code,
             errors: errors,
           };
