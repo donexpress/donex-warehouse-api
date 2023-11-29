@@ -77,7 +77,7 @@ export const barcode = async (req: Request, res: Response) => {
     const canvas = Canvas.createCanvas(200, 200);
     Barcode(
       canvas,
-      `Cajas: ${code.box} Usuario: ${code.customer}`,
+      `Cajas: ${code.boxes_amount} Usuario: ${code.customer_code}`,
       {
         format: 'CODE128',
         displayValue: false,
