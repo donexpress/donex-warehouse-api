@@ -161,9 +161,9 @@ export const create_do = async (
               } else {
                 const elem = {
                   MWB: 'guide not found',
-                  tracking_number: value[1],
-                  invoice_weight: value[2],
-                  shipping_cost: value[3],
+                  tracking_number: value[0],
+                  invoice_weight: value[1],
+                  shipping_cost: value[2],
                 };
                 unrecorded_manifests.push(elem);
               }
