@@ -14,8 +14,9 @@ import { countOutputPlan } from '../context/output_plan';
 import { countLineClassification } from '../context/line_classification';
 import { countRegionalDivision } from '../context/regional_division';
 import { getCurrentUser } from '../middlewares';
-const Barcode = require('jsbarcode')
+const Barcode = require('jsbarcode');
 import Canvas from 'canvas';
+const PDFDocument = require('pdfkit');
 
 export const country = async (req: Request, res: Response) => {
   const countryCodes = Object.keys(countries.countries);
@@ -53,21 +54,38 @@ export const counts = async (req: Request, res: Response) => {
     output_plan_count,
     cargo_station_count,
     line_clasification_count,
-    regional_division_count
+    regional_division_count,
   });
 };
 
 export const barcode = async (req: Request, res: Response) => {
-  console.log("CODE: ", req.query.code)
-  const canvas = Canvas.createCanvas(200, 200);
-  // @ts-ignore
-    Barcode(canvas, req.query.code, {
-        format: "CODE128",
-        displayValue: true,
+  const myDoc = new PDFDocument({ bufferPages: true });
+  let buffers = [];
+  myDoc.on('data', buffers.push.bind(buffers));
+  myDoc.on('end', () => {
+    let pdfData = Buffer.concat(buffers);
+    res
+      .writeHead(200, {
+        'Content-Length': Buffer.byteLength(pdfData),
+        'Content-Type': 'application/pdf',
+        'Content-disposition': 'attachment;filename=barcode.pdf',
+      })
+      .end(pdfData);
+  });
+  req.body.forEach((code, index) => {
+    const canvas = Canvas.createCanvas(200, 200);
+    Barcode(
+      canvas,
+      `Cajas: ${code.boxes_amount} Usuario: ${code.customer_code}`,
+      {
+        format: 'CODE128',
+        displayValue: false,
         fontSize: 18,
-        textMargin: 10
-    })
-    res.type('image/png');
-    const stream = canvas.createPNGStream();
-    stream.pipe(res)
-}
+        textMargin: 10,
+      }
+    );
+    myDoc.image(canvas.toBuffer(), 100, index*100, { width: 300 });
+    myDoc.font('Times-Roman').fontSize(12).text(code.number, 185, ((index+1)*60)+(index*40));
+  });
+  myDoc.end();
+};
