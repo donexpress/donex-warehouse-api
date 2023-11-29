@@ -201,6 +201,6 @@ export const colPartialManifest = () => {
     'TRACKING',
     'SHIPPING COST',
     'INVOICE WEIGHT',
-    'Bill CODE'
+    'BILL CODE'
   ];
 };

@@ -146,11 +146,11 @@ export const create_do = async (
                 if (manifest.bill_state === 'charged') {
                   manifest_charged.push(manifest);
                   const elem = {
-                    manifests_waybill_id: manifest.waybill_id,
+                    manifests_waybill_id: manifest.waybill_id + ' (_REPEATED)',
                     manifests_tracking_number: manifest.tracking_number,
                     manifests_invoice_weight: manifest.weigth,
                     manifests_shipping_cost: manifest.shipping_cost,
-                    manifests_payment_voucher: 'REPEATED',
+                    manifests_payment_voucher: manifest.payment_voucher,
                   };
                   manifest_charged_code.push(elem);
                 } else {
