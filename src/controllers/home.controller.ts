@@ -59,7 +59,6 @@ export const counts = async (req: Request, res: Response) => {
 };
 
 export const barcode = async (req: Request, res: Response) => {
-  console.log('CODE: ', req.body.code);
   const myDoc = new PDFDocument({ bufferPages: true });
   let buffers = [];
   myDoc.on('data', buffers.push.bind(buffers));
