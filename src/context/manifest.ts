@@ -36,15 +36,6 @@ export const findByWaybillId = async (waybill_id: string) => {
   });
 };
 
-export const findByTrackingAndCarrier = async (
-  tracking_number: string,
-  carrier: string
-) => {
-  return await AppDataSource.manager.findOne(Manifest, {
-    where: { tracking_number, carrier },
-  });
-};
-
 export const findByWaybillAndCarrier = async (
   waybill_id: string,
   carrier: string
@@ -69,15 +60,6 @@ export const findManfest = async (params) => {
   }
   return await AppDataSource.manager.find(Manifest, {
     where: where,
-  });
-};
-
-export const countManifestWaybillAndCarrier = async (
-  waybill_id: string,
-  carrier: string
-) => {
-  return AppDataSource.manager.count(Manifest, {
-    where: { waybill_id, carrier },
   });
 };
 

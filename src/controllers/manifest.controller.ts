@@ -12,14 +12,12 @@ import {
   createManifest,
   findManifest,
   countManifest,
-  findByTrackingAndCarrier,
   updateManifest,
   findByTracking,
   findByWaybillId,
   removeManifest,
   sumManifest,
   findByWaybillAndCarrier,
-  countManifestWaybillAndCarrier,
   selectByWaybill,
   listManifests,
   paidManifest,
@@ -162,6 +160,7 @@ export const create_do = async (
                 }
               } else {
                 const elem = {
+                  MWB: 'guide not found',
                   tracking_number: value[0],
                   invoice_weight: value[1],
                   shipping_cost: value[2],
@@ -171,8 +170,11 @@ export const create_do = async (
             }
             const manifests_code = await listManifests(bill_code);
             if (manifests_code.length > 0) {
+              const concat_manifest = (manifests_code as string[]).concat(
+                unrecorded_manifests
+              );
               const excelHeader = await colPartialManifest();
-              const filepath = await jsonToExcel(manifests_code, excelHeader);
+              const filepath = await jsonToExcel(concat_manifest, excelHeader);
 
               const urls = await uploadFileToStore(filepath, 'xlsx', bill_code);
 
@@ -224,7 +226,7 @@ export const find = async (req: Request, res: Response) => {
 export const jsonToxlsx = async (req: Request, res: Response) => {
   const manifest = await findManfest(req.query);
 
-  if (manifest !== null) {
+  if (manifest !== null && manifest.length > 0) {
     const excelHeader = await colManifest();
     const filepath = await jsonToExcel(manifest, excelHeader);
 
