@@ -59,7 +59,7 @@ export const create_do = async (
           var worksheetsBody = await xslx(urls.url);
           await removeFile(urls.name);
           if (worksheetsBody.data.length < 1) {
-            res.status(404).send('Not send data to update this');
+            res.status(404).send('No data found to upload');
           }
 
           if (action === 'create') {
