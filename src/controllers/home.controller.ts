@@ -72,6 +72,7 @@ export const barcode = async (req: Request, res: Response) => {
       })
       .end(pdfData);
   });
+  let spacer: number = 0
   req.body.forEach((code, index) => {
     const canvas = Canvas.createCanvas(200, 200);
     Barcode(
@@ -84,8 +85,17 @@ export const barcode = async (req: Request, res: Response) => {
         textMargin: 10,
       }
     );
-    myDoc.image(canvas.toBuffer(), 100, index*100, { width: 300 });
-    myDoc.font('Times-Roman').fontSize(12).text(code.number, 185, ((index+1)*60)+(index*40));
+    if(index % 7 === 0 && index !== 0) {
+      myDoc.addPage()
+      spacer = 0;
+    }
+    myDoc.image(canvas.toBuffer(),150, spacer*100,{
+      width: 300,
+      height: 80,
+      align: 'center',
+    })
+    .text(code.number, 235, (spacer * 100) + 80);
+    spacer++ //always the last instrucction
   });
   myDoc.end();
 };
