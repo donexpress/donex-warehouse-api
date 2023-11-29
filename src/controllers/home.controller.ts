@@ -73,7 +73,7 @@ export const barcode = async (req: Request, res: Response) => {
       })
       .end(pdfData);
   });
-  req.body.code.forEach((code, index) => {
+  req.body.forEach((code, index) => {
     const canvas = Canvas.createCanvas(200, 200);
     Barcode(
       canvas,
