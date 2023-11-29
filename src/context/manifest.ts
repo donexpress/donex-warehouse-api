@@ -174,6 +174,7 @@ export const listManifests = async (
       'manifests.tracking_number',
       'manifests.invoice_weight',
       'manifests.shipping_cost',
+      'manifests.payment_voucher'
     ])
     .getRawMany();
 };
@@ -217,7 +218,7 @@ export const getWhere = (params) => {
   }
 
   if (params.client_reference) {
-    where.client_reference = params.client_reference;
+    where.manifest_name = params.client_reference;
   }
   if (params.bill_code) {
     where.payment_voucher = params.bill_code;

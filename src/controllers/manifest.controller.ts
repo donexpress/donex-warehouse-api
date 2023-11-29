@@ -54,6 +54,7 @@ export const create_do = async (
           let manifests = [];
           let waybill_id = null;
           let manifest_charged = [];
+          let manifest_charged_code = [];
           let unrecorded_manifests = [];
           let manifests_bill_code = [];
           var worksheetsBody = await xslx(urls.url);
@@ -144,6 +145,14 @@ export const create_do = async (
               if (manifest instanceof Manifest) {
                 if (manifest.bill_state === 'charged') {
                   manifest_charged.push(manifest);
+                  const elem = {
+                    manifests_waybill_id: manifest.waybill_id + ' (_REPEATED)',
+                    manifests_tracking_number: manifest.tracking_number,
+                    manifests_invoice_weight: manifest.weigth,
+                    manifests_shipping_cost: manifest.shipping_cost,
+                    manifests_payment_voucher: manifest.payment_voucher,
+                  };
+                  manifest_charged_code.push(elem);
                 } else {
                   const update_manifest = await updateManifest(manifest, {
                     shipping_cost: shipping_cost,
@@ -160,10 +169,11 @@ export const create_do = async (
                 }
               } else {
                 const elem = {
-                  MWB: 'guide not found',
-                  tracking_number: value[0],
-                  invoice_weight: value[1],
-                  shipping_cost: value[2],
+                  manifests_waybill_id: 'GUIDE NOT FOUND',
+                  manifests_tracking_number: value[0],
+                  manifests_invoice_weight: value[1],
+                  manifests_shipping_cost: value[2],
+                  manifests_payment_voucher: 'NOT FOUND',
                 };
                 unrecorded_manifests.push(elem);
               }
@@ -171,7 +181,8 @@ export const create_do = async (
             const manifests_code = await listManifests(bill_code);
             if (manifests_code.length > 0) {
               const concat_manifest = (manifests_code as string[]).concat(
-                unrecorded_manifests
+                ...unrecorded_manifests,
+                ...manifest_charged_code
               );
               const excelHeader = await colPartialManifest();
               const filepath = await jsonToExcel(concat_manifest, excelHeader);
@@ -193,9 +204,6 @@ export const create_do = async (
             manifest_count: manifests.length,
             manifest_charged_count: manifest_charged.length,
             waybill_id: action === 'update_supplier' ? null : waybill_id,
-            manifest_charged,
-            unrecorded_manifests:
-              action === 'update_supplier' ? unrecorded_manifests : [],
             manifests_bill_code: manifests_bill_code,
             errors: errors,
           };
