@@ -179,6 +179,7 @@ export const create_do = async (
               }
             }
             const manifests_code = await listManifests(bill_code);
+            console.log(manifests_code);
             if (manifests_code.length > 0) {
               const concat_manifest = (manifests_code as string[]).concat(
                 ...unrecorded_manifests,
