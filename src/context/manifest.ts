@@ -174,6 +174,7 @@ export const listManifests = async (
       'manifests.tracking_number',
       'manifests.invoice_weight',
       'manifests.shipping_cost',
+      'manifests.payment_voucher'
     ])
     .getRawMany();
 };
