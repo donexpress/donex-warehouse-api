@@ -16,7 +16,6 @@ import { countRegionalDivision } from '../context/regional_division';
 import { getCurrentUser } from '../middlewares';
 const Barcode = require('jsbarcode');
 import Canvas from 'canvas';
-import { jsPDF } from 'jspdf';
 const PDFDocument = require('pdfkit');
 
 export const country = async (req: Request, res: Response) => {
