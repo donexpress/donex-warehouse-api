@@ -160,17 +160,21 @@ export const create_do = async (
                 }
               } else {
                 const elem = {
-                  tracking_number: value[0],
-                  invoice_weight: value[1],
-                  shipping_cost: value[2],
+                  MWB: 'guide not found',
+                  tracking_number: value[1],
+                  invoice_weight: value[2],
+                  shipping_cost: value[3],
                 };
                 unrecorded_manifests.push(elem);
               }
             }
             const manifests_code = await listManifests(bill_code);
             if (manifests_code.length > 0) {
+              const concat_manifest = (manifests_code as string[]).concat(
+                unrecorded_manifests
+              );
               const excelHeader = await colPartialManifest();
-              const filepath = await jsonToExcel(manifests_code, excelHeader);
+              const filepath = await jsonToExcel(concat_manifest, excelHeader);
 
               const urls = await uploadFileToStore(filepath, 'xlsx', bill_code);
 
