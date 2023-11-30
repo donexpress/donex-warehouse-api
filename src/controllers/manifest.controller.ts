@@ -53,14 +53,14 @@ export const create_do = async (
           let errors = [];
           let manifests = [];
           let waybill_id = null;
-          let manifest_charged = [];
           let manifest_charged_code = [];
           let unrecorded_manifests = [];
           let manifests_bill_code = [];
           var worksheetsBody = await xslx(urls.url);
           await removeFile(urls.name);
-          //for (let i = 0; i < worksheetsBody.data.length; i++) {
-          //const value = await getValues(worksheetsBody.data[i]);
+          if (worksheetsBody.data.length < 1) {
+            res.status(404).send('No data found to upload');
+          }
 
           if (action === 'create') {
             const carrier = String(req.query.carrier);
@@ -144,7 +144,6 @@ export const create_do = async (
               const manifest = await findByTracking(tracking_number);
               if (manifest instanceof Manifest) {
                 if (manifest.bill_state === 'charged') {
-                  manifest_charged.push(manifest);
                   const elem = {
                     manifests_waybill_id: manifest.waybill_id + ' (_REPEATED)',
                     manifests_tracking_number: manifest.tracking_number,
@@ -197,12 +196,11 @@ export const create_do = async (
               });
             }
           }
-          //}
 
           let body = {};
           body = {
             manifest_count: manifests.length,
-            manifest_charged_count: manifest_charged.length,
+            manifest_charged_count: manifest_charged_code.length,
             waybill_id: action === 'update_supplier' ? null : waybill_id,
             manifests_bill_code: manifests_bill_code,
             errors: errors,
