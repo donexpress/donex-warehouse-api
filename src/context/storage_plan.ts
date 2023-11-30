@@ -14,8 +14,12 @@ import {
 import states from '../config/states';
 import { getCountByState, getStates } from '../helpers/states';
 import { removeNullProperties } from '../helpers';
-import { findShelfByWarehouseId } from './shelf';
+import {
+  findShelfByWarehouseId,
+  listShelfAndPckagesByWarehouseId,
+} from './shelf';
 import { ShelfPackages } from '../models/shelf_package.model';
+import { Shelf } from '../models/shelf.model';
 
 export const listStoragePlan = async (
   current_page: number,
@@ -259,14 +263,14 @@ export const createStoragePlan = async (data, user_id: number) => {
   }
   const result = repository.create(data);
   const validated = await validateContext(AppDataSource, result);
-  if(validated instanceof StoragePlan) {
+  if (validated instanceof StoragePlan) {
     const on = `DEWMXI${date.getFullYear()}${month}${
       date.getDate() <= 9 ? `0${date.getDate()}` : date.getDate()
     }${validated.id.toString().padStart(6, '0')}`;
     await repository.update({ id: validated.id }, { order_number: on });
     validated.order_number = on;
   }
-  return validated
+  return validated;
 };
 
 export const updateStoragePlan = async (id: number, data) => {
@@ -295,11 +299,19 @@ export const updateStoragePlan = async (id: number, data) => {
 
 export const removeStoragePlan = async (id: number) => {
   const repository = await AppDataSource.getRepository(StoragePlan);
-  const packing_list_repository = await AppDataSource.getRepository(PackingList)
-  const packing_lists = await packing_list_repository.find({where:{storage_plan_id: id}})
-  const shelf_package_repository = await AppDataSource.getRepository(ShelfPackages)
-  await shelf_package_repository.delete({package_id: In(packing_lists.map(el => el.id))})
-  await packing_list_repository.delete({storage_plan_id: id})
+  const packing_list_repository = await AppDataSource.getRepository(
+    PackingList
+  );
+  const packing_lists = await packing_list_repository.find({
+    where: { storage_plan_id: id },
+  });
+  const shelf_package_repository = await AppDataSource.getRepository(
+    ShelfPackages
+  );
+  await shelf_package_repository.delete({
+    package_id: In(packing_lists.map((el) => el.id)),
+  });
+  await packing_list_repository.delete({ storage_plan_id: id });
   const result = await repository.delete({ id });
   return result;
 };
@@ -414,45 +426,90 @@ export const getStoragePlansbyIds = async (ids: number[]) => {
   return storage_plans;
 };
 
-export const full_assign = async(storage_plan_id: number, box_ids: number[] | undefined | null) => {
-  let exist_empty:boolean = false;
-  const storage_plan = await AppDataSource.manager.findOne(StoragePlan, {where: {id: storage_plan_id}})
-  if(!storage_plan) {
-    return {state: 404, exist_empty}
+export const full_assign = async (
+  storage_plan_id: number,
+  box_ids: number[] | undefined | null
+) => {
+  let added = false;
+  const storage_plan = await AppDataSource.manager.findOne(StoragePlan, {
+    where: { id: storage_plan_id },
+  });
+  if (!storage_plan) {
+    return { state: 404, exist_empty: false };
   }
-  let where: FindOptionsWhere<PackingList> = {}
-  if(box_ids && box_ids.length > 0) {
-    where = {storage_plan_id: storage_plan.id, id: In(box_ids)}
+  let where: FindOptionsWhere<PackingList> = {};
+  if (box_ids && box_ids.length > 0) {
+    where = { storage_plan_id: storage_plan.id, id: In(box_ids) };
   } else {
-    where = {storage_plan_id: storage_plan.id}
+    where = { storage_plan_id: storage_plan.id };
   }
-  const packages_list = await AppDataSource.manager.find(PackingList, {where})
-  const shelfs = await findShelfByWarehouseId(storage_plan.warehouse_id)
-  console.log(!shelfs || ! packages_list)
-  if(!shelfs || ! packages_list) {
-    return {state: 404, exist_empty}
+  const packages_list = await AppDataSource.manager.find(PackingList, {
+    where,
+  });
+  const shelfs = await findShelfByWarehouseId(storage_plan.warehouse_id);
+  console.log(!shelfs || !packages_list);
+  if (!shelfs || !packages_list) {
+    return { state: 404, exist_empty: false };
   }
-  const package_shelf_repository = await AppDataSource.getRepository(ShelfPackages);
-  for (let i = 0; i < shelfs.length; i++) {
-    const shelf = shelfs[i];
-    const packages_shelf = await AppDataSource.manager.find(ShelfPackages,{where:{shelf_id: shelf.id}})
-    if(packages_shelf.length === 0) {
-      exist_empty = true;
-      for (let j = 0; j < packages_list.length; j++) {
-        const package_list = packages_list[j];
-        const result = await package_shelf_repository.create({
-          column: j,
-          layer: 1,
-          package_id: package_list.id,
-          shelf_id: shelf.id
-        })
-        const validate = await validateContext(AppDataSource, result)
+  const package_shelf_repository = await AppDataSource.getRepository(
+    ShelfPackages
+  );
+  let check_shelves = shelfs;
+  let partition_count = 1;
+  while (check_shelves.length > 0) {
+    console.log(`check shelves ammount: `, check_shelves.length);
+    const selected_shelves = check_shelves.filter(
+      (el) => el.partition_table === partition_count
+    );
+    console.log(`selected shelves ammount: `, selected_shelves.length);
+    for (let i = 0; i < selected_shelves.length; i++) {
+      const shelf = selected_shelves[i];
+      // check used layers and columns
+      let layer_id_used: { layer: number; column: number }[] = [];
+      const packages = await AppDataSource.manager.find(ShelfPackages, {
+        where: { shelf_id: shelf.id },
+      });
+      console.log(
+        `Ammount of packages: `,
+        packages.length
+      );
+      packages.forEach((p) => {
+        if (
+          layer_id_used.filter(
+            (el) => el.layer === p.layer && el.column === p.column
+          ).length === 0
+        ) {
+          layer_id_used.push({ layer: p.layer, column: p.column });
+        }
+      });
+      console.log(layer_id_used)
+      for (let j = 1; j <= shelf.layers && !added; j++) {
+        for (let k = 1; k <= shelf.column_ammount && !added; k++) {
+          if (
+            layer_id_used.find((el) => el.layer === j && el.column === k) ===
+            undefined
+          ) {
+            for (let l = 0; l < packages_list.length; l++) {
+              const package_list = packages_list[l];
+              const result = await package_shelf_repository.create({
+                column: k,
+                layer: j,
+                package_id: package_list.id,
+                shelf_id: shelf.id,
+              });
+              const validate = await validateContext(AppDataSource, result);
+            }
+            return { state: 200, exist_empty: true };
+          }
+        }
       }
-      break;
     }
+    check_shelves = check_shelves.filter(
+      (el) => el.partition_table !== partition_count
+    );
+    partition_count++;
+    console.log(partition_count);
   }
-  if(exist_empty) {
-    await AppDataSource.manager.update(StoragePlan,{id: storage_plan_id}, {state: states.entry_plan.stocked.value})
-  }
-  return {state: 200, exist_empty}
-}
+
+  return { state: 200, exist_empty: added };
+};

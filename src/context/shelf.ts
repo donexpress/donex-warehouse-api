@@ -60,3 +60,20 @@ export const removeShelf = async (id: number) => {
   const result = await repository.delete({ id });
   return result;
 };
+
+interface ShelfLocation extends Shelf {
+  packages: ShelfPackages[]
+}
+
+export const listShelfAndPckagesByWarehouseId = async(id: number) => {
+  const shelfs = await AppDataSource.manager.find(Shelf, {where: {warehouse_id: id}})
+  // const package_shelf = await AppDataSource.manager.find(ShelfPackages)
+  const mod_shelfs: ShelfLocation[] = []
+  for (let i = 0; i < shelfs.length; i++) {
+    const shelf = shelfs[i];
+    const packages = await getDataByShelfId(shelf.id)
+    mod_shelfs.push({...shelf, packages})
+  }
+  return mod_shelfs
+  // return shelfs;
+}
