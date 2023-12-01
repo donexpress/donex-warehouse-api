@@ -41,7 +41,7 @@ export const manifestParams = (value, carrier, customer_code) => {
     quantity: value[24],
     pieces: value[24],
     carrier: carrier,
-    state: 'loading',
+    state: 'pending',
     manifest_name: customer_code,
     item_description: '',
     payment_voucher: '',

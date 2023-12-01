@@ -22,6 +22,7 @@ import {
   listManifests,
   paidManifest,
   findManfest,
+  paidManifestClient,
 } from '../context/manifest';
 import carriers_type from '../config/carriers';
 import { Manifest } from '../models/manifest.model';
@@ -120,12 +121,14 @@ export const create_do = async (
             }
           } else if (action === 'update_customer') {
             for (let i = 0; i < worksheetsBody.data.length; i++) {
+              const collected = String(req.query.collected) || false;
               const value = await getValues(worksheetsBody.data[i]);
               const tracking_number = value[1];
               const sale_price = value[2];
               const manifest = await findByTracking(tracking_number);
               const update_manifest = await updateManifest(manifest, {
                 sale_price: sale_price,
+                state: collected ? 'collected' : manifest.state,
               });
               if (update_manifest instanceof Manifest) {
                 manifests.push(update_manifest);
@@ -136,6 +139,7 @@ export const create_do = async (
           } else if (action === 'update_supplier') {
             const bill_code = String(req.query.bill_code);
             const paid = Boolean(req.query.paid) || false;
+            const currency_exchange = Number(req.query.paid);
             for (let i = 0; i < worksheetsBody.data.length; i++) {
               const value = await getValues(worksheetsBody.data[i]);
               const tracking_number = value[0];
@@ -154,7 +158,7 @@ export const create_do = async (
                   manifest_charged_code.push(elem);
                 } else {
                   const update_manifest = await updateManifest(manifest, {
-                    shipping_cost: shipping_cost,
+                    shipping_cost: shipping_cost / currency_exchange,
                     invoice_weight: invoice_weight,
                     payment_voucher: bill_code,
                     bill_state: 'charged',
@@ -295,8 +299,15 @@ const parseHeader = (req: Request, res: Response) => {
 };
 
 export const paidUpdate = async (req: Request, res: Response) => {
-  const bill_code = req.query.bill_code;
-  const result = await paidManifest(String(bill_code));
+  const client = req.query.client;
+  let result;
+  if (client === 'customer') {
+    const waybill_id = String(req.query.waybill_id);
+    result = await paidManifestClient(waybill_id);
+  } else {
+    const bill_code = req.query.bill_code;
+    result = await paidManifest(String(bill_code));
+  }
 
   if (result) {
     res.status(204).send();
