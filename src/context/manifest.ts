@@ -157,6 +157,14 @@ export const paidManifest = async (
     .update({ payment_voucher: bill_code }, { paid: true });
 };
 
+export const paidManifestClient = async (
+  waybill_id: string
+): Promise<UpdateResult | null> => {
+  return await AppDataSource.manager
+    .getRepository(Manifest)
+    .update({ waybill_id: waybill_id }, { state: 'collected' });
+};
+
 export const selectByWaybill = async () => {
   return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
     .select('DISTINCT manifests.waybill_id', 'waybill_id')
@@ -174,7 +182,7 @@ export const listManifests = async (
       'manifests.tracking_number',
       'manifests.invoice_weight',
       'manifests.shipping_cost',
-      'manifests.payment_voucher'
+      'manifests.payment_voucher',
     ])
     .getRawMany();
 };
@@ -220,8 +228,13 @@ export const getWhere = (params) => {
   if (params.client_reference) {
     where.manifest_name = params.client_reference;
   }
+
   if (params.bill_code) {
     where.payment_voucher = params.bill_code;
+  }
+
+  if (params.state) {
+    where.state = params.state;
   }
 
   return where;
