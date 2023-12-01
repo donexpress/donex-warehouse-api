@@ -157,8 +157,9 @@ export const create_do = async (
                   };
                   manifest_charged_code.push(elem);
                 } else {
+                  const exchange = shipping_cost / currency_exchange;
                   const update_manifest = await updateManifest(manifest, {
-                    shipping_cost: shipping_cost / currency_exchange,
+                    shipping_cost: Number(exchange.toFixed(2)),
                     invoice_weight: invoice_weight,
                     payment_voucher: bill_code,
                     bill_state: 'charged',
