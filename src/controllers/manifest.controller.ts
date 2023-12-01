@@ -139,7 +139,7 @@ export const create_do = async (
           } else if (action === 'update_supplier') {
             const bill_code = String(req.query.bill_code);
             const paid = Boolean(req.query.paid) || false;
-            const currency_exchange = Number(req.query.paid);
+            const currency_exchange = Number(req.query.currency_exchange);
             for (let i = 0; i < worksheetsBody.data.length; i++) {
               const value = await getValues(worksheetsBody.data[i]);
               const tracking_number = value[0];
