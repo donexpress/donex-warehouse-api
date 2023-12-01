@@ -489,8 +489,11 @@ export const full_assign = async (
             layer_id_used.find((el) => el.layer === j && el.column === k) ===
             undefined
           ) {
+            console.log({packages: packages_list.length})
             for (let l = 0; l < packages_list.length; l++) {
               const package_list = packages_list[l];
+              console.log({package_id: package_list.id})
+              await package_shelf_repository.delete({package_id: package_list.id})
               const result = await package_shelf_repository.create({
                 column: k,
                 layer: j,
