@@ -37,7 +37,7 @@ export const showShelfPackage = async (id: number) => {
   return { ...shelf_package, shelf, package: packages };
 };
 
-export const getDataByShelfId = async (id: number) => {
+export const getDataByShelfId = async (id: number): Promise<ShelfPackages[]> => {
   const shelf_packages = await AppDataSource.manager.find(ShelfPackages, {
     where: { shelf_id: id },
   });
