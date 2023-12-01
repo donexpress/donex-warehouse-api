@@ -121,14 +121,14 @@ export const create_do = async (
             }
           } else if (action === 'update_customer') {
             for (let i = 0; i < worksheetsBody.data.length; i++) {
-              const collected = String(req.query.collected) || false;
+              const collected = Boolean(req.query.collected) || false;
               const value = await getValues(worksheetsBody.data[i]);
               const tracking_number = value[1];
               const sale_price = value[2];
               const manifest = await findByTracking(tracking_number);
               const update_manifest = await updateManifest(manifest, {
                 sale_price: sale_price,
-                state: collected ? 'collected' : manifest.state,
+                state: collected === true ? 'collected' : manifest.state,
               });
               if (update_manifest instanceof Manifest) {
                 manifests.push(update_manifest);
