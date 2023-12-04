@@ -439,9 +439,9 @@ export const full_assign = async (
   }
   let where: FindOptionsWhere<PackingList> = {};
   if (box_ids && box_ids.length > 0) {
-    where = { storage_plan_id: storage_plan.id, id: In(box_ids) };
+    where = { storage_plan_id: storage_plan.id, id: In(box_ids), dispatched: false };
   } else {
-    where = { storage_plan_id: storage_plan.id };
+    where = { storage_plan_id: storage_plan.id, dispatched: false };
   }
   const packages_list = await AppDataSource.manager.find(PackingList, {
     where,
