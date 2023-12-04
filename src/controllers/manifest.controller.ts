@@ -121,14 +121,14 @@ export const create_do = async (
             }
           } else if (action === 'update_customer') {
             for (let i = 0; i < worksheetsBody.data.length; i++) {
-              const collected = String(req.query.collected) || false;
+              const collected = Boolean(req.query.collected) || false;
               const value = await getValues(worksheetsBody.data[i]);
               const tracking_number = value[1];
               const sale_price = value[2];
               const manifest = await findByTracking(tracking_number);
               const update_manifest = await updateManifest(manifest, {
                 sale_price: sale_price,
-                state: collected ? 'collected' : manifest.state,
+                state: collected === true ? 'collected' : manifest.state,
               });
               if (update_manifest instanceof Manifest) {
                 manifests.push(update_manifest);
@@ -157,8 +157,9 @@ export const create_do = async (
                   };
                   manifest_charged_code.push(elem);
                 } else {
+                  const exchange = shipping_cost / currency_exchange;
                   const update_manifest = await updateManifest(manifest, {
-                    shipping_cost: shipping_cost / currency_exchange,
+                    shipping_cost: Number(exchange.toFixed(2)),
                     invoice_weight: invoice_weight,
                     payment_voucher: bill_code,
                     bill_state: 'charged',
