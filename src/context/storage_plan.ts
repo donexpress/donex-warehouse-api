@@ -473,7 +473,7 @@ export const full_assign = async (
         where: {id: In(packages.map(el => el.package_id)), dispatched: true},
       });
 
-      packages = packages.filter(p => packages_list_dispatched.find(pld => p.id === pld.id) === undefined )
+      packages = packages.filter(p => packages_list_dispatched.find(pld => p.package_id === pld.id) === undefined )
 
       console.log(
         `Ammount of packages: `,
