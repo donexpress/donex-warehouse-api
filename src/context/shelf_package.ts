@@ -44,7 +44,7 @@ export const getDataByShelfId = async (id: number): Promise<ShelfPackages[]> => 
   const mod_data = [];
   for (let i = 0; i < shelf_packages.length; i++) {
     const packages = await AppDataSource.manager.findOne(PackingList, {
-      where: { id: shelf_packages[i].package_id, dispatched: false },
+      where: { id: shelf_packages[i].package_id },
     });
     mod_data.push({ ...shelf_packages[i], package: packages });
   }
