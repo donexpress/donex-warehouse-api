@@ -439,9 +439,9 @@ export const full_assign = async (
   }
   let where: FindOptionsWhere<PackingList> = {};
   if (box_ids && box_ids.length > 0) {
-    where = { storage_plan_id: storage_plan.id, id: In(box_ids), dispatched: false };
+    where = { storage_plan_id: storage_plan.id, id: In(box_ids)};
   } else {
-    where = { storage_plan_id: storage_plan.id, dispatched: false };
+    where = { storage_plan_id: storage_plan.id };
   }
   const packages_list = await AppDataSource.manager.find(PackingList, {
     where,
@@ -466,9 +466,15 @@ export const full_assign = async (
       const shelf = selected_shelves[i];
       // check used layers and columns
       let layer_id_used: { layer: number; column: number }[] = [];
-      const packages = await AppDataSource.manager.find(ShelfPackages, {
+      let packages = await AppDataSource.manager.find(ShelfPackages, {
         where: { shelf_id: shelf.id },
       });
+      const packages_list_dispatched = await AppDataSource.manager.find(PackingList, {
+        where: {id: In(packages.map(el => el.package_id)), dispatched: true},
+      });
+
+      packages = packages.filter(p => packages_list_dispatched.find(pld => p.id === pld.id) === undefined )
+
       console.log(
         `Ammount of packages: `,
         packages.length
