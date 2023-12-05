@@ -205,8 +205,9 @@ export const barcode = async (req: Request, res: Response) => {
         }
       );
     // spacer++; //always the last instrucction
+    if (index < storage_plans.length -1) {
       myDoc.addPage();
-
+    }
   });
   myDoc.end();
 };
