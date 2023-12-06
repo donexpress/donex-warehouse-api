@@ -243,11 +243,7 @@ export const getWhere = (params) => {
   return where;
 };
 
-export const createBill = async (
-  waybill_id: string,
-  carrier: string,
-  eta
-) => {
+export const createBill = async (waybill_id: string, carrier: string, eta) => {
   const manifests = await AppDataSource.manager.find(Manifest, {
     where: { waybill_id, carrier },
     order: {
@@ -256,15 +252,15 @@ export const createBill = async (
     relations: ['consignee_address'],
   });
   const xlsx_headers = [
-   'Número',
+    'Número',
     'ETA(fecha de llegada)',
     'Numero de seguimiento',
-    "Numero de referencia",
-    "Canal de envío",
-    "País",
-    "Peso KG",
-    "Cantidad USD",
-    "Observaciones",
+    'Numero de referencia',
+    'Canal de envío',
+    'País',
+    'Peso KG',
+    'Cantidad USD',
+    'Observaciones',
   ];
   const xlsx_data = [];
   manifests.forEach((manifest, index) => {
@@ -281,6 +277,13 @@ export const createBill = async (
     });
   });
 
-  const xlsx = await generateBillXlsx(xlsx_headers, xlsx_data, shipping_invoice.address, shipping_invoice.email, manifests[0].manifest_name, waybill_id)
+  const xlsx = await generateBillXlsx(
+    xlsx_headers,
+    xlsx_data,
+    shipping_invoice.address,
+    shipping_invoice.email,
+    manifests[0].manifest_name,
+    waybill_id
+  );
   return xlsx;
 };
