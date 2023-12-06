@@ -56,7 +56,7 @@ router.get(
 );
 
 router.post(
-  '/api/v1/excel/bill',
+  '/api/v1/shipping_invoice',
   verifyTokenPresent,
   //guardianMw(['ADMIN', 'FINANCE']),
   ManifestController.xlsxBill

@@ -6,6 +6,7 @@ import { ConsigneeAddress } from '../models/consignee_address.model';
 import { ShipperAddress } from '../models/shipper_address.model';
 import { Between, FindOptionsWhere, UpdateResult } from 'typeorm';
 import { generateBillXlsx } from '../helpers/xlsx';
+import { shipping_invoice } from '../config/manifest';
 
 export const findManifest = async (
   current_page: number,
@@ -245,8 +246,7 @@ export const getWhere = (params) => {
 export const createBill = async (
   waybill_id: string,
   carrier: string,
-  address: string,
-  email: string,
+  eta
 ) => {
   const manifests = await AppDataSource.manager.find(Manifest, {
     where: { waybill_id, carrier },
@@ -270,7 +270,7 @@ export const createBill = async (
   manifests.forEach((manifest, index) => {
     xlsx_data.push({
       number: index + 1,
-      eta: manifest.created_at,
+      eta,
       traking_number: manifest.tracking_number,
       reference_number: manifest.client_reference,
       chanel: manifest.carrier,
@@ -281,6 +281,6 @@ export const createBill = async (
     });
   });
 
-  const xlsx = await generateBillXlsx(xlsx_headers, xlsx_data, address, email, manifests[0].manifest_name, waybill_id)
+  const xlsx = await generateBillXlsx(xlsx_headers, xlsx_data, shipping_invoice.address, shipping_invoice.email, manifests[0].manifest_name, waybill_id)
   return xlsx;
 };

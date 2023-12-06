@@ -328,12 +328,11 @@ export const remove = async (req: Request, res: Response) => {
 
 export const xlsxBill = async (req: Request, res: Response) => {
   try {
-    const { waybill_id, carrier, address, email } = req.body;
+    const { waybill_id, carrier, eta } = req.body;
     const filepath = await createBill(
       waybill_id,
       carrier,
-      address,
-      email
+      eta
     );
     const urls = await uploadFileToStore(filepath, 'xlsx');
     res.json(urls);
