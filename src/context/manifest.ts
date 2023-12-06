@@ -5,6 +5,7 @@ import { Manifest } from '../models/manifest.model';
 import { ConsigneeAddress } from '../models/consignee_address.model';
 import { ShipperAddress } from '../models/shipper_address.model';
 import { Between, FindOptionsWhere, UpdateResult } from 'typeorm';
+import { generateBillXlsx } from '../helpers/xlsx';
 
 export const findManifest = async (
   current_page: number,
@@ -239,4 +240,47 @@ export const getWhere = (params) => {
   }
 
   return where;
+};
+
+export const createBill = async (
+  waybill_id: string,
+  carrier: string,
+  address: string,
+  email: string,
+) => {
+  const manifests = await AppDataSource.manager.find(Manifest, {
+    where: { waybill_id, carrier },
+    order: {
+      created_at: 'DESC',
+    },
+    relations: ['consignee_address'],
+  });
+  const xlsx_headers = [
+   'Número',
+    'ETA(fecha de llegada)',
+    'Numero de seguimiento',
+    "Numero de referencia",
+    "Canal de envío",
+    "País",
+    "Peso KG",
+    "Cantidad USD",
+    "Observaciones",
+  ];
+  const xlsx_data = [];
+  manifests.forEach((manifest, index) => {
+    xlsx_data.push({
+      number: index + 1,
+      eta: manifest.created_at,
+      traking_number: manifest.tracking_number,
+      reference_number: manifest.client_reference,
+      chanel: manifest.carrier,
+      country: manifest.consignee_address.country_code,
+      weight: manifest.unit_weigth,
+      usd_amount: manifest.sale_price,
+      observations: manifest.item_description,
+    });
+  });
+
+  const xlsx = await generateBillXlsx(xlsx_headers, xlsx_data, address, email, manifests[0].manifest_name, waybill_id)
+  return xlsx;
 };

@@ -23,6 +23,7 @@ import {
   paidManifest,
   findManfest,
   paidManifestClient,
+  createBill,
 } from '../context/manifest';
 import carriers_type from '../config/carriers';
 import { Manifest } from '../models/manifest.model';
@@ -323,4 +324,22 @@ export const remove = async (req: Request, res: Response) => {
   await removeManifest(manifest);
 
   res.sendStatus(200);
+};
+
+export const xlsxBill = async (req: Request, res: Response) => {
+  try {
+    const { waybill_id, carrier, address, email } = req.body;
+    const filepath = await createBill(
+      waybill_id,
+      carrier,
+      address,
+      email
+    );
+    const urls = await uploadFileToStore(filepath, 'xlsx');
+    res.json(urls);
+    fs.unlink(filepath, () => {});
+  } catch (e) {
+    console.log(e);
+    res.status(500).json(e);
+  }
 };

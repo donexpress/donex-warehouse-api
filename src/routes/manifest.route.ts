@@ -55,6 +55,13 @@ router.get(
   ManifestController.jsonToxlsx
 );
 
+router.post(
+  '/api/v1/excel/bill',
+  verifyTokenPresent,
+  //guardianMw(['ADMIN', 'FINANCE']),
+  ManifestController.xlsxBill
+);
+
 router.get(
   '/api/v1/count',
   verifyTokenPresent,
