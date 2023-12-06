@@ -522,3 +522,84 @@ export const full_assign = async (
 
   return { state: 200, exist_empty: added };
 };
+
+
+export const suggest_asign = async (
+  storage_plan_id: number,
+  box_ids: number[] | undefined | null
+) => {
+  let added = false;
+  const available = [];
+  const storage_plan = await AppDataSource.manager.findOne(StoragePlan, {
+    where: { id: storage_plan_id },
+  });
+  if (!storage_plan) {
+    return { state: 404, available };
+  }
+  let where: FindOptionsWhere<PackingList> = {};
+  if (box_ids && box_ids.length > 0) {
+    where = { storage_plan_id: storage_plan.id, id: In(box_ids)};
+  } else {
+    where = { storage_plan_id: storage_plan.id };
+  }
+  const packages_list = await AppDataSource.manager.find(PackingList, {
+    where,
+  });
+  const shelfs = await findShelfByWarehouseId(storage_plan.warehouse_id);
+  console.log(!shelfs || !packages_list);
+  if (!shelfs || !packages_list) {
+    return { state: 404, available };
+  }
+  const package_shelf_repository = await AppDataSource.getRepository(
+    ShelfPackages
+  );
+  let check_shelves = shelfs;
+  let partition_count = 1;
+  while (check_shelves.length > 0) {
+    const selected_shelves = check_shelves.filter(
+      (el) => el.partition_table === partition_count
+    );
+    for (let i = 0; i < selected_shelves.length; i++) {
+      const shelf = selected_shelves[i];
+      // check used layers and columns
+      let layer_id_used: { layer: number; column: number }[] = [];
+      let packages = await AppDataSource.manager.find(ShelfPackages, {
+        where: { shelf_id: shelf.id },
+      });
+      const packages_list_dispatched = await AppDataSource.manager.find(PackingList, {
+        where: {id: In(packages.map(el => el.package_id)), dispatched: true},
+      });
+
+      packages = packages.filter(p => packages_list_dispatched.find(pld => p.package_id === pld.id) === undefined )
+      packages.forEach((p) => {
+        if (
+          layer_id_used.filter(
+            (el) => el.layer === p.layer && el.column === p.column
+          ).length === 0
+        ) {
+          layer_id_used.push({ layer: p.layer, column: p.column });
+        }
+      });
+      for (let j = 1; j <= shelf.layers && !added; j++) {
+        for (let k = 1; k <= shelf.column_ammount && !added; k++) {
+          if (
+            layer_id_used.find((el) => el.layer === j && el.column === k) ===
+            undefined
+          ) {
+            available.push({
+              column: k,
+              layer: j,
+              shelf_id: shelf.id
+            })
+          }
+        }
+      }
+    }
+    check_shelves = check_shelves.filter(
+      (el) => el.partition_table !== partition_count
+    );
+    partition_count++;
+  }
+
+  return { state: 200, available };
+};
