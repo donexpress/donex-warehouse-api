@@ -329,6 +329,9 @@ export const remove = async (req: Request, res: Response) => {
 export const xlsxBill = async (req: Request, res: Response) => {
   try {
     const { waybill_id, carrier, eta } = req.body;
+    console.log(waybill_id);
+    console.log(carrier);
+    console.log(eta);
     const filepath = await createBill(
       waybill_id,
       carrier,
