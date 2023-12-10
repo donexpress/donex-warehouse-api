@@ -48,18 +48,7 @@ export const findByWaybillAndCarrier = async (
 };
 
 export const findManfest = async (params) => {
-  const where: FindOptionsWhere<Manifest> | FindOptionsWhere<Manifest>[] = {};
-  if (params.bill_code) {
-    where.payment_voucher = params.bill_code;
-  }
-
-  if (params.waybill_id) {
-    where.waybill_id = params.waybill_id;
-  }
-
-  if (params.carrier) {
-    where.carrier = params.carrier;
-  }
+  const where = await getWhere(params)
   return await AppDataSource.manager.find(Manifest, {
     where: where,
   });
