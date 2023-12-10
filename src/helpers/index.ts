@@ -27,8 +27,8 @@ export const getValues = (obj) => {
   return obj_array;
 };
 
-export const manifestParams = (value, carrier, customer_code) => {
-  const shipping_cost = calculate_cost(value[19], carrier);
+export const manifestParams = async (value, carrier, customer_code) => {
+  const shipping_cost = await calculate_cost(value[19], carrier);
   let manifest_data = {
     waybill_id: value[0],
     bag_code: value[1],
