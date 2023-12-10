@@ -6,12 +6,16 @@ export const calculate_cost = async (weight, carrier) => {
         fee = 2.1;
       }
 
-      if (weight > 0.501 && weight <= 1.0) {
+      if (weight >= 0.501 && weight <= 1.0) {
         fee = 2.3;
       }
 
-      if (weight > 1.001 && weight <= 2.0) {
+      if (weight >= 1.001 && weight <= 2.0) {
         fee = 2.5;
+      }
+
+      if (weight >= 2.001 && weight < 3.0) {
+        fee = 3;
       }
       break;
 
