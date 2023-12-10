@@ -1,7 +1,7 @@
 export const calculate_cost = async (weight, carrier) => {
   let fee;
   switch (carrier) {
-    case 'J&T':
+    case 'JT':
       if (weight > 0 && weight <= 0.5) {
         fee = 2.1;
       }
