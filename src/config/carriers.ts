@@ -2,12 +2,12 @@ const carriers = {
   // MExico
   JT: {
     name: 'J&T',
-    value: 'JT',
+    value: 'J&T',
     position: 1,
   },
   RP: {
     name: 'Redpack',
-    value: 'RP',
+    value: 'Redpack',
     position: 2,
   },
   CSM: {
