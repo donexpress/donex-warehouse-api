@@ -48,7 +48,7 @@ export const manifestParams = async (value, carrier, customer_code) => {
     item_description: '',
     payment_voucher: '',
     bill_state: 'pending',
-    sale_price: value[25] === '' ? shipping_cost : value[25],
+    sale_price: Number(shipping_cost),
   };
 
   let shipper_data = {
