@@ -240,6 +240,12 @@ export const getWhere = (params) => {
     where.state = params.state;
   }
 
+  if (params.start_date && params.end_date) {
+    const start_date_to = new Date(params.start_date);
+    const end_date_to = new Date(params.end_date);
+    where.created_at = Between(start_date_to, end_date_to);
+  }
+
   return where;
 };
 
