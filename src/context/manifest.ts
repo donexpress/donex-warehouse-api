@@ -204,11 +204,12 @@ export const summaryByWaybill = async () => {
     const body = {
       MWB: waybill_id,
       quantity_package: count,
-      kilo_count: Number(kilo_count.toFixed(3)),
+      quantity_kilograms: Number(kilo_count.toFixed(3)),
       created_at: manifest[0].created_at,
-      quantity_shipping_cost: sum_cost === null ? 0 : sum_cost.toFixed(2),
+      quantity_shipping_cost:
+        sum_cost === null ? 0 : Number(sum_cost.toFixed(2)),
       quantity_sale_price:
-        sum_sale_price === null ? 0 : sum_sale_price.toFixed(2),
+        sum_sale_price === null ? 0 : Number(sum_sale_price.toFixed(2)),
       earnings: Number(sum_cost.toFixed(2)) - Number(sum_sale_price.toFixed(2)),
     };
     summary.push(body);
