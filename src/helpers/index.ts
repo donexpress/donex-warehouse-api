@@ -30,7 +30,7 @@ export const getValues = (obj) => {
 export const manifestParams = async (value, carrier, customer_code) => {
   const shipping_cost = await calculate_cost(value[19], carrier);
   let manifest_data = {
-    waybill_id: value[0],
+    waybill_id: value[0].trim(),
     bag_code: value[1],
     bag_id: value[2],
     tracking_number: value[3],
