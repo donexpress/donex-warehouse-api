@@ -27,6 +27,11 @@ router.post(
   verifyTokenPresent,
   StoragePlanController.auto_assign
 );
+router.post(
+  '/api/v1/storage_plan/:id/suggest_asign',
+  verifyTokenPresent,
+  StoragePlanController.suggested
+);
 router.put(
   '/api/v1/storage_plan/:id',
   verifyTokenPresent,

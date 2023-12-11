@@ -10,6 +10,7 @@ import {
   removeStoragePlan,
   showCleanStoragePlan,
   showStoragePlan,
+  suggest_asign,
   updateStoragePlan,
 } from '../context/storage_plan';
 import { StoragePlan } from '../models/storage_plan.model';
@@ -201,4 +202,9 @@ export const changeState = async (req: Request, res: Response) => {
 export const auto_assign = async(req: Request, res: Response) => {
   const result = await full_assign(Number(req.params.id), req.body.box_ids)
   res.status(result.state).send({success: result.exist_empty})
+}
+
+export const suggested = async(req: Request, res: Response) => {
+  const result = await suggest_asign(Number(req.params.id), req.body.box_ids)
+  res.status(result.state).send({available: result.available})
 }

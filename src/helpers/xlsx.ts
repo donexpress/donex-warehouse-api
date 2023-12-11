@@ -75,7 +75,7 @@ export const generateBillXlsx = async (
       ['','',`Email: ${email}`],
       [],
       [
-        `No. fact: ${date.getFullYear()}${date.getMonth().toString().padStart(2, '0')}${date.getDate().toString().padStart(2,'0')}${Math.floor(Math.random()*1000)}`
+        `No. fact: ${date.getFullYear()}${(date.getMonth()+1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2,'0')}${Math.floor(Math.random()*1000)}`
       ],
       [
         `Fecha fact:`, `${date.toDateString()}` 

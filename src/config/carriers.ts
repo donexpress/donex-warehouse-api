@@ -1,29 +1,44 @@
 const carriers = {
-  RP: {
-    name: 'RedPack',
-    value: 'RP',
+  // MExico
+  JT: {
+    name: 'JT',
+    value: 'JT',
     position: 1,
+  },
+  RP: {
+    name: 'Redpack',
+    value: 'Redpack',
+    position: 2,
   },
   CSM: {
     name: 'SCM',
     value: 'SCM',
-    position: 2,
-  },
-  AMPM: {
-    name: 'AMPM',
-    value: 'AMPM',
     position: 3,
   },
-  JT: {
-    name: 'JT Express',
-    value: 'JT',
+  //Colombia
+  SERVIENTREGA: {
+    name: 'Servientrega',
+    value: 'Servientrega',
     position: 4,
   },
-  APG: {
-    name: 'APG-UPU',
-    value: 'APG',
+  // Peru
+  SERPOST: {
+    name: 'Serpost',
+    value: 'Serpost',
     position: 5,
   },
+  URBANO: {
+    name: 'Urbano',
+    value: 'Urbano',
+    position: 6,
+  },
+  // Chile
+  Starken: {
+    name: 'Starken',
+    value: 'Starken',
+    position: 7,
+  },
+  // Argenita
   OCA: {
     name: 'OCA',
     value: 'OCA',

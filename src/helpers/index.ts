@@ -1,4 +1,5 @@
 import { upload } from './file';
+import { calculate_cost } from './shipping_cost';
 
 export const randomStr = (length) => {
   let result = '';
@@ -26,7 +27,8 @@ export const getValues = (obj) => {
   return obj_array;
 };
 
-export const manifestParams = (value, carrier, customer_code) => {
+export const manifestParams = async (value, carrier, customer_code) => {
+  const shipping_cost = await calculate_cost(value[19], carrier);
   let manifest_data = {
     waybill_id: value[0],
     bag_code: value[1],
@@ -46,7 +48,7 @@ export const manifestParams = (value, carrier, customer_code) => {
     item_description: '',
     payment_voucher: '',
     bill_state: 'pending',
-    sale_price: value[25] === '' ? 0 : value[25],
+    sale_price: Number(shipping_cost),
   };
 
   let shipper_data = {
@@ -196,11 +198,5 @@ export const colManifest = () => {
 };
 
 export const colPartialManifest = () => {
-  return [
-    'MWB',
-    'TRACKING',
-    'SHIPPING COST',
-    'INVOICE WEIGHT',
-    'BILL CODE'
-  ];
+  return ['MWB', 'TRACKING', 'SHIPPING COST', 'INVOICE WEIGHT', 'BILL CODE'];
 };
