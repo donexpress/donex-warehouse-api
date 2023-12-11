@@ -32,14 +32,13 @@ export const index = async (req: Request, res: Response) => {
     const number_of_rows = req.query.number_of_rows
       ? Number(req.query.number_of_rows)
       : await countStoragePlan();
-    const query = req.query.query;
+    const filter = req.query.filter;
     const state = req.query.state;
     const current_user = getCurrentUser(req);
     const storage_plans = await listStoragePlan(
       current_page,
       number_of_rows,
-      query == undefined ? '' : String(query),
-      state == undefined ? '' : String(state),
+      filter ? JSON.parse(String(filter)): {},
       current_user
     );
     res.json(storage_plans);
@@ -80,10 +79,10 @@ export const no_dependencies = async (req: Request, res: Response) => {
 export const count = async (req: Request, res: Response) => {
   try {
     const current_user = getCurrentUser(req);
-    const query = req.query.query;
+    const filter = req.query.filter;
     const count = await countAllStoragePlan(
       current_user,
-      query == undefined ? '' : String(query)
+      filter ? JSON.parse(String(filter)): {}
     );
     res.json(count);
   } catch (e) {

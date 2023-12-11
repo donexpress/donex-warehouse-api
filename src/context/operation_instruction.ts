@@ -23,55 +23,14 @@ import { OutputPlan } from '../models/output_plan.model';
 export const listOI = async (
   current_page: number,
   number_of_rows: number,
-  state: string | '',
-  query_name: string,
+  filter: Partial<OperationInstruction>,
   current_user: any
 ) => {
   let query = {};
   let where:
     | FindOptionsWhere<OperationInstruction>
-    | FindOptionsWhere<OperationInstruction>[] = [
-    { number_delivery: ILike(`%${query_name}%`) },
-  ];
-  const o_p = await AppDataSource.manager.find(OutputPlan, {where: {output_number: ILike(`%${query_name}%`)}})
-  if (state === 'all') {
-    if (current_user.customer_number) {
-      where = [
-        { output_plan_id: In(o_p.map(el => el.id)), user_id: current_user.id },
-        {user_id: current_user.id, number_delivery: ILike(`%${query_name}%`)}
-      ];
-    } else {
-      where = [{ output_plan_id: In(o_p.map(el => el.id))},{number_delivery: ILike(`%${query_name}%`)}];
-    }
-  } else {
-    if (current_user.customer_number) {
-      where = [
-        {
-          output_plan_id: In(o_p.map(el => el.id)),
-          user_id: current_user.id,
-          state: state,
-        },
-        {
-          number_delivery: ILike(`%${query_name}%`),
-          user_id: current_user.id,
-          state: state,
-        }
-      ];
-    } else {
-      where = [
-        {
-          output_plan_id: In(o_p.map(el => el.id)),
-          state: state,
-        },
-        {
-          number_delivery: ILike(`%${query_name}%`),
-          state: state,
-
-        }
-      ];
-    }
-  }
-
+    | FindOptionsWhere<OperationInstruction>[] = getFilterWhere(filter, current_user)
+  // const o_p = await AppDataSource.manager.find(OutputPlan);
   query = {
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
@@ -144,18 +103,15 @@ export const listOIByOutputPlanId = async (
   return mod_operation_instructions;
 };
 
-export const countOI = async (current_user?: any) => {
-  let where: any = {};
-  if (current_user && current_user.customer_number) {
-    where.user_id = current_user.id;
-  }
+export const countOI = async (filter: Partial<OperationInstruction>, current_user?: any) => {
+  let where: any = getFilterWhere(current_user, filter)
   return AppDataSource.manager.count(OperationInstruction, { where });
 };
 
 export const countAllOI = async (
   output_id: number,
   current_user: any,
-  query = ''
+  filter: Partial<OperationInstruction>
 ): Promise<Object> => {
   const repository = AppDataSource.getRepository(OperationInstruction);
 
@@ -164,21 +120,21 @@ export const countAllOI = async (
     states.operation_instruction.pending.value,
     output_id,
     current_user,
-    query
+    filter
   );
   const processed = await getCountByStateAndOutputId(
     repository,
     states.operation_instruction.processed.value,
     output_id,
     current_user,
-    query
+    filter
   );
   const processing = await getCountByStateAndOutputId(
     repository,
     states.operation_instruction.processing.value,
     output_id,
     current_user,
-    query
+    filter
   );
 
   const cancelled = await getCountByStateAndOutputId(
@@ -186,7 +142,7 @@ export const countAllOI = async (
     states.operation_instruction.cancelled.value,
     output_id,
     current_user,
-    query
+    filter
   );
 
   const total = pending + processed + processing + cancelled;
@@ -322,26 +278,48 @@ const getCountByStateAndOutputId = async (
   state_value,
   output_plan_id,
   current_user,
-  query: string = ''
+  filter: Partial<OperationInstruction>
 ): Promise<number> => {
   let where:
     | FindOptionsWhere<OperationInstruction>
-    | FindOptionsWhere<OperationInstruction>[] = { state: state_value };
-  if (output_plan_id) {
-    where = { state: state_value, output_plan_id: output_plan_id };
-    if (current_user.customer_number) {
-        where.user_id = current_user.id;
-      }
-  } else {
-    const o_p = await AppDataSource.manager.find(OutputPlan, {where: {output_number: ILike(`%${query}%`)}})
-    if (current_user.customer_number) {
-      where = [{ state: state_value, output_plan_id: In(o_p.map(el => el.id)), user_id: current_user.id }, {number_delivery: ILike(`%${query}%`), state: state_value, user_id: current_user.id}];
-    } else {
-    where = [{ state: state_value, output_plan_id: In(o_p.map(el => el.id)) }, {number_delivery: ILike(`%${query}%`), state: state_value}];
+    | FindOptionsWhere<OperationInstruction>[] = getFilterWhere(filter, current_user)
+
+    if(state_value) {
+      filter.state = state_value
     }
-  }
-  
+    if(output_plan_id) {
+      filter.output_plan_id = output_plan_id
+    }
+
   return await repository.count({
     where,
   });
+};
+
+const getFilterWhere = (
+  filter: Partial<OperationInstruction>,
+  current_user: any
+) => {
+  const where: FindOptionsWhere<OperationInstruction> | FindOptionsWhere<OperationInstruction>[] =
+    {};
+
+    if(filter.client_display) {
+      where.client_display = filter.client_display
+    }
+    if(filter.internal_remark) {
+      where.internal_remark = filter.internal_remark
+    }
+    if(filter.number_delivery) {
+      where.number_delivery = ILike(`%${filter.number_delivery}%`)
+    }
+    if(filter.remark) {
+      where.remark = filter.remark
+    }
+    if(filter.state) {
+      where.state = filter.state
+    }
+    if (current_user.customer_number) {
+      where.user_id = current_user.id;
+    }
+    return where;
 };

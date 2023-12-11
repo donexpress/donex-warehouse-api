@@ -16,49 +16,18 @@ import { getCountByState, getStates } from '../helpers/states';
 import { removeNullProperties } from '../helpers';
 import {
   findShelfByWarehouseId,
-  listShelfAndPckagesByWarehouseId,
 } from './shelf';
 import { ShelfPackages } from '../models/shelf_package.model';
-import { Shelf } from '../models/shelf.model';
 
 export const listStoragePlan = async (
   current_page: number,
   number_of_rows: number,
-  query: string,
-  state: string,
+  query: Partial<StoragePlan>,
   current_user
 ) => {
-  let where: FindOptionsWhere<StoragePlan> | FindOptionsWhere<StoragePlan>[] = [
-    { customer_order_number: ILike(`%${query}%`), state: state },
-    { order_number: ILike(`%${query}%`), state: state },
-    { pr_number: ILike(`%${query}%`), state: state },
-    { reference_number: ILike(`%${query}%`), state: state },
-  ];
 
-  if (current_user.customer_number) {
-    where = [
-      {
-        customer_order_number: ILike(`%${query}%`),
-        state: state,
-        user_id: current_user.id,
-      },
-      {
-        order_number: ILike(`%${query}%`),
-        state: state,
-        user_id: current_user.id,
-      },
-      {
-        pr_number: ILike(`%${query}%`),
-        state: state,
-        user_id: current_user.id,
-      },
-      {
-        reference_number: ILike(`%${query}%`),
-        state: state,
-        user_id: current_user.id,
-      },
-    ];
-  }
+  const where  = getWhereFilter(query, current_user)
+  
   const storage_plans = await AppDataSource.manager.find(StoragePlan, {
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
@@ -131,25 +100,25 @@ export const countStoragePlan = async () => {
 
 export const countAllStoragePlan = async (
   current_user: any,
-  query: string
+  filter: Partial<StoragePlan>
 ): Promise<Object> => {
   const repository = AppDataSource.getRepository(StoragePlan);
   const total = await countStoragePlan();
   const to_be_storage = await getCountByState(
     repository,
-    await getWhere(current_user, query, states.entry_plan.to_be_storage.value)
+    await getWhereFilter({...filter, state: states.entry_plan.to_be_storage.value}, current_user)
   );
   const into_warehouse = await getCountByState(
     repository,
-    await getWhere(current_user, query, states.entry_plan.into_warehouse.value)
+    await getWhereFilter({...filter, state: states.entry_plan.into_warehouse.value}, current_user)
   );
   const cancelled = await getCountByState(
     repository,
-    await getWhere(current_user, query, states.entry_plan.cancelled.value)
+    await getWhereFilter({...filter, state: states.entry_plan.cancelled.value}, current_user)
   );
   const stocked = await getCountByState(
     repository,
-    await getWhere(current_user, query, states.entry_plan.stocked.value)
+    await getWhereFilter({...filter, state: states.entry_plan.stocked.value}, current_user)
   );
 
   const result = {
@@ -523,6 +492,55 @@ export const full_assign = async (
   return { state: 200, exist_empty: added };
 };
 
+export const getWhereFilter = (query: Partial<StoragePlan>, current_user) => {
+  let where: FindOptionsWhere<StoragePlan> | FindOptionsWhere<StoragePlan>[] = {}
+  if(query.box_amount) {
+    where.box_amount = query.box_amount;
+  }
+  if(query.country) {
+    where.country = query.country;
+  }
+  if(query.customer_order_number) {
+    where.customer_order_number = ILike(`%${query.customer_order_number}%`);
+  }
+  if(query.is_images) {
+    where.is_images = query.is_images;
+  }
+  if(query.observations) {
+    where.observations = ILike(`%${query.observations}%`)
+  }
+  if(query.order_number) {
+    where.order_number = ILike(`%${query.order_number}%`)
+  }
+  if(query.out_boxes) {
+    where.out_boxes = query.out_boxes
+  }
+  if(query.pr_number) {
+    where.pr_number = query.pr_number
+  }
+  if(query.ready) {
+    where.ready = query.ready
+  }
+  if(query.reference_number) {
+    where.reference_number = query.reference_number
+  }
+  if(query.rejected_boxes) {
+    where.rejected_boxes = query.rejected_boxes
+  }
+  if(query.return) {
+    where.return = query.return
+  }
+  if(query.state) {
+    where.state = query.state
+  }
+  if(query.stock_boxes) {
+    where.stock_boxes = query.stock_boxes
+  }
+  if(current_user.customer_number) {
+    where.user_id = current_user.id
+  }
+  return where;
+}
 
 export const suggest_asign = async (
   storage_plan_id: number,

@@ -40,66 +40,13 @@ import { jsonToExcel } from '../helpers/xlsx';
 import { uploadFileToStore } from './file';
 import fs from 'fs';
 
-
 export const listOutputPlan = async (
   current_page: number,
   number_of_rows: number,
-  state: string,
-  query: string,
   current_user: any,
-  filter: OutputPlanFilter
+  filter: Partial<OutputPlanFilter>
 ) => {
-  const fl =
-    filter.location.length !== Object.keys(destinations).length
-      ? { destination: In(filter.location) }
-      : {};
-  if (filter.initialDate) {
-    const start_date = new Date(filter.initialDate);
-    let final_date = new Date(filter.initialDate);
-    if (filter.finalDate) {
-      final_date = new Date(filter.finalDate);
-    }
-    final_date.setDate(final_date.getDate() + 1);
-    fl['delivered_time'] = Between(
-      start_date.toISOString(),
-      final_date.toISOString()
-    );
-  }
-  let where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] = [
-    { output_number: ILike(`%${query}%`), state: state, ...fl },
-    { case_numbers: ArrayContains([query]), state: state, ...fl },
-    { reference_number: ILike(`%${query}%`), state: state, ...fl },
-    { client_box_number: ILike(`%${query}%`), state: state, ...fl },
-  ];
-
-  if (current_user.customer_number) {
-    where = [
-      {
-        output_number: ILike(`%${query}%`),
-        state: state,
-        user_id: current_user.id,
-        ...fl,
-      },
-      {
-        case_numbers: ArrayContains([query]),
-        state: state,
-        user_id: current_user.id,
-        ...fl,
-      },
-      {
-        reference_number: ILike(`%${query}%`),
-        state: state,
-        user_id: current_user.id,
-        ...fl,
-      },
-      {
-        client_box_number: ILike(`%${query}%`),
-        state: state,
-        user_id: current_user.id,
-        ...fl,
-      },
-    ];
-  }
+  const where = getWhereFilter(filter, current_user);
   const result = await AppDataSource.manager.find(OutputPlan, {
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
@@ -270,65 +217,39 @@ export const getOutputPlanByState = async (
   return mod_package_list;
 };
 
-export const countOutputPlan = async (current_user?) => {
-  const where: any = {};
-  if (current_user && current_user.customer_number) {
-    where.user_id = current_user.id;
-  }
+export const countOutputPlan = async (current_user?, filter?) => {
+  const where: any = getWhereFilter(filter, current_user);
+  // if (current_user && current_user.customer_number) {
+  //   where.user_id = current_user.id;
+  // }
   return AppDataSource.manager.count(OutputPlan, { where });
 };
 
 export const countAllOutputPlan = async (
   current_user: any,
-  query,
-  filter: OutputPlanFilter
+  filter: Partial<OutputPlanFilter>
 ): Promise<Object> => {
   const repository = AppDataSource.getRepository(OutputPlan);
   const total = await countOutputPlan(current_user);
   const pending = await getCountByState(
     repository,
-    await getWhere(
-      current_user,
-      query,
-      states.output_plan.pending.value,
-      filter
-    )
+    await getWhereFilter({...filter, state: states.output_plan.pending.value}, current_user)
   );
   const to_be_processed = await getCountByState(
     repository,
-    await getWhere(
-      current_user,
-      query,
-      states.output_plan.to_be_processed.value,
-      filter
-    )
+    await getWhereFilter({...filter, state: states.output_plan.to_be_processed.value}, current_user)
   );
   const processing = await getCountByState(
     repository,
-    await getWhere(
-      current_user,
-      query,
-      states.output_plan.processing.value,
-      filter
-    )
+    await getWhereFilter({...filter, state: states.output_plan.processing.value}, current_user)
   );
   const dispatched = await getCountByState(
     repository,
-    await getWhere(
-      current_user,
-      query,
-      states.output_plan.dispatched.value,
-      filter
-    )
+    await getWhereFilter({...filter, state: states.output_plan.dispatched.value}, current_user)
   );
   const cancelled = await getCountByState(
     repository,
-    await getWhere(
-      current_user,
-      query,
-      states.output_plan.cancelled.value,
-      filter
-    )
+    await getWhereFilter({...filter, state: states.output_plan.cancelled.value}, current_user)
   );
 
   const result = {
@@ -458,8 +379,8 @@ export const showOutputPlan = async (id: number) => {
 };
 
 export const createOutputPlan = async (data: any, current_user: any) => {
-  if(!data.user_id) {
-    data.user_id = current_user.id
+  if (!data.user_id) {
+    data.user_id = current_user.id;
   }
   const repository = await AppDataSource.getRepository(OutputPlan);
   const date = new Date();
@@ -540,8 +461,10 @@ export const updateOutputPlan = async (id: number, data) => {
 
 export const removeOutputPlan = async (id: number) => {
   const repository = await AppDataSource.getRepository(OutputPlan);
-  const operation_instruction_repository = await AppDataSource.getRepository(OperationInstruction)
-  await operation_instruction_repository.delete({output_plan_id: id})
+  const operation_instruction_repository = await AppDataSource.getRepository(
+    OperationInstruction
+  );
+  await operation_instruction_repository.delete({ output_plan_id: id });
   const result = await repository.delete({ id });
   return result;
 };
@@ -555,10 +478,6 @@ export const getDestinations = () => {
 };
 
 export const getAddresses = () => {
-  // const addrss = [];
-  // for (const [key, value] of Object.entries(addresses)) {
-  //   addrss.push(value);
-  // }
   return addresses;
 };
 
@@ -630,8 +549,8 @@ export const returnBoxes = async (id: number, data) => {
   data.case_numbers = output_plan.case_numbers.filter(
     (el) => !data.case_numbers.find((cn) => cn === el)
   );
-  data.box_amount = data.case_numbers.length
-  data.output_boxes = data.case_numbers.length
+  data.box_amount = data.case_numbers.length;
+  data.output_boxes = data.case_numbers.length;
   data.client_box_number = getCustomerOrderNumber(output_plan.packing_lists);
   const result = await repository.update({ id }, data);
   return result;
@@ -765,9 +684,11 @@ export const pullBoxes = async ({
 };
 
 export const cleanOutputPlan = async (owner_id: number | null) => {
-  const where: FindOptionsWhere<OutputPlan> = { state: Not(states.output_plan.cancelled.value) }
-  if(owner_id) {
-    where.user_id = owner_id
+  const where: FindOptionsWhere<OutputPlan> = {
+    state: Not(states.output_plan.cancelled.value),
+  };
+  if (owner_id) {
+    where.user_id = owner_id;
   }
   const result = await AppDataSource.manager.find(OutputPlan, {
     where,
@@ -785,12 +706,12 @@ export const listOutputPlanRequired = async (
   let where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] = {
     state,
   };
-  if(state === 'all') {
-    where = {}
+  if (state === 'all') {
+    where = {};
   }
 
   if (current_user.customer_number) {
-    if(state === "all") {
+    if (state === 'all') {
       where = {
         user_id: current_user.id,
       };
@@ -814,7 +735,7 @@ export const listOutputPlanRequired = async (
     let user = null;
     let destination = destinations[el.destination];
 
-    const packing_lists =  await getPackingListByCaseNumbers(el.case_numbers)
+    const packing_lists = await getPackingListByCaseNumbers(el.case_numbers);
     // for (let i = 0; i < el.case_numbers.length; i++) {
     //   const element = el.case_numbers[i];
     //   const res = await getPackingListByCaseNumber(element);
@@ -859,14 +780,88 @@ export const getCustomerOrderNumber = (
   return numbers.join(', ');
 };
 
-export const exportOutputPlanXLSX = async (ids: number[], columns: {key: string, value: string}[]) => {
-  const select: FindOptionsSelect<OutputPlan> = {}
-  columns.forEach(column => {
-    select[column.key] = true
-  })
-  const output_plans = await AppDataSource.manager.find(OutputPlan, {where: {id: In(ids)}, select})
-  const filepath = await jsonToExcel(output_plans, columns.map(el => el.value));
+export const exportOutputPlanXLSX = async (
+  ids: number[],
+  columns: { key: string; value: string }[]
+) => {
+  const select: FindOptionsSelect<OutputPlan> = {};
+  columns.forEach((column) => {
+    select[column.key] = true;
+  });
+  const output_plans = await AppDataSource.manager.find(OutputPlan, {
+    where: { id: In(ids) },
+    select,
+  });
+  const filepath = await jsonToExcel(
+    output_plans,
+    columns.map((el) => el.value)
+  );
   const url = await uploadFileToStore(filepath, 'xlsx');
   fs.unlink(filepath, () => {});
-  return url 
-}
+  return url;
+};
+
+const getWhereFilter = (
+  filter: Partial<OutputPlanFilter>,
+  current_user: any
+) => {
+  const where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] =
+    {};
+
+  if (
+    filter.location &&
+    filter.location.length !== Object.keys(destinations).length
+  ) {
+    where.destination = In(filter.location);
+  }
+
+  if (filter.initialDate) {
+    const start_date = new Date(filter.initialDate);
+    let final_date = new Date(filter.initialDate);
+    if (filter.finalDate) {
+      final_date = new Date(filter.finalDate);
+    }
+    final_date.setDate(final_date.getDate() + 1);
+    where.delivered_time = Between(
+      start_date.toISOString(),
+      final_date.toISOString()
+    );
+  }
+  if (filter.amount) {
+    where.amount = filter.amount;
+  }
+  if (filter.box_amount) {
+    where.box_amount = filter.box_amount;
+  }
+  if (filter.city) {
+    where.city = filter.city;
+  }
+  if (filter.client_box_number) {
+    where.client_box_number = ILike(`%${filter.client_box_number}%`);
+  }
+  if (filter.country) {
+    where.country = filter.country;
+  }
+  if (filter.delivered_quantity) {
+    where.delivered_quantity = filter.delivered_quantity;
+  }
+  if (filter.observations) {
+    where.observations = ILike(`%${filter.observations}%`);
+  }
+  if (filter.output_boxes) {
+    where.output_boxes = filter.output_boxes;
+  }
+  if (filter.output_number) {
+    where.output_number = ILike(`%${filter.output_number}%`);
+  }
+  if (filter.reference_number) {
+    where.reference_number = ILike(`%${filter.reference_number}%`);
+  }
+  if (filter.state) {
+    where.state = filter.state;
+  }
+  if (current_user.customer_number) {
+    where.user_id = current_user.id;
+  }
+  return where;
+};
