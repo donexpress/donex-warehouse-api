@@ -26,21 +26,20 @@ export const listOperationInstructionType = async (
 
 export const index = async (req: Request, res: Response) => {
   try {
+    const filter = req.query.filter;
+    const current_user = getCurrentUser(req);
     const current_page = req.query.current_page
       ? Number(req.query.current_page)
       : 1;
     const number_of_rows = req.query.number_of_rows
       ? Number(req.query.number_of_rows)
-      : await countOI();
+      : await countOI(filter ? JSON.parse(String(filter)): {}, current_user);
 
     const state = req.query.state;
-    const query = req.query.query;
-    const current_user = getCurrentUser(req);
     const operation_instruction = await listOI(
       current_page,
       number_of_rows,
-      String(state),
-      query === undefined ? '' : String(query),
+      filter ? JSON.parse(String(filter)): {},
       current_user
     );
     res.json(operation_instruction);
@@ -57,7 +56,7 @@ export const indexByOutputPlan = async (req: Request, res: Response) => {
       : 1;
     const number_of_rows = req.query.number_of_rows
       ? Number(req.query.number_of_rows)
-      : await countOI();
+      : await countOI({});
 
     const state = req.query.state;
     const output_plan_id = req.params.outputPlanId;
@@ -91,11 +90,11 @@ export const count = async (req: Request, res: Response) => {
   try {
     const output_id = req.query.output_plan_id;
     const current_user = getCurrentUser(req);
-    const query = req.query.query;
+    const filter = req.query.filter;
     const count = await countAllOI(
       Number(output_id),
       current_user,
-      query === undefined ? '' : String(query)
+      filter ? JSON.parse(String(filter)): {}
     );
     res.json(count);
   } catch (e) {
