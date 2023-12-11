@@ -47,7 +47,7 @@ export const findByWaybillAndCarrier = async (
   });
 };
 
-export const findManfest = async (params) => {
+export const findAllManifest = async (params) => {
   const where = await getWhere(params)
   return await AppDataSource.manager.find(Manifest, {
     where: where,

@@ -21,7 +21,7 @@ import {
   selectByWaybill,
   listManifests,
   paidManifest,
-  findManfest,
+  findAllManifest,
   paidManifestClient,
   createBill,
 } from '../context/manifest';
@@ -236,7 +236,7 @@ export const find = async (req: Request, res: Response) => {
 };
 
 export const jsonToxlsx = async (req: Request, res: Response) => {
-  const manifest = await findManfest(req.query);
+  const manifest = await findAllManifest(req.query);
 
   if (manifest !== null && manifest.length > 0) {
     const excelHeader = await colManifest();
