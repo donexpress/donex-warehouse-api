@@ -36,10 +36,14 @@ export const index = async (req: Request, res: Response) => {
       : await countOI(filter ? JSON.parse(String(filter)): {}, current_user);
 
     const state = req.query.state;
+    const f = filter ? JSON.parse(String(filter)): {}
+    if(state) {
+      f.state = state
+    }
     const operation_instruction = await listOI(
       current_page,
       number_of_rows,
-      filter ? JSON.parse(String(filter)): {},
+      f,
       current_user
     );
     res.json(operation_instruction);
@@ -91,10 +95,15 @@ export const count = async (req: Request, res: Response) => {
     const output_id = req.query.output_plan_id;
     const current_user = getCurrentUser(req);
     const filter = req.query.filter;
+    const state = req.query.state;
+    const f = filter ? JSON.parse(String(filter)): {}
+    if(state) {
+      f.state = state
+    }
     const count = await countAllOI(
       Number(output_id),
       current_user,
-      filter ? JSON.parse(String(filter)): {}
+      f
     );
     res.json(count);
   } catch (e) {

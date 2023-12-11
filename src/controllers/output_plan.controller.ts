@@ -30,8 +30,12 @@ export const index = async (req: Request, res: Response) => {
       ? Number(req.query.current_page)
       : 1;
     // const query = req.query.query;
-    // const state = req.query.state;
+    const state = req.query.state;
     const filter = req.query.filter;
+    const f = filter ? JSON.parse(String(filter)): {}
+    if(state) {
+      f.state = state
+    }
     const initialDate = req.query.initialDate;
     const finalDate = req.query.finalDate;
     const location = req.query.location;
@@ -43,7 +47,7 @@ export const index = async (req: Request, res: Response) => {
           initialDate: initialDate == undefined ? '' : String(initialDate),
           finalDate: finalDate == undefined ? '' : String(finalDate),
           location: location == undefined ? '' : JSON.parse(String(location)),
-          ...(filter ? JSON.parse(String(filter)): {}) 
+          ...f
         });
     const outpu_plans = await listOutputPlan(
       current_page,
@@ -93,6 +97,11 @@ export const count = async (req: Request, res: Response) => {
   try {
     const current_user = getCurrentUser(req);
     const filter = req.query.filter;
+    const state = req.query.state;
+    const f = filter ? JSON.parse(String(filter)): {}
+    if(state) {
+      f.state = state
+    }
     const initialDate = req.query.initialDate;
     const finalDate = req.query.finalDate;
     const location = req.query.location;
@@ -102,7 +111,7 @@ export const count = async (req: Request, res: Response) => {
         initialDate: initialDate == undefined ? '' : String(initialDate),
         finalDate: finalDate == undefined ? '' : String(finalDate),
         location: location == undefined ? '' : JSON.parse(String(location)),
-        ...(filter ? JSON.parse(String(filter)): {})      
+        ...f      
       }
     );
     res.json(count);
