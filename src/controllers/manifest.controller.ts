@@ -21,9 +21,10 @@ import {
   selectByWaybill,
   listManifests,
   paidManifest,
-  findManfest,
+  findAllManifest,
   paidManifestClient,
   createBill,
+  summaryByWaybill,
 } from '../context/manifest';
 import carriers_type from '../config/carriers';
 import { Manifest } from '../models/manifest.model';
@@ -236,7 +237,7 @@ export const find = async (req: Request, res: Response) => {
 };
 
 export const jsonToxlsx = async (req: Request, res: Response) => {
-  const manifest = await findManfest(req.query);
+  const manifest = await findAllManifest(req.query);
 
   if (manifest !== null && manifest.length > 0) {
     const excelHeader = await colManifest();
@@ -329,11 +330,7 @@ export const remove = async (req: Request, res: Response) => {
 export const xlsxBill = async (req: Request, res: Response) => {
   try {
     const { waybill_id, carrier, eta } = req.body;
-    const filepath = await createBill(
-      waybill_id,
-      carrier,
-      eta
-    );
+    const filepath = await createBill(waybill_id, carrier, eta);
     const urls = await uploadFileToStore(filepath, 'xlsx');
     res.json(urls);
     fs.unlink(filepath, () => {});
@@ -341,4 +338,9 @@ export const xlsxBill = async (req: Request, res: Response) => {
     console.log(e);
     res.status(500).json(e);
   }
+};
+export const summary = async (req: Request, res: Response) => {
+  const summary = await summaryByWaybill();
+
+  res.json(summary);
 };
