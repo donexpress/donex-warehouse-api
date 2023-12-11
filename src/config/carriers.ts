@@ -1,5 +1,5 @@
 const carriers = {
-  // MExico
+  // Mexico
   JT: {
     name: 'JT',
     value: 'JT',
