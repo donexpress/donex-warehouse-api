@@ -70,6 +70,7 @@ export const create_do = async (
             const customer_code = String(req.query.customer_code);
             const mwb = String(req.query.mwb);
             const force = Boolean(req.query.force) || false;
+            const collected = Boolean(req.query.collected) || false;
             const waybills = await findByWaybillAndCarrier(mwb, carrier);
             if (waybills.length > 0 && force !== true) {
               return res.status(205).send('This manifest is already stored');
@@ -79,7 +80,8 @@ export const create_do = async (
                 const manifest_obj = await manifestParams(
                   value,
                   carrier,
-                  customer_code
+                  customer_code,
+                  collected
                 );
 
                 const manifest = await findByTracking(
@@ -104,7 +106,8 @@ export const create_do = async (
                 const manifest_obj = await manifestParams(
                   value,
                   carrier,
-                  customer_code
+                  customer_code,
+                  collected
                 );
 
                 const manifest = await createManifest(
