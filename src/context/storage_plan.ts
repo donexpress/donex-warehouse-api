@@ -494,50 +494,52 @@ export const full_assign = async (
 
 export const getWhereFilter = (query: Partial<StoragePlan>, current_user) => {
   let where: FindOptionsWhere<StoragePlan> | FindOptionsWhere<StoragePlan>[] = {}
-  if(query.box_amount) {
-    where.box_amount = query.box_amount;
-  }
-  if(query.country) {
-    where.country = query.country;
-  }
-  if(query.customer_order_number) {
-    where.customer_order_number = ILike(`%${query.customer_order_number}%`);
-  }
-  if(query.is_images) {
-    where.is_images = query.is_images;
-  }
-  if(query.observations) {
-    where.observations = ILike(`%${query.observations}%`)
-  }
-  if(query.order_number) {
-    where.order_number = ILike(`%${query.order_number}%`)
-  }
-  if(query.out_boxes) {
-    where.out_boxes = query.out_boxes
-  }
-  if(query.pr_number) {
-    where.pr_number = query.pr_number
-  }
-  if(query.ready) {
-    where.ready = query.ready
-  }
-  if(query.reference_number) {
-    where.reference_number = query.reference_number
-  }
-  if(query.rejected_boxes) {
-    where.rejected_boxes = query.rejected_boxes
-  }
-  if(query.return) {
-    where.return = query.return
-  }
-  if(query.state) {
-    where.state = query.state
-  }
-  if(query.stock_boxes) {
-    where.stock_boxes = query.stock_boxes
-  }
-  if(current_user.customer_number) {
-    where.user_id = current_user.id
+  if(query) {
+    if(query.box_amount) {
+      where.box_amount = query.box_amount;
+    }
+    if(query.country) {
+      where.country = query.country;
+    }
+    if(query.customer_order_number) {
+      where.customer_order_number = ILike(`%${query.customer_order_number}%`);
+    }
+    if(query.is_images) {
+      where.is_images = query.is_images;
+    }
+    if(query.observations) {
+      where.observations = ILike(`%${query.observations}%`)
+    }
+    if(query.order_number) {
+      where.order_number = ILike(`%${query.order_number}%`)
+    }
+    if(query.out_boxes) {
+      where.out_boxes = query.out_boxes
+    }
+    if(query.pr_number) {
+      where.pr_number = query.pr_number
+    }
+    if(query.ready) {
+      where.ready = query.ready
+    }
+    if(query.reference_number) {
+      where.reference_number = query.reference_number
+    }
+    if(query.rejected_boxes) {
+      where.rejected_boxes = query.rejected_boxes
+    }
+    if(query.return) {
+      where.return = query.return
+    }
+    if(query.state) {
+      where.state = query.state
+    }
+    if(query.stock_boxes) {
+      where.stock_boxes = query.stock_boxes
+    }
+    if(current_user.customer_number) {
+      where.user_id = current_user.id
+    }
   }
   return where;
 }

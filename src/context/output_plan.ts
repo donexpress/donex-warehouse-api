@@ -233,23 +233,38 @@ export const countAllOutputPlan = async (
   const total = await countOutputPlan(current_user);
   const pending = await getCountByState(
     repository,
-    await getWhereFilter({...filter, state: states.output_plan.pending.value}, current_user)
+    await getWhereFilter(
+      { ...filter, state: states.output_plan.pending.value },
+      current_user
+    )
   );
   const to_be_processed = await getCountByState(
     repository,
-    await getWhereFilter({...filter, state: states.output_plan.to_be_processed.value}, current_user)
+    await getWhereFilter(
+      { ...filter, state: states.output_plan.to_be_processed.value },
+      current_user
+    )
   );
   const processing = await getCountByState(
     repository,
-    await getWhereFilter({...filter, state: states.output_plan.processing.value}, current_user)
+    await getWhereFilter(
+      { ...filter, state: states.output_plan.processing.value },
+      current_user
+    )
   );
   const dispatched = await getCountByState(
     repository,
-    await getWhereFilter({...filter, state: states.output_plan.dispatched.value}, current_user)
+    await getWhereFilter(
+      { ...filter, state: states.output_plan.dispatched.value },
+      current_user
+    )
   );
   const cancelled = await getCountByState(
     repository,
-    await getWhereFilter({...filter, state: states.output_plan.cancelled.value}, current_user)
+    await getWhereFilter(
+      { ...filter, state: states.output_plan.cancelled.value },
+      current_user
+    )
   );
 
   const result = {
@@ -807,61 +822,64 @@ const getWhereFilter = (
 ) => {
   const where: FindOptionsWhere<OutputPlan> | FindOptionsWhere<OutputPlan>[] =
     {};
-
-  if (
-    filter.location &&
-    filter.location.length !== Object.keys(destinations).length
-  ) {
-    where.destination = In(filter.location);
-  }
-
-  if (filter.initialDate) {
-    const start_date = new Date(filter.initialDate);
-    let final_date = new Date(filter.initialDate);
-    if (filter.finalDate) {
-      final_date = new Date(filter.finalDate);
+  if (filter) {
+    if (
+      filter &&
+      filter.location &&
+      filter.location.length !== Object.keys(destinations).length
+    ) {
+      where.destination = In(filter.location);
     }
-    final_date.setDate(final_date.getDate() + 1);
-    where.delivered_time = Between(
-      start_date.toISOString(),
-      final_date.toISOString()
-    );
+
+    if (filter.initialDate) {
+      const start_date = new Date(filter.initialDate);
+      let final_date = new Date(filter.initialDate);
+      if (filter.finalDate) {
+        final_date = new Date(filter.finalDate);
+      }
+      final_date.setDate(final_date.getDate() + 1);
+      where.delivered_time = Between(
+        start_date.toISOString(),
+        final_date.toISOString()
+      );
+    }
+    if (filter.amount) {
+      where.amount = filter.amount;
+    }
+    if (filter.box_amount) {
+      where.box_amount = filter.box_amount;
+    }
+    if (filter.city) {
+      where.city = filter.city;
+    }
+    if (filter.client_box_number) {
+      where.client_box_number = ILike(`%${filter.client_box_number}%`);
+    }
+    if (filter.country) {
+      where.country = filter.country;
+    }
+    if (filter.delivered_quantity) {
+      where.delivered_quantity = filter.delivered_quantity;
+    }
+    if (filter.observations) {
+      where.observations = ILike(`%${filter.observations}%`);
+    }
+    if (filter.output_boxes) {
+      where.output_boxes = filter.output_boxes;
+    }
+    if (filter.output_number) {
+      where.output_number = ILike(`%${filter.output_number}%`);
+    }
+    if (filter.reference_number) {
+      where.reference_number = ILike(`%${filter.reference_number}%`);
+    }
+    if (filter.state) {
+      where.state = filter.state;
+    }
+    if (current_user.customer_number) {
+      where.user_id = current_user.id;
+    }
   }
-  if (filter.amount) {
-    where.amount = filter.amount;
-  }
-  if (filter.box_amount) {
-    where.box_amount = filter.box_amount;
-  }
-  if (filter.city) {
-    where.city = filter.city;
-  }
-  if (filter.client_box_number) {
-    where.client_box_number = ILike(`%${filter.client_box_number}%`);
-  }
-  if (filter.country) {
-    where.country = filter.country;
-  }
-  if (filter.delivered_quantity) {
-    where.delivered_quantity = filter.delivered_quantity;
-  }
-  if (filter.observations) {
-    where.observations = ILike(`%${filter.observations}%`);
-  }
-  if (filter.output_boxes) {
-    where.output_boxes = filter.output_boxes;
-  }
-  if (filter.output_number) {
-    where.output_number = ILike(`%${filter.output_number}%`);
-  }
-  if (filter.reference_number) {
-    where.reference_number = ILike(`%${filter.reference_number}%`);
-  }
-  if (filter.state) {
-    where.state = filter.state;
-  }
-  if (current_user.customer_number) {
-    where.user_id = current_user.id;
-  }
+
   return where;
 };

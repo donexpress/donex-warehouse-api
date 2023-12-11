@@ -302,24 +302,25 @@ const getFilterWhere = (
 ) => {
   const where: FindOptionsWhere<OperationInstruction> | FindOptionsWhere<OperationInstruction>[] =
     {};
-
-    if(filter.client_display) {
-      where.client_display = filter.client_display
-    }
-    if(filter.internal_remark) {
-      where.internal_remark = filter.internal_remark
-    }
-    if(filter.number_delivery) {
-      where.number_delivery = ILike(`%${filter.number_delivery}%`)
-    }
-    if(filter.remark) {
-      where.remark = filter.remark
-    }
-    if(filter.state) {
-      where.state = filter.state
-    }
-    if (current_user.customer_number) {
-      where.user_id = current_user.id;
+    if(filter) {
+      if(filter.client_display) {
+        where.client_display = filter.client_display
+      }
+      if(filter.internal_remark) {
+        where.internal_remark = filter.internal_remark
+      }
+      if(filter.number_delivery) {
+        where.number_delivery = ILike(`%${filter.number_delivery}%`)
+      }
+      if(filter.remark) {
+        where.remark = filter.remark
+      }
+      if(filter.state) {
+        where.state = filter.state
+      }
+      if (current_user.customer_number) {
+        where.user_id = current_user.id;
+      }
     }
     return where;
 };
