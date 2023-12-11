@@ -44,7 +44,7 @@ export const calculate_cost = async (weight, carrier) => {
       break;
 
     default:
-      'not fee yet';
+      fee = 0;
       break;
   }
 
