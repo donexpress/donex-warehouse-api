@@ -48,7 +48,7 @@ export const findByWaybillAndCarrier = async (
 };
 
 export const findAllManifest = async (params) => {
-  const where = await getWhere(params)
+  const where = await getWhere(params);
   return await AppDataSource.manager.find(Manifest, {
     where: where,
   });
@@ -162,6 +162,40 @@ export const selectByWaybill = async () => {
     .select('DISTINCT manifests.waybill_id', 'waybill_id')
     .orderBy('manifests.waybill_id')
     .getRawMany();
+};
+
+export const summaryByWaybill = async () => {
+  const waybills = await selectByWaybill();
+  let summary = [];
+
+  for (let i = 0; i < waybills.length; i++) {
+    const element = waybills[i];
+    const waybill_id = element.waybill_id;
+
+    const [manifest, count] = await AppDataSource.getRepository(
+      Manifest
+    ).findAndCount({
+      where: {
+        waybill_id,
+      },
+    });
+
+    const kilo_count = await AppDataSource.getRepository(Manifest).sum(
+      'unit_weigth',
+      {
+        waybill_id,
+      }
+    );
+
+    const body = {
+      MWB: waybill_id,
+      quantity_package: count,
+      kilo_count,
+      created_at: manifest[0].created_at,
+    };
+    summary.push(body);
+  }
+  return summary;
 };
 
 export const listManifests = async (

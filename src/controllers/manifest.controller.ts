@@ -24,6 +24,7 @@ import {
   findAllManifest,
   paidManifestClient,
   createBill,
+  summaryByWaybill,
 } from '../context/manifest';
 import carriers_type from '../config/carriers';
 import { Manifest } from '../models/manifest.model';
@@ -337,4 +338,9 @@ export const xlsxBill = async (req: Request, res: Response) => {
     console.log(e);
     res.status(500).json(e);
   }
+};
+export const summary = async (req: Request, res: Response) => {
+  const summary = await summaryByWaybill();
+
+  res.json(summary);
 };
