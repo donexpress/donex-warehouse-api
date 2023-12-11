@@ -190,7 +190,7 @@ export const summaryByWaybill = async () => {
     const body = {
       MWB: waybill_id,
       quantity_package: count,
-      kilo_count,
+      kilo_count: kilo_count.toFixed(3),
       created_at: manifest[0].created_at,
     };
     summary.push(body);
