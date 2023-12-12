@@ -204,14 +204,28 @@ export const summaryByWaybill = async () => {
     const count_collected = await AppDataSource.getRepository(Manifest).count({
       where: {
         waybill_id,
-        state: 'collected'
+        state: 'collected',
       },
     });
 
     const count_pending = await AppDataSource.getRepository(Manifest).count({
       where: {
         waybill_id,
-        state: 'pending'
+        state: 'pending',
+      },
+    });
+
+    const count_paid = await AppDataSource.getRepository(Manifest).count({
+      where: {
+        waybill_id,
+        paid: true,
+      },
+    });
+
+    const count_not_paid = await AppDataSource.getRepository(Manifest).count({
+      where: {
+        waybill_id,
+        paid: false,
       },
     });
 
@@ -226,7 +240,9 @@ export const summaryByWaybill = async () => {
       earnings: Number(sum_cost.toFixed(2)) - Number(sum_sale_price.toFixed(2)),
       created_at: manifest[0].created_at,
       collected: count_collected,
-      pending: count_pending
+      pending: count_pending,
+      paid: count_paid,
+      not_paid: count_not_paid,
     };
     summary.push(body);
   }
