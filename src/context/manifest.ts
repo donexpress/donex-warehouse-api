@@ -165,19 +165,35 @@ export const selectByWaybill = async () => {
 };
 
 export const selectByWaybillBySort = async (params) => {
-  let where = '';
   if (params.bill_code) {
-    where = `manifests.payment_voucher = '${params.bill_code}'`;
+    return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
+      .select('DISTINCT manifests.waybill_id', 'waybill_id')
+      .orderBy('manifests.waybill_id')
+      .where(`manifests.payment_voucher = '${params.bill_code}'`)
+      .getRawMany();
   }
-  return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
-    .select('DISTINCT manifests.waybill_id', 'waybill_id')
-    .orderBy('manifests.waybill_id')
-    .where(where)
-    .getRawMany();
+
+  if (params.start_date && params.end_date) {
+    return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
+      .select('DISTINCT manifests.waybill_id', 'waybill_id')
+      .orderBy('manifests.waybill_id')
+      .where(`manifests.created_at > '${new Date(params.start_date)}'`)
+      .andWhere(`manifests.created_at < '${new Date(params.end_date)}'`)
+      .getRawMany();
+  }
+
+  if (params.start_date && params.end_date && params.bill_code) {
+    return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
+      .select('DISTINCT manifests.waybill_id', 'waybill_id')
+      .orderBy('manifests.waybill_id')
+      .where(`manifests.created_at > '${new Date(params.start_date)}'`)
+      .andWhere(`manifests.created_at < '${new Date(params.end_date)}'`)
+      .andWhere(`manifests.payment_voucher = '${params.bill_code}'`)
+      .getRawMany();
+  }
 };
 
 export const summaryByWaybill = async (params) => {
-  console.log(params);
   const waybills =
     Object.keys(params).length === 0
       ? await selectByWaybill()
