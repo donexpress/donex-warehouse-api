@@ -177,8 +177,8 @@ export const selectByWaybillBySort = async (params) => {
     return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
       .select('DISTINCT manifests.waybill_id', 'waybill_id')
       .orderBy('manifests.waybill_id')
-      .where(`manifests.created_at > '${new Date(params.start_date)}'`)
-      .andWhere(`manifests.created_at < '${new Date(params.end_date)}'`)
+      .where(`manifests.created_at > '${params.start_date}'`)
+      .andWhere(`manifests.created_at < '${params.end_date}'`)
       .getRawMany();
   }
 
@@ -186,8 +186,8 @@ export const selectByWaybillBySort = async (params) => {
     return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
       .select('DISTINCT manifests.waybill_id', 'waybill_id')
       .orderBy('manifests.waybill_id')
-      .where(`manifests.created_at > '${new Date(params.start_date)}'`)
-      .andWhere(`manifests.created_at < '${new Date(params.end_date)}'`)
+      .where(`manifests.created_at > '${params.start_date}'`)
+      .andWhere(`manifests.created_at < '${params.end_date}'`)
       .andWhere(`manifests.payment_voucher = '${params.bill_code}'`)
       .getRawMany();
   }
