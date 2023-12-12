@@ -201,16 +201,32 @@ export const summaryByWaybill = async () => {
       }
     );
 
+    const count_collected = await AppDataSource.getRepository(Manifest).count({
+      where: {
+        waybill_id,
+        state: 'collected'
+      },
+    });
+
+    const count_pending = await AppDataSource.getRepository(Manifest).count({
+      where: {
+        waybill_id,
+        state: 'pending'
+      },
+    });
+
     const body = {
       MWB: waybill_id,
       quantity_package: count,
       quantity_kilograms: Number(kilo_count.toFixed(3)),
-      created_at: manifest[0].created_at,
       quantity_shipping_cost:
         sum_cost === null ? 0 : Number(sum_cost.toFixed(2)),
       quantity_sale_price:
         sum_sale_price === null ? 0 : Number(sum_sale_price.toFixed(2)),
       earnings: Number(sum_cost.toFixed(2)) - Number(sum_sale_price.toFixed(2)),
+      created_at: manifest[0].created_at,
+      collected: count_collected,
+      pending: count_pending
     };
     summary.push(body);
   }
@@ -282,7 +298,7 @@ export const getWhere = (params) => {
     where.state = params.state;
   }
 
-  if(params.start_date && !params.end_date) {
+  if (params.start_date && !params.end_date) {
     const start_date_to = new Date(params.start_date);
     const end_date_to = new Date(params.start_date);
     end_date_to.setDate(end_date_to.getDate() + 1);
