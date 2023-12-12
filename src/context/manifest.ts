@@ -164,8 +164,24 @@ export const selectByWaybill = async () => {
     .getRawMany();
 };
 
-export const summaryByWaybill = async () => {
-  const waybills = await selectByWaybill();
+export const selectByWaybillBySort = async (params) => {
+  let where = '';
+  if (params.bill_code) {
+    where = `manifests.payment_voucher = '${params.bill_code}'`;
+  }
+  return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
+    .select('DISTINCT manifests.waybill_id', 'waybill_id')
+    .orderBy('manifests.waybill_id')
+    .where(where)
+    .getRawMany();
+};
+
+export const summaryByWaybill = async (params) => {
+  console.log(params);
+  const waybills =
+    Object.keys(params).length === 0
+      ? await selectByWaybill()
+      : await selectByWaybillBySort(params);
   let summary = [];
 
   for (let i = 0; i < waybills.length; i++) {

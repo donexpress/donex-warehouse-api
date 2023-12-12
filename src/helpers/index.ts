@@ -205,3 +205,19 @@ export const colManifest = () => {
 export const colPartialManifest = () => {
   return ['MWB', 'TRACKING', 'SHIPPING COST', 'INVOICE WEIGHT', 'BILL CODE'];
 };
+
+export const colSummaryManifest = () => {
+  return [
+    'MWB',
+    'Packages',
+    'Kilograms',
+    'Shipping Cost',
+    'Sale Price',
+    'Earnings',
+    'Fecha',
+    'Collected',
+    'Pending',
+    'Paid',
+    'Not Paid',
+  ];
+};
