@@ -57,7 +57,7 @@ export const index = async (req: Request, res: Response) => {
         initialDate: initialDate == undefined ? '' : String(initialDate),
         finalDate: finalDate == undefined ? '' : String(finalDate),
         location: location == undefined ? '' : JSON.parse(String(location)),
-        ...(filter ? JSON.parse(String(filter)): {}) 
+        ...f
       }
     );
 

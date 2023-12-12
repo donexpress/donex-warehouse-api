@@ -282,6 +282,13 @@ export const getWhere = (params) => {
     where.state = params.state;
   }
 
+  if(params.start_date && !params.end_date) {
+    const start_date_to = new Date(params.start_date);
+    const end_date_to = new Date(params.start_date);
+    end_date_to.setDate(end_date_to.getDate() + 1);
+    where.created_at = Between(start_date_to, end_date_to);
+  }
+
   if (params.start_date && params.end_date) {
     const start_date_to = new Date(params.start_date);
     const end_date_to = new Date(params.end_date);
