@@ -164,8 +164,40 @@ export const selectByWaybill = async () => {
     .getRawMany();
 };
 
-export const summaryByWaybill = async () => {
-  const waybills = await selectByWaybill();
+export const selectByWaybillBySort = async (params) => {
+  if (params.bill_code) {
+    return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
+      .select('DISTINCT manifests.waybill_id', 'waybill_id')
+      .orderBy('manifests.waybill_id')
+      .where(`manifests.payment_voucher = '${params.bill_code}'`)
+      .getRawMany();
+  }
+
+  if (params.start_date && params.end_date) {
+    return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
+      .select('DISTINCT manifests.waybill_id', 'waybill_id')
+      .orderBy('manifests.waybill_id')
+      .where(`manifests.created_at > '${params.start_date}'`)
+      .andWhere(`manifests.created_at < '${params.end_date}'`)
+      .getRawMany();
+  }
+
+  if (params.start_date && params.end_date && params.bill_code) {
+    return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
+      .select('DISTINCT manifests.waybill_id', 'waybill_id')
+      .orderBy('manifests.waybill_id')
+      .where(`manifests.created_at > '${params.start_date}'`)
+      .andWhere(`manifests.created_at < '${params.end_date}'`)
+      .andWhere(`manifests.payment_voucher = '${params.bill_code}'`)
+      .getRawMany();
+  }
+};
+
+export const summaryByWaybill = async (params) => {
+  const waybills =
+    Object.keys(params).length === 0
+      ? await selectByWaybill()
+      : await selectByWaybillBySort(params);
   let summary = [];
 
   for (let i = 0; i < waybills.length; i++) {
@@ -201,16 +233,48 @@ export const summaryByWaybill = async () => {
       }
     );
 
+    const count_collected = await AppDataSource.getRepository(Manifest).count({
+      where: {
+        waybill_id,
+        state: 'collected',
+      },
+    });
+
+    const count_pending = await AppDataSource.getRepository(Manifest).count({
+      where: {
+        waybill_id,
+        state: 'pending',
+      },
+    });
+
+    const count_paid = await AppDataSource.getRepository(Manifest).count({
+      where: {
+        waybill_id,
+        paid: true,
+      },
+    });
+
+    const count_not_paid = await AppDataSource.getRepository(Manifest).count({
+      where: {
+        waybill_id,
+        paid: false,
+      },
+    });
+
     const body = {
       MWB: waybill_id,
       quantity_package: count,
       quantity_kilograms: Number(kilo_count.toFixed(3)),
-      created_at: manifest[0].created_at,
       quantity_shipping_cost:
         sum_cost === null ? 0 : Number(sum_cost.toFixed(2)),
       quantity_sale_price:
         sum_sale_price === null ? 0 : Number(sum_sale_price.toFixed(2)),
       earnings: Number(sum_cost.toFixed(2)) - Number(sum_sale_price.toFixed(2)),
+      created_at: manifest[0].created_at,
+      collected: count_collected,
+      pending: count_pending,
+      paid: count_paid,
+      not_paid: count_not_paid,
     };
     summary.push(body);
   }
@@ -282,7 +346,7 @@ export const getWhere = (params) => {
     where.state = params.state;
   }
 
-  if(params.start_date && !params.end_date) {
+  if (params.start_date && !params.end_date) {
     const start_date_to = new Date(params.start_date);
     const end_date_to = new Date(params.start_date);
     end_date_to.setDate(end_date_to.getDate() + 1);

@@ -45,6 +45,13 @@ router.get(
   ManifestController.summary
 );
 
+router.get(
+  '/api/v1/download/summary',
+  verifyTokenPresent,
+  //guardianMw(['ADMIN', 'FINANCE']),
+  ManifestController.summaryXlsx
+);
+
 router.delete(
   '/api/v1/manifest',
   verifyTokenPresent,

@@ -7,6 +7,7 @@ import {
   getValues,
   colManifest,
   colPartialManifest,
+  colSummaryManifest,
 } from '../helpers';
 import {
   createManifest,
@@ -342,8 +343,21 @@ export const xlsxBill = async (req: Request, res: Response) => {
     res.status(500).json(e);
   }
 };
+
 export const summary = async (req: Request, res: Response) => {
-  const summary = await summaryByWaybill();
+  const params = req.query;
+  const summary = await summaryByWaybill(params);
 
   res.json(summary);
+};
+
+export const summaryXlsx = async (req: Request, res: Response) => {
+  const params = req.query;
+  const summary = await summaryByWaybill(params);
+  const excelHeader = await colSummaryManifest();
+  const filepath = await jsonToExcel(summary, excelHeader);
+
+  const urls = await uploadFileToStore(filepath, 'xlsx');
+  res.json(urls);
+  fs.unlink(filepath, () => {});
 };
