@@ -321,6 +321,12 @@ const getFilterWhere = (
       if (current_user.customer_number) {
         where.user_id = current_user.id;
       }
+      if(filter.user_id)  {
+        where.user_id = filter.user_id
+      }
+      if(filter.output_plan_id) {
+        where.output_plan_id = filter.output_plan_id
+      }
     }
     return where;
 };
