@@ -50,7 +50,7 @@ export const manifestParams = async (
     carrier: carrier,
     state: collected ? 'collected' : 'pending',
     manifest_name: customer_code,
-    item_description: '',
+    item_description: value[26],
     payment_voucher: '',
     bill_state: 'pending',
     sale_price: Number(shipping_cost),
