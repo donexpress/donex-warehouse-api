@@ -276,6 +276,7 @@ export const summaryByWaybill = async (params) => {
       paid: count_paid,
       not_paid: count_not_paid,
     };
+
     summary.push(body);
   }
   return summary;
