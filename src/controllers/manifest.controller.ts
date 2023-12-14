@@ -365,7 +365,7 @@ export const summary = async (req: Request, res: Response) => {
     : 1;
   const number_of_rows = req.query.number_of_rows
     ? Number(req.query.number_of_rows)
-    : await countManifest(params);
+    : 25;
   const summary = await summaryByWaybill(params);
 
   res.json(
