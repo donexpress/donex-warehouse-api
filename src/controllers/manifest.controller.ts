@@ -143,6 +143,7 @@ export const create_do = async (
               }
 
               const manifest = await findByTracking(tracking_number);
+              console.log(manifest.state);
               const update_manifest = await updateManifest(manifest, {
                 sale_price: sale_price,
                 state: collected === true ? 'collected' : manifest.state,
