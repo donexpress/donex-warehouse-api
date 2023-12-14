@@ -159,7 +159,7 @@ export const paidManifestClient = async (
 
 export const selectByWaybill = async () => {
   return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
-    .select('DISTINCT manifests.waybill_id', 'waybill_id')
+    .select(['DISTINCT manifests.waybill_id', 'waybill_id', 'carrier'])
     .orderBy('manifests.waybill_id')
     .getRawMany();
 };

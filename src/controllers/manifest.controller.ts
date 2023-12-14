@@ -127,10 +127,21 @@ export const create_do = async (
             }
           } else if (action === 'update_customer') {
             for (let i = 0; i < worksheetsBody.data.length; i++) {
+              let tracking_number;
+              let sale_price;
               const collected = Boolean(req.query.collected) || false;
+              const delivery = String(req.query.delivery);
               const value = await getValues(worksheetsBody.data[i]);
-              const tracking_number = value[1];
-              const sale_price = value[2];
+              if (delivery === 'bill_details' && value.length >= 7) {
+                tracking_number = value[2];
+                sale_price = Number(value[7]);
+              }
+
+              if (delivery === 'template') {
+                tracking_number = value[1];
+                sale_price = value[2];
+              }
+
               const manifest = await findByTracking(tracking_number);
               const update_manifest = await updateManifest(manifest, {
                 sale_price: sale_price,
