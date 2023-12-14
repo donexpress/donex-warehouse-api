@@ -175,6 +175,7 @@ export const selectByWaybillBySort = async (params) => {
 
   if (params.start_date && params.end_date) {
     let final_date = new Date(params.end_date);
+    final_date.setDate(final_date.getDate() + 1);
     return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
       .select('DISTINCT manifests.waybill_id', 'waybill_id')
       .orderBy('manifests.waybill_id')
@@ -185,6 +186,7 @@ export const selectByWaybillBySort = async (params) => {
 
   if (params.start_date && params.end_date && params.bill_code) {
     let final_date = new Date(params.end_date);
+    final_date.setDate(final_date.getDate() + 1);
     return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
       .select('DISTINCT manifests.waybill_id', 'waybill_id')
       .orderBy('manifests.waybill_id')
