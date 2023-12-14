@@ -537,8 +537,11 @@ export const getWhereFilter = (query: Partial<StoragePlan>, current_user) => {
     if(query.stock_boxes) {
       where.stock_boxes = query.stock_boxes
     }
-    if(current_user.customer_number) {
+    if(current_user && current_user.customer_number) {
       where.user_id = current_user.id
+    }
+    if(query.user_id)  {
+      where.user_id = query.user_id
     }
   }
   return where;
