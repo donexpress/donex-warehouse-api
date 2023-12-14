@@ -368,12 +368,13 @@ export const summary = async (req: Request, res: Response) => {
     : 25;
   const summary = await summaryByWaybill(params);
 
-  res.json(
-    summary.slice(
+  res.json({
+    count: summary.length,
+    data: summary.slice(
       (current_page - 1) * number_of_rows,
       current_page * number_of_rows
-    )
-  );
+    ),
+  });
 };
 
 export const summaryXlsx = async (req: Request, res: Response) => {
