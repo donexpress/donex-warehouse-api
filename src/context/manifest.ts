@@ -208,9 +208,7 @@ export const summaryByWaybill = async (params) => {
     const element = waybills[i];
     const waybill_id = element.waybill_id;
 
-    const [manifest, count] = await AppDataSource.getRepository(
-      Manifest
-    ).findAndCount({
+    const count = await AppDataSource.getRepository(Manifest).count({
       where: {
         waybill_id,
       },
@@ -274,7 +272,7 @@ export const summaryByWaybill = async (params) => {
       quantity_sale_price:
         sum_sale_price === null ? 0 : Number(sum_sale_price.toFixed(2)),
       earnings: Number(sum_cost.toFixed(2)) - Number(sum_sale_price.toFixed(2)),
-      created_at: manifest[0].created_at,
+      created_at: 'null',
       collected: count_collected,
       pending: count_pending,
       paid: count_paid,
