@@ -318,7 +318,7 @@ const getFilterWhere = (
       if(filter.state) {
         where.state = filter.state
       }
-      if (current_user.customer_number) {
+      if (current_user && current_user.customer_number) {
         where.user_id = current_user.id;
       }
       if(filter.user_id)  {
