@@ -373,15 +373,15 @@ export const createBill = async (waybill_id: string, carrier: string, eta) => {
     relations: ['consignee_address'],
   });
   const xlsx_headers = [
-    'Número',
-    'ETA(fecha de llegada)',
-    'Numero de seguimiento',
-    'Numero de referencia',
-    'Canal de envío',
-    'País',
-    'Peso KG',
-    'Cantidad USD',
-    'Observaciones',
+    '序号',
+    '到达日期',
+    '跟踪号',
+    '客户运单号',
+    '服务类型',
+    '发往国家',
+    '收费重KG',
+    '金额USD',
+    '备注',
   ];
   const xlsx_data = [];
   manifests.forEach((manifest, index) => {
@@ -404,7 +404,8 @@ export const createBill = async (waybill_id: string, carrier: string, eta) => {
     shipping_invoice.address,
     shipping_invoice.email,
     manifests[0].manifest_name,
-    waybill_id
+    waybill_id,
+    manifests[0].payment_voucher
   );
   return xlsx;
 };
