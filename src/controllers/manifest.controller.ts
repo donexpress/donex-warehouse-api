@@ -132,7 +132,7 @@ export const create_do = async (
               const collected = Boolean(req.query.collected) || false;
               const delivery = String(req.query.delivery);
               const value = await getValues(worksheetsBody.data[i]);
-              if (delivery === 'bill_details' && value.length >= 7) {
+              if (delivery === 'bill_details' && value.length >= 7 && Number(value[7])) {
                 tracking_number = value[2];
                 sale_price = Number(value[7]);
               }
@@ -141,9 +141,7 @@ export const create_do = async (
                 tracking_number = value[1];
                 sale_price = value[2];
               }
-
               const manifest = await findByTracking(tracking_number);
-              console.log(manifest.state);
               const update_manifest = await updateManifest(manifest, {
                 sale_price: sale_price,
                 state: collected === true ? 'collected' : manifest.state,
