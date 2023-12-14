@@ -199,9 +199,9 @@ export const selectByWaybillBySort = async (params) => {
 
 export const summaryByWaybill = async (params) => {
   const waybills =
-    Object.keys(params).length === 2
-      ? await selectByWaybill()
-      : await selectByWaybillBySort(params);
+    params.bill_code || params.start_date
+      ? await selectByWaybillBySort(params)
+      : await selectByWaybill();
   let summary = [];
 
   for (let i = 0; i < waybills.length; i++) {
