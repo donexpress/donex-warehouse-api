@@ -57,7 +57,8 @@ export const generateBillXlsx = async (
   address,
   email,
   name,
-  awb
+  awb,
+  bill_code
 ) => {
   // const worksheet = XLSX.utils.json_to_sheet(xlsx_data);
   const worksheet = XLSX.utils.json_to_sheet([]);
@@ -70,18 +71,19 @@ export const generateBillXlsx = async (
     [
       ['','','DON EXPRESS CO., LIMITED.'],
       [],
-      ['','','','Factura de envio'],
-      [`Dirección: ${address}`],
-      ['','',`Email: ${email}`],
+      ['','','','账 单 明 细 表（派送）'],
+      [`地址: ${address} \n 邮箱: ${email}`],
+      [],
       [],
       [
-        `No. fact: ${date.getFullYear()}${(date.getMonth()+1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2,'0')}${Math.floor(Math.random()*1000)}`
+        `账单编号: ${bill_code}`
+        //`账单编号: ${date.getFullYear()}${(date.getMonth()+1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2,'0')}${Math.floor(Math.random()*1000)}`
       ],
       [
-        `Fecha fact:`, `${date.toDateString()}` 
+        `账单日期:`, `${date.toDateString()}` 
       ],
       [
-        `Nombre: ${name}`, "", "", "", "", "","",`AWB: ${awb}`
+        `客户名称: ${name}`, "", "", "", "", "","",`AWB: ${awb}`
       ],
       xlsx_headers,
     ],
