@@ -97,6 +97,10 @@ export const count = async (req: Request, res: Response) => {
     const filter = req.query.filter;
     const state = req.query.state;
     const f = filter ? JSON.parse(String(filter)): {}
+    const op_id = req.query.output_plan_id
+    if(op_id) {
+      f.output_plan_id = op_id
+    }
     if(state) {
       f.state = state
     }
