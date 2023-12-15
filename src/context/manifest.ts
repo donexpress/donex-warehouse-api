@@ -400,7 +400,7 @@ export const createBill = async (waybill_id: string, carrier: string, eta) => {
       reference_number: manifest.client_reference,
       chanel: manifest.carrier,
       country: manifest.consignee_address.country_code,
-      weight: manifest.unit_weigth,
+      weight: manifest.weigth,
       usd_amount: manifest.sale_price,
       observations: manifest.item_description,
     });
