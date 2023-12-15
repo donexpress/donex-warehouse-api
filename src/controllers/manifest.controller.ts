@@ -132,7 +132,11 @@ export const create_do = async (
               const collected = Boolean(req.query.collected) || false;
               const delivery = String(req.query.delivery);
               const value = await getValues(worksheetsBody.data[i]);
-              if (delivery === 'bill_details' && value.length >= 7 && Number(value[7])) {
+              if (
+                delivery === 'bill_details' &&
+                value.length >= 7 &&
+                Number(value[7])
+              ) {
                 tracking_number = value[2];
                 sale_price = Number(value[7]);
               }
@@ -356,9 +360,21 @@ export const xlsxBill = async (req: Request, res: Response) => {
 
 export const summary = async (req: Request, res: Response) => {
   const params = req.query;
+  const current_page = req.query.current_page
+    ? Number(req.query.current_page)
+    : 1;
+  const number_of_rows = req.query.number_of_rows
+    ? Number(req.query.number_of_rows)
+    : 25;
   const summary = await summaryByWaybill(params);
 
-  res.json(summary);
+  res.json({
+    count: summary.length,
+    data: summary.slice(
+      (current_page - 1) * number_of_rows,
+      current_page * number_of_rows
+    ),
+  });
 };
 
 export const summaryXlsx = async (req: Request, res: Response) => {

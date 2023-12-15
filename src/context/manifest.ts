@@ -199,18 +199,22 @@ export const selectByWaybillBySort = async (params) => {
 
 export const summaryByWaybill = async (params) => {
   const waybills =
-    Object.keys(params).length === 0
-      ? await selectByWaybill()
-      : await selectByWaybillBySort(params);
+    params.bill_code || params.start_date
+      ? await selectByWaybillBySort(params)
+      : await selectByWaybill();
   let summary = [];
 
   for (let i = 0; i < waybills.length; i++) {
     const element = waybills[i];
     const waybill_id = element.waybill_id;
 
-    const [manifest, count] = await AppDataSource.getRepository(
-      Manifest
-    ).findAndCount({
+    const manifest = await AppDataSource.getRepository(Manifest).findOne({
+      where: {
+        waybill_id,
+      },
+    });
+
+    const count = await AppDataSource.getRepository(Manifest).count({
       where: {
         waybill_id,
       },
@@ -274,7 +278,7 @@ export const summaryByWaybill = async (params) => {
       quantity_sale_price:
         sum_sale_price === null ? 0 : Number(sum_sale_price.toFixed(2)),
       earnings: Number(sum_cost.toFixed(2)) - Number(sum_sale_price.toFixed(2)),
-      created_at: manifest[0].created_at,
+      created_at: manifest.created_at,
       collected: count_collected,
       pending: count_pending,
       paid: count_paid,
@@ -396,7 +400,7 @@ export const createBill = async (waybill_id: string, carrier: string, eta) => {
       reference_number: manifest.client_reference,
       chanel: manifest.carrier,
       country: manifest.consignee_address.country_code,
-      weight: manifest.unit_weigth,
+      weight: manifest.weigth,
       usd_amount: manifest.sale_price,
       observations: manifest.item_description,
     });
