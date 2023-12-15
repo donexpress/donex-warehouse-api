@@ -71,11 +71,9 @@ export const listOI = async (
 export const listOIByOutputPlanId = async (
   current_page: number,
   number_of_rows: number,
-  state: string | '',
-  output_plan_id: number
+  filter: Partial<OperationInstruction>
 ): Promise<OperationInstruction[] | null> => {
-  const where_query =
-    state == '' ? { output_plan_id } : { state, output_plan_id };
+  const where_query = getFilterWhere(filter,  null);
   const operation_instructions = await AppDataSource.manager.find(
     OperationInstruction,
     {
