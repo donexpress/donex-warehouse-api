@@ -64,11 +64,16 @@ export const indexByOutputPlan = async (req: Request, res: Response) => {
 
     const state = req.query.state;
     const output_plan_id = req.params.outputPlanId;
+    const filter = req.query.filter;
+    const f = filter ? JSON.parse(String(filter)): {}
+    f.output_plan_id = parseInt(output_plan_id)
+    if(state) {
+      f.state = state
+    }
     const operation_instruction = await listOIByOutputPlanId(
       current_page,
       number_of_rows,
-      state == undefined ? '' : String(state),
-      parseInt(output_plan_id)
+      f
     );
     res.json(operation_instruction);
   } catch (e) {
@@ -97,6 +102,10 @@ export const count = async (req: Request, res: Response) => {
     const filter = req.query.filter;
     const state = req.query.state;
     const f = filter ? JSON.parse(String(filter)): {}
+    const op_id = req.query.output_plan_id
+    if(op_id) {
+      f.output_plan_id = Number(op_id)
+    }
     if(state) {
       f.state = state
     }

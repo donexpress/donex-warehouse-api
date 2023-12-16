@@ -39,6 +39,9 @@ import {
 import { jsonToExcel } from '../helpers/xlsx';
 import { uploadFileToStore } from './file';
 import fs from 'fs';
+import { jsonToPDF } from '../helpers/pdf';
+import { Response } from 'express';
+import { ShelfPackages } from '../models/shelf_package.model';
 
 export const listOutputPlan = async (
   current_page: number,
@@ -815,6 +818,38 @@ export const exportOutputPlanXLSX = async (
   fs.unlink(filepath, () => {});
   return url;
 };
+
+export const exportOutputPlanPDF = async (ids: number[],columns: { key: string; value: string }[], res: Response) => {
+  const select: FindOptionsSelect<OutputPlan> = {};
+  columns.forEach((column) => {
+    select[column.key] = true;
+  });
+  const output_plans = await AppDataSource.manager.find(OutputPlan, {
+    where: { id: In(ids) },
+    select,
+    order: {id: 'DESC'}
+  });
+  await jsonToPDF(output_plans, columns, 'Información de planes de salida', res)
+}
+
+export const InventoryOutputPlanPdf = async(id: number, res: Response) => {
+  const output_plan = await AppDataSource.manager.findOne(OutputPlan, {where: {id}})
+  const user = await AppDataSource.manager.findOne(User, {where: {id: output_plan.user_id}})
+  const warehouse = await AppDataSource.manager.findOne(AOSWarehouse, {where: {id: output_plan.warehouse_id}})
+  const packages = await AppDataSource.manager.find(PackingList, {where: {case_number: In(output_plan.case_numbers)}})
+  const locations = await AppDataSource.manager.find(ShelfPackages, {where: {package_id: In(packages.map(el => el.id))}})
+  const output_plan_data = {
+    output_number: output_plan.output_number,
+    user: user.username,
+    warehouse: `${warehouse.name}(${warehouse.code})`,
+    box_number: output_plan.box_amount,
+    destination: destinations[output_plan.destination].es_name,
+    address: output_plan.address,
+    observations: output_plan.observations
+  }
+
+  res.send({output_plan_data})
+}
 
 const getWhereFilter = (
   filter: Partial<OutputPlanFilter>,

@@ -71,11 +71,9 @@ export const listOI = async (
 export const listOIByOutputPlanId = async (
   current_page: number,
   number_of_rows: number,
-  state: string | '',
-  output_plan_id: number
+  filter: Partial<OperationInstruction>
 ): Promise<OperationInstruction[] | null> => {
-  const where_query =
-    state == '' ? { output_plan_id } : { state, output_plan_id };
+  const where_query = getFilterWhere(filter,  null);
   const operation_instructions = await AppDataSource.manager.find(
     OperationInstruction,
     {
@@ -280,16 +278,16 @@ const getCountByStateAndOutputId = async (
   current_user,
   filter: Partial<OperationInstruction>
 ): Promise<number> => {
+  if(state_value) {
+    filter.state = state_value
+  }
   let where:
     | FindOptionsWhere<OperationInstruction>
     | FindOptionsWhere<OperationInstruction>[] = getFilterWhere(filter, current_user)
 
-    if(state_value) {
-      filter.state = state_value
-    }
-    if(output_plan_id) {
-      filter.output_plan_id = output_plan_id
-    }
+    // if(output_plan_id) {
+    //   filter.output_plan_id = output_plan_id
+    // }
 
   return await repository.count({
     where,

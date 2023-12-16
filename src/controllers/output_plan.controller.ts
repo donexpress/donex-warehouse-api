@@ -1,10 +1,12 @@
 import { Request, Response } from 'express';
 import {
+  InventoryOutputPlanPdf,
   changeOutputPlanState,
   cleanOutputPlan,
   countAllOutputPlan,
   countOutputPlan,
   createOutputPlan,
+  exportOutputPlanPDF,
   exportOutputPlanXLSX,
   getAddresses,
   getDestinations,
@@ -251,7 +253,13 @@ export const export_exit_plan = async(req: Request, res: Response) => {
   const {type, ids, display_columns} = req.body
   let url = null
   if(type === 'xlsx') {
-    url = await exportOutputPlanXLSX(ids, display_columns)
+    url = await exportOutputPlanXLSX(ids, display_columns ? display_columns : [])
+  } else if (type === 'pdf') {
+    if(display_columns && display_columns.length > 0) {
+      return await exportOutputPlanPDF(ids, display_columns ? display_columns : [], res)
+    } else {
+      return await InventoryOutputPlanPdf(ids[0], res)
+    }
   }
   return res.json({url})
 }
