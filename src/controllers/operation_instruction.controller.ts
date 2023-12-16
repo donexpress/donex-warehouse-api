@@ -104,7 +104,7 @@ export const count = async (req: Request, res: Response) => {
     const f = filter ? JSON.parse(String(filter)): {}
     const op_id = req.query.output_plan_id
     if(op_id) {
-      f.output_plan_id = op_id
+      f.output_plan_id = Number(op_id)
     }
     if(state) {
       f.state = state

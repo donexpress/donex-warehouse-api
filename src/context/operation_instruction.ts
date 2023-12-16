@@ -278,16 +278,16 @@ const getCountByStateAndOutputId = async (
   current_user,
   filter: Partial<OperationInstruction>
 ): Promise<number> => {
+  if(state_value) {
+    filter.state = state_value
+  }
   let where:
     | FindOptionsWhere<OperationInstruction>
     | FindOptionsWhere<OperationInstruction>[] = getFilterWhere(filter, current_user)
 
-    if(state_value) {
-      filter.state = state_value
-    }
-    if(output_plan_id) {
-      filter.output_plan_id = output_plan_id
-    }
+    // if(output_plan_id) {
+    //   filter.output_plan_id = output_plan_id
+    // }
 
   return await repository.count({
     where,
