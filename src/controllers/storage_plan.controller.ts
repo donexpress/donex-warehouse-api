@@ -5,6 +5,8 @@ import {
   countStoragePlan,
   createStoragePlan,
   createStoragePlanMulti,
+  exportStoragePlanPDF,
+  exportStoragePlanXLSX,
   full_assign,
   listStoragePlan,
   removeStoragePlan,
@@ -216,4 +218,17 @@ export const auto_assign = async(req: Request, res: Response) => {
 export const suggested = async(req: Request, res: Response) => {
   const result = await suggest_asign(Number(req.params.id), req.body.box_ids)
   res.status(result.state).send({available: result.available})
+}
+
+export const export_storage_plan = async(req: Request, res: Response) => {
+  const {type, ids, display_columns} = req.body
+  let url = null
+  if(type === 'xlsx') {
+    url = await exportStoragePlanXLSX(ids, display_columns ? display_columns : [])
+  } else if (type === 'pdf') {
+    if(display_columns && display_columns.length > 0) {
+      return await exportStoragePlanPDF(ids, display_columns ? display_columns : [], res)
+    }
+  }
+  return res.json({url})
 }
