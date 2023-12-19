@@ -39,9 +39,10 @@ import {
 import { jsonToExcel } from '../helpers/xlsx';
 import { uploadFileToStore } from './file';
 import fs from 'fs';
-import { jsonToPDF } from '../helpers/pdf';
+import { generateOutputPlanInventory, jsonToPDF } from '../helpers/pdf';
 import { Response } from 'express';
 import { ShelfPackages } from '../models/shelf_package.model';
+import { Shelf } from '../models/shelf.model';
 
 export const listOutputPlan = async (
   current_page: number,
@@ -819,7 +820,11 @@ export const exportOutputPlanXLSX = async (
   return url;
 };
 
-export const exportOutputPlanPDF = async (ids: number[],columns: { key: string; value: string }[], res: Response) => {
+export const exportOutputPlanPDF = async (
+  ids: number[],
+  columns: { key: string; value: string }[],
+  res: Response
+) => {
   const select: FindOptionsSelect<OutputPlan> = {};
   columns.forEach((column) => {
     select[column.key] = true;
@@ -827,17 +832,35 @@ export const exportOutputPlanPDF = async (ids: number[],columns: { key: string; 
   const output_plans = await AppDataSource.manager.find(OutputPlan, {
     where: { id: In(ids) },
     select,
-    order: {id: 'DESC'}
+    order: { id: 'DESC' },
   });
-  await jsonToPDF(output_plans, columns, 'Información de planes de salida', res)
-}
+  await jsonToPDF(
+    output_plans,
+    columns,
+    'Información de planes de salida',
+    res
+  );
+};
 
-export const InventoryOutputPlanPdf = async(id: number, res: Response) => {
-  const output_plan = await AppDataSource.manager.findOne(OutputPlan, {where: {id}})
-  const user = await AppDataSource.manager.findOne(User, {where: {id: output_plan.user_id}})
-  const warehouse = await AppDataSource.manager.findOne(AOSWarehouse, {where: {id: output_plan.warehouse_id}})
-  const packages = await AppDataSource.manager.find(PackingList, {where: {case_number: In(output_plan.case_numbers)}})
-  const locations = await AppDataSource.manager.find(ShelfPackages, {where: {package_id: In(packages.map(el => el.id))}})
+export const InventoryOutputPlanPdf = async (id: number, res: Response) => {
+  const output_plan = await AppDataSource.manager.findOne(OutputPlan, {
+    where: { id },
+  });
+  const user = await AppDataSource.manager.findOne(User, {
+    where: { id: output_plan.user_id },
+  });
+  const warehouse = await AppDataSource.manager.findOne(AOSWarehouse, {
+    where: { id: output_plan.warehouse_id },
+  });
+  const packages = await AppDataSource.manager.find(PackingList, {
+    where: { case_number: In(output_plan.case_numbers) },
+  });
+  const locations = await AppDataSource.manager.find(ShelfPackages, {
+    where: { package_id: In(packages.map((el) => el.id)) },
+  });
+  const shelf = await AppDataSource.manager.find(Shelf, {
+    where: { id: In(locations.map((el) => el.shelf_id)) },
+  });
   const output_plan_data = {
     output_number: output_plan.output_number,
     user: user.username,
@@ -845,11 +868,32 @@ export const InventoryOutputPlanPdf = async(id: number, res: Response) => {
     box_number: output_plan.box_amount,
     destination: destinations[output_plan.destination].es_name,
     address: output_plan.address,
-    observations: output_plan.observations
-  }
+    observations: output_plan.observations,
+  };
+  const boxes = packages.map((pack) => {
+    const location = locations.find(
+      (location) => location.package_id === pack.id
+    );
+    const shelf = locations.find((shelf) => shelf.package_id === pack.id);
+    const date = pack.dispatched_time
+          ? pack.dispatched_time
+          : new Date().toISOString();
+        const storage_date = shelf.created_at;
+        const storage_time = calcDate(date, storage_date);
+    const p = {
+      box_number: pack.box_number,
+      case_number: pack.case_number,
+      location: `Zona: ${shelf.shelf_id}\nFila: ${shelf.layer}\nPuesto: ${location.column}\nNivel: ${location.layer}`,
+      storage_time: `${storage_time.total_days} Días`,
+      delivered_time: output_plan.delivered_time,
 
-  res.send({output_plan_data})
-}
+    };
+    return p;
+  });
+
+  await generateOutputPlanInventory(output_plan_data, boxes, res);
+  // res.send({output_plan_data, boxes})
+};
 
 const getWhereFilter = (
   filter: Partial<OutputPlanFilter>,
@@ -914,8 +958,8 @@ const getWhereFilter = (
     if (current_user && current_user.customer_number) {
       where.user_id = current_user.id;
     }
-    if(filter.user_id)  {
-      where.user_id = filter.user_id
+    if (filter.user_id) {
+      where.user_id = filter.user_id;
     }
   }
 

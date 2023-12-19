@@ -1,4 +1,4 @@
-import { FindOptionsWhere, ILike, In, Not } from 'typeorm';
+import { FindOptionsSelect, FindOptionsWhere, ILike, In, Not } from 'typeorm';
 import { AppDataSource } from '../config/ormconfig';
 import { validateContext } from '../helpers/validate';
 import { StoragePlan } from '../models/storage_plan.model';
@@ -14,10 +14,14 @@ import {
 import states from '../config/states';
 import { getCountByState, getStates } from '../helpers/states';
 import { removeNullProperties } from '../helpers';
-import {
-  findShelfByWarehouseId,
-} from './shelf';
+import { findShelfByWarehouseId } from './shelf';
 import { ShelfPackages } from '../models/shelf_package.model';
+import { jsonToExcel } from '../helpers/xlsx';
+import { uploadFileToStore } from './file';
+import fs from 'fs';
+import { Response } from 'express';
+import { jsonToPDF } from '../helpers/pdf';
+
 
 export const listStoragePlan = async (
   current_page: number,
@@ -25,9 +29,8 @@ export const listStoragePlan = async (
   query: Partial<StoragePlan>,
   current_user
 ) => {
+  const where = getWhereFilter(query, current_user);
 
-  const where  = getWhereFilter(query, current_user)
-  
   const storage_plans = await AppDataSource.manager.find(StoragePlan, {
     take: number_of_rows,
     skip: (current_page - 1) * number_of_rows,
@@ -67,7 +70,7 @@ export const listStoragePlan = async (
       warehouse,
       user,
       packing_list,
-      storage_state,
+      storage_state
     });
   }
   return data;
@@ -106,19 +109,31 @@ export const countAllStoragePlan = async (
   const total = await countStoragePlan();
   const to_be_storage = await getCountByState(
     repository,
-    await getWhereFilter({...filter, state: states.entry_plan.to_be_storage.value}, current_user)
+    await getWhereFilter(
+      { ...filter, state: states.entry_plan.to_be_storage.value },
+      current_user
+    )
   );
   const into_warehouse = await getCountByState(
     repository,
-    await getWhereFilter({...filter, state: states.entry_plan.into_warehouse.value}, current_user)
+    await getWhereFilter(
+      { ...filter, state: states.entry_plan.into_warehouse.value },
+      current_user
+    )
   );
   const cancelled = await getCountByState(
     repository,
-    await getWhereFilter({...filter, state: states.entry_plan.cancelled.value}, current_user)
+    await getWhereFilter(
+      { ...filter, state: states.entry_plan.cancelled.value },
+      current_user
+    )
   );
   const stocked = await getCountByState(
     repository,
-    await getWhereFilter({...filter, state: states.entry_plan.stocked.value}, current_user)
+    await getWhereFilter(
+      { ...filter, state: states.entry_plan.stocked.value },
+      current_user
+    )
   );
 
   const result = {
@@ -233,9 +248,8 @@ export const createStoragePlan = async (data, user_id: number) => {
   const result = repository.create(data);
   const validated = await validateContext(AppDataSource, result);
   if (validated instanceof StoragePlan) {
-    const on = `DEWMXI${date.getFullYear()}${month}${
-      date.getDate() <= 9 ? `0${date.getDate()}` : date.getDate()
-    }${validated.id.toString().padStart(6, '0')}`;
+    const on = `DEWMXI${date.getFullYear()}${month}${date.getDate() <= 9 ? `0${date.getDate()}` : date.getDate()
+      }${validated.id.toString().padStart(6, '0')}`;
     await repository.update({ id: validated.id }, { order_number: on });
     validated.order_number = on;
   }
@@ -408,7 +422,7 @@ export const full_assign = async (
   }
   let where: FindOptionsWhere<PackingList> = {};
   if (box_ids && box_ids.length > 0) {
-    where = { storage_plan_id: storage_plan.id, id: In(box_ids)};
+    where = { storage_plan_id: storage_plan.id, id: In(box_ids) };
   } else {
     where = { storage_plan_id: storage_plan.id };
   }
@@ -438,16 +452,23 @@ export const full_assign = async (
       let packages = await AppDataSource.manager.find(ShelfPackages, {
         where: { shelf_id: shelf.id },
       });
-      const packages_list_dispatched = await AppDataSource.manager.find(PackingList, {
-        where: {id: In(packages.map(el => el.package_id)), dispatched: true},
-      });
-
-      packages = packages.filter(p => packages_list_dispatched.find(pld => p.package_id === pld.id) === undefined )
-
-      console.log(
-        `Ammount of packages: `,
-        packages.length
+      const packages_list_dispatched = await AppDataSource.manager.find(
+        PackingList,
+        {
+          where: {
+            id: In(packages.map((el) => el.package_id)),
+            dispatched: true,
+          },
+        }
       );
+
+      packages = packages.filter(
+        (p) =>
+          packages_list_dispatched.find((pld) => p.package_id === pld.id) ===
+          undefined
+      );
+
+      console.log(`Ammount of packages: `, packages.length);
       packages.forEach((p) => {
         if (
           layer_id_used.filter(
@@ -457,18 +478,20 @@ export const full_assign = async (
           layer_id_used.push({ layer: p.layer, column: p.column });
         }
       });
-      console.log(layer_id_used)
+      console.log(layer_id_used);
       for (let j = 1; j <= shelf.layers && !added; j++) {
         for (let k = 1; k <= shelf.column_ammount && !added; k++) {
           if (
             layer_id_used.find((el) => el.layer === j && el.column === k) ===
             undefined
           ) {
-            console.log({packages: packages_list.length})
+            console.log({ packages: packages_list.length });
             for (let l = 0; l < packages_list.length; l++) {
               const package_list = packages_list[l];
-              console.log({package_id: package_list.id})
-              await package_shelf_repository.delete({package_id: package_list.id})
+              console.log({ package_id: package_list.id });
+              await package_shelf_repository.delete({
+                package_id: package_list.id,
+              });
               const result = await package_shelf_repository.create({
                 column: k,
                 layer: j,
@@ -493,59 +516,60 @@ export const full_assign = async (
 };
 
 export const getWhereFilter = (query: Partial<StoragePlan>, current_user) => {
-  let where: FindOptionsWhere<StoragePlan> | FindOptionsWhere<StoragePlan>[] = {}
-  if(query) {
-    if(query.box_amount) {
+  let where: FindOptionsWhere<StoragePlan> | FindOptionsWhere<StoragePlan>[] =
+    {};
+  if (query) {
+    if (query.box_amount) {
       where.box_amount = query.box_amount;
     }
-    if(query.country) {
+    if (query.country) {
       where.country = query.country;
     }
-    if(query.customer_order_number) {
+    if (query.customer_order_number) {
       where.customer_order_number = ILike(`%${query.customer_order_number}%`);
     }
-    if(query.is_images) {
+    if (query.is_images) {
       where.is_images = query.is_images;
     }
-    if(query.observations) {
-      where.observations = ILike(`%${query.observations}%`)
+    if (query.observations) {
+      where.observations = ILike(`%${query.observations}%`);
     }
-    if(query.order_number) {
-      where.order_number = ILike(`%${query.order_number}%`)
+    if (query.order_number) {
+      where.order_number = ILike(`%${query.order_number}%`);
     }
-    if(query.out_boxes) {
-      where.out_boxes = query.out_boxes
+    if (query.out_boxes) {
+      where.out_boxes = query.out_boxes;
     }
-    if(query.pr_number) {
-      where.pr_number = query.pr_number
+    if (query.pr_number) {
+      where.pr_number = query.pr_number;
     }
-    if(query.ready) {
-      where.ready = query.ready
+    if (query.ready) {
+      where.ready = query.ready;
     }
-    if(query.reference_number) {
-      where.reference_number = query.reference_number
+    if (query.reference_number) {
+      where.reference_number = query.reference_number;
     }
-    if(query.rejected_boxes) {
-      where.rejected_boxes = query.rejected_boxes
+    if (query.rejected_boxes) {
+      where.rejected_boxes = query.rejected_boxes;
     }
-    if(query.return) {
-      where.return = query.return
+    if (query.return) {
+      where.return = query.return;
     }
-    if(query.state) {
-      where.state = query.state
+    if (query.state) {
+      where.state = query.state;
     }
-    if(query.stock_boxes) {
-      where.stock_boxes = query.stock_boxes
+    if (query.stock_boxes) {
+      where.stock_boxes = query.stock_boxes;
     }
-    if(current_user && current_user.customer_number) {
-      where.user_id = current_user.id
+    if (current_user && current_user.customer_number) {
+      where.user_id = current_user.id;
     }
-    if(query.user_id)  {
-      where.user_id = query.user_id
+    if (query.user_id) {
+      where.user_id = query.user_id;
     }
   }
   return where;
-}
+};
 
 export const suggest_asign = async (
   storage_plan_id: number,
@@ -561,7 +585,7 @@ export const suggest_asign = async (
   }
   let where: FindOptionsWhere<PackingList> = {};
   if (box_ids && box_ids.length > 0) {
-    where = { storage_plan_id: storage_plan.id, id: In(box_ids)};
+    where = { storage_plan_id: storage_plan.id, id: In(box_ids) };
   } else {
     where = { storage_plan_id: storage_plan.id };
   }
@@ -589,11 +613,21 @@ export const suggest_asign = async (
       let packages = await AppDataSource.manager.find(ShelfPackages, {
         where: { shelf_id: shelf.id },
       });
-      const packages_list_dispatched = await AppDataSource.manager.find(PackingList, {
-        where: {id: In(packages.map(el => el.package_id)), dispatched: true},
-      });
+      const packages_list_dispatched = await AppDataSource.manager.find(
+        PackingList,
+        {
+          where: {
+            id: In(packages.map((el) => el.package_id)),
+            dispatched: true,
+          },
+        }
+      );
 
-      packages = packages.filter(p => packages_list_dispatched.find(pld => p.package_id === pld.id) === undefined )
+      packages = packages.filter(
+        (p) =>
+          packages_list_dispatched.find((pld) => p.package_id === pld.id) ===
+          undefined
+      );
       packages.forEach((p) => {
         if (
           layer_id_used.filter(
@@ -612,8 +646,8 @@ export const suggest_asign = async (
             available.push({
               column: k,
               layer: j,
-              shelf_id: shelf.id
-            })
+              shelf_id: shelf.id,
+            });
           }
         }
       }
@@ -625,4 +659,47 @@ export const suggest_asign = async (
   }
 
   return { state: 200, available };
+};
+
+export const exportStoragePlanXLSX = async (
+  ids: number[],
+  columns: { key: string; value: string }[]
+) => {
+  const select: FindOptionsSelect<StoragePlan> = {};
+  columns.forEach((column) => {
+    select[column.key] = true;
+  });
+  const storage_plans = await AppDataSource.manager.find(StoragePlan, {
+    where: { id: In(ids) },
+    select,
+  });
+  const filepath = await jsonToExcel(
+    storage_plans,
+    columns.map((el) => el.value)
+  );
+  const url = await uploadFileToStore(filepath, 'xlsx');
+  fs.unlink(filepath, () => {});
+  return url;
+};
+
+export const exportStoragePlanPDF = async (
+  ids: number[],
+  columns: { key: string; value: string }[],
+  res: Response
+) => {
+  const select: FindOptionsSelect<StoragePlan> = {};
+  columns.forEach((column) => {
+    select[column.key] = true;
+  });
+  const storage_plans = await AppDataSource.manager.find(StoragePlan, {
+    where: { id: In(ids) },
+    select,
+    order: { id: 'DESC' },
+  });
+  await jsonToPDF(
+    storage_plans,
+    columns,
+    'Información de planes de entrada',
+    res
+  );
 };

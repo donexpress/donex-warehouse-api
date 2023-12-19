@@ -4,7 +4,7 @@ import { validateContext } from '../helpers/validate';
 import { PackingList } from '../models/packing_list.model';
 import { StoragePlan } from '../models/storage_plan.model';
 import { getDataByPackageId, getDataByPackagesIds } from './shelf_package';
-import { splitLastOccurrence } from '../helpers';
+import { calcDate, splitLastOccurrence } from '../helpers';
 import { OutputPlan } from '../models/output_plan.model';
 import states from '../config/states';
 
@@ -165,10 +165,20 @@ export const getPackingListByStoragePlanId = async (
         output_plan_delivered_number = op.output_number;
       }
     });
+    let storage_time = 0;
+    if (package_shelf[0] && package_shelf[0].created_at) {
+      const date = pl.dispatched_time
+        ? pl.dispatched_time
+        : new Date().toISOString();
+      const storage_date = package_shelf[0].created_at;
+      storage_time = calcDate(date, storage_date).total_days;
+    }
+
     mod_packing_list.push({
       ...pl,
       package_shelf,
       output_plan_delivered_number,
+      storage_time: storage_time
     });
   }
   return mod_packing_list;
