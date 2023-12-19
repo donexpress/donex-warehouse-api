@@ -388,9 +388,12 @@ const runQuery = async (params) => {
 };
 
 const buildSelectClause = (params) => {
-  if (Boolean(params.is_carrier) === true) {
+  console.log(params.is_carrier);
+  if (Boolean(params.is_carrier)) {
+    console.log('entro if');
     return `DISTINCT waybill_id, carrier`;
   } else {
+    console.log('NO entro if');
     return `DISTINCT waybill_id`;
   }
 };
