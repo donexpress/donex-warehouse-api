@@ -205,10 +205,11 @@ export const selectByWaybillBySort = async (params) => {
 };
 
 export const summaryByWaybill = async (params) => {
-  const waybills =
+  /* const waybills =
     params.bill_code || params.start_date
       ? await selectByWaybillBySort(params)
-      : await selectDistintByWaybill();
+      : await selectDistintByWaybill(); */
+  const waybills = await runQuery(params);
   let summary = [];
 
   for (let i = 0; i < waybills.length; i++) {
@@ -377,6 +378,60 @@ export const getWhere = (params) => {
   }
 
   return where;
+};
+
+const runQuery = async (params): Promise<Manifest[] | []> => {
+  return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
+    .select(buildSelectClause(params))
+    .where(buildWhereClause(params), buildParams(params))
+    .getRawMany();
+};
+
+const buildSelectClause = (params) => {
+  if (params.is_carrier) {
+    return `['DISTINCT manifests.waybill_id', 'waybill_id', 'carrier']`;
+  } else {
+    return `DISTINCT manifests.waybill_id', 'waybill_id`;
+  }
+};
+
+const buildWhereClause = (params) => {
+  if (params.bill_code) {
+    return `manifests.payment_voucher = :bill_code`;
+  }
+  if (params.bill_code && params.start_date) {
+    return `manifests.payment_voucher = :bill_code and manifests.created_at >= :start_date and created_at <= :end_date`;
+  }
+
+  if (params.start_date) {
+    return `manifests.created_at >= :start_date and created_at <= :end_date`;
+  }
+  return `manifests.created_at IS NOT NULL`;
+};
+
+const buildParams = (params) => {
+  if (params.bill_code) {
+    return { bill_code: params.bill_code };
+  }
+
+  if (params.bill_code && params.start_date) {
+    let final_date = new Date(params.end_date);
+    final_date.setDate(final_date.getDate() + 1);
+    return {
+      bill_code: params.bill_code,
+      start_date: params.start_date,
+      end_date: final_date.toISOString(),
+    };
+  }
+
+  if (params.start_date) {
+    let final_date = new Date(params.end_date);
+    final_date.setDate(final_date.getDate() + 1);
+    return {
+      start_date: params.start_date,
+      end_date: final_date.toISOString(),
+    };
+  }
 };
 
 export const createBill = async (waybill_id: string, carrier: string, eta) => {
