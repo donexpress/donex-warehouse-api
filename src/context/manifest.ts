@@ -380,7 +380,7 @@ export const getWhere = (params) => {
   return where;
 };
 
-const runQuery = async (params): Promise<Manifest[] | []> => {
+const runQuery = async (params) => {
   return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
     .select(buildSelectClause(params))
     .where(buildWhereClause(params), buildParams(params))
@@ -397,16 +397,16 @@ const buildSelectClause = (params) => {
 
 const buildWhereClause = (params) => {
   if (params.bill_code) {
-    return `manifests.payment_voucher = :bill_code`;
+    return `payment_voucher = :bill_code`;
   }
   if (params.bill_code && params.start_date) {
-    return `manifests.payment_voucher = :bill_code and manifests.created_at >= :start_date and created_at <= :end_date`;
+    return `payment_voucher = :bill_code and created_at >= :start_date and created_at <= :end_date`;
   }
 
   if (params.start_date) {
-    return `manifests.created_at >= :start_date and created_at <= :end_date`;
+    return `created_at >= :start_date and created_at <= :end_date`;
   }
-  return `manifests.created_at IS NOT NULL`;
+  return `created_at IS NOT NULL`;
 };
 
 const buildParams = (params) => {
