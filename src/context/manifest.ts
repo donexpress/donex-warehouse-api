@@ -388,7 +388,7 @@ const runQuery = async (params) => {
 };
 
 const buildSelectClause = (params) => {
-  if (params.is_carrier) {
+  if (Boolean(params.is_carrier) === true) {
     return `DISTINCT waybill_id, carrier`;
   } else {
     return `DISTINCT waybill_id`;
