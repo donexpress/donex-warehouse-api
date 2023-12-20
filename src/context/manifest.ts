@@ -216,38 +216,33 @@ export const summaryByWaybill = async (params) => {
   for (let i = 0; i < waybills.length; i++) {
     const element = waybills[i];
     const waybill_id = element.waybill_id;
+    const where: FindOptionsWhere<Manifest> | FindOptionsWhere<Manifest>[] = {
+      waybill_id: waybill_id,
+    };
+
+    element.carrier ? (where.carrier = element.carrier) : where;
 
     const manifest = await AppDataSource.getRepository(Manifest).findOne({
-      where: {
-        waybill_id,
-      },
+      where,
     });
 
     const count = await AppDataSource.getRepository(Manifest).count({
-      where: {
-        waybill_id,
-      },
+      where,
     });
 
     const kilo_count = await AppDataSource.getRepository(Manifest).sum(
       'unit_weigth',
-      {
-        waybill_id,
-      }
+      where
     );
 
     const sum_cost = await AppDataSource.getRepository(Manifest).sum(
       'shipping_cost',
-      {
-        waybill_id,
-      }
+      where
     );
 
     const sum_sale_price = await AppDataSource.getRepository(Manifest).sum(
       'sale_price',
-      {
-        waybill_id,
-      }
+      where
     );
 
     const count_collected = await AppDataSource.getRepository(Manifest).count({
