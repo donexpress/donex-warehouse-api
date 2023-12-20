@@ -245,11 +245,10 @@ export const summaryByWaybill = async (params) => {
       where
     );
 
+    const where_collected = { ...where, state: 'collected' };
+
     const count_collected = await AppDataSource.getRepository(Manifest).count({
-      where: {
-        waybill_id,
-        state: 'collected',
-      },
+      where: where_collected,
     });
 
     const count_pending = await AppDataSource.getRepository(Manifest).count({
