@@ -251,25 +251,22 @@ export const summaryByWaybill = async (params) => {
       where: where_collected,
     });
 
+    const where_pending = { ...where, state: 'pending' };
+
     const count_pending = await AppDataSource.getRepository(Manifest).count({
-      where: {
-        waybill_id,
-        state: 'pending',
-      },
+      where: where_pending,
     });
+
+    const where_paid = { ...where, paid: true };
 
     const count_paid = await AppDataSource.getRepository(Manifest).count({
-      where: {
-        waybill_id,
-        paid: true,
-      },
+      where: where_paid,
     });
 
+    const where_Not_paid = { ...where, paid: false };
+
     const count_not_paid = await AppDataSource.getRepository(Manifest).count({
-      where: {
-        waybill_id,
-        paid: false,
-      },
+      where: where_Not_paid,
     });
 
     const body = {
