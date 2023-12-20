@@ -210,6 +210,7 @@ export const summaryByWaybill = async (params) => {
       ? await selectByWaybillBySort(params)
       : await selectDistintByWaybill(); */
   const waybills = await runQuery(params);
+  console.log(waybills);
   let summary = [];
 
   for (let i = 0; i < waybills.length; i++) {
