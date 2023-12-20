@@ -263,10 +263,10 @@ export const summaryByWaybill = async (params) => {
       where: where_paid,
     });
 
-    const where_Not_paid = { ...where, paid: false };
+    const where_not_paid = { ...where, paid: false };
 
     const count_not_paid = await AppDataSource.getRepository(Manifest).count({
-      where: where_Not_paid,
+      where: where_not_paid,
     });
 
     const body = {
@@ -283,6 +283,7 @@ export const summaryByWaybill = async (params) => {
       pending: count_pending,
       paid: count_paid,
       not_paid: count_not_paid,
+      carrier: element.carrier
     };
 
     summary.push(body);
