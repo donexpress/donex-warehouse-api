@@ -97,8 +97,12 @@ export const findStoragePlanByOrderNumber = async (order_number: string) => {
   return { ...storage_plan, packing_list, warehouse, user };
 };
 
-export const countStoragePlan = async () => {
-  return AppDataSource.manager.count(StoragePlan);
+export const countStoragePlan = async (current_user: any = null) => {
+  const where: FindOptionsWhere<StoragePlan> = {}
+  if (current_user && current_user.customer_number) {
+    where.user_id = current_user.id;
+  }
+  return AppDataSource.manager.count(StoragePlan, {where});
 };
 
 export const countAllStoragePlan = async (
@@ -106,7 +110,7 @@ export const countAllStoragePlan = async (
   filter: Partial<StoragePlan>
 ): Promise<Object> => {
   const repository = AppDataSource.getRepository(StoragePlan);
-  const total = await countStoragePlan();
+  const total = await countStoragePlan(current_user);
   const to_be_storage = await getCountByState(
     repository,
     await getWhereFilter(
