@@ -225,6 +225,8 @@ export const countOutputPlan = async (current_user?, filter?) => {
   const where: any = getWhereFilter(filter, current_user);
   // if (current_user && current_user.customer_number) {
   //   where.user_id = current_user.id;
+  where.state = Not('')
+
   // }
   return AppDataSource.manager.count(OutputPlan, { where });
 };
