@@ -164,53 +164,8 @@ export const selectByWaybill = async () => {
     .getRawMany();
 };
 
-export const selectDistintByWaybill = async () => {
-  return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
-    .select('DISTINCT manifests.waybill_id', 'waybill_id')
-    .orderBy('manifests.waybill_id')
-    .getRawMany();
-};
-
-export const selectByWaybillBySort = async (params) => {
-  if (params.bill_code) {
-    return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
-      .select('DISTINCT manifests.waybill_id', 'waybill_id')
-      .orderBy('manifests.waybill_id')
-      .where(`manifests.payment_voucher = '${params.bill_code}'`)
-      .getRawMany();
-  }
-
-  if (params.start_date && params.end_date) {
-    let final_date = new Date(params.end_date);
-    final_date.setDate(final_date.getDate() + 1);
-    return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
-      .select('DISTINCT manifests.waybill_id', 'waybill_id')
-      .orderBy('manifests.waybill_id')
-      .where(`manifests.created_at >= '${params.start_date}'`)
-      .andWhere(`manifests.created_at < '${final_date.toISOString()}'`)
-      .getRawMany();
-  }
-
-  if (params.start_date && params.end_date && params.bill_code) {
-    let final_date = new Date(params.end_date);
-    final_date.setDate(final_date.getDate() + 1);
-    return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
-      .select('DISTINCT manifests.waybill_id', 'waybill_id')
-      .orderBy('manifests.waybill_id')
-      .where(`manifests.created_at >= '${params.start_date}'`)
-      .andWhere(`manifests.created_at < '${final_date.toISOString()}'`)
-      .andWhere(`manifests.payment_voucher = '${params.bill_code}'`)
-      .getRawMany();
-  }
-};
-
 export const summaryByWaybill = async (params) => {
-  /* const waybills =
-    params.bill_code || params.start_date
-      ? await selectByWaybillBySort(params)
-      : await selectDistintByWaybill(); */
   const waybills = await runQuery(params);
-  console.log(waybills);
   let summary = [];
 
   for (let i = 0; i < waybills.length; i++) {
