@@ -98,20 +98,20 @@ const table_body = (
         .rect(
           10 + column_index * cell_width,
           70 +
-            count * (config.cell_height ? config.cell_height : (columns.length > 7 ? 25 : 20)) +
+            count * (config && config.cell_height ? config.cell_height : (columns.length > 7 ? 25 : 20)) +
             20 +
-            (config.margin_top ? config.margin_top : 0),
+            (config && config.margin_top ? config.margin_top : 0),
           cell_width,
-          (config.cell_height ? config.cell_height : (columns.length > 7 ? 25 : 20))
+          (config && config.cell_height ? config.cell_height : (columns.length > 7 ? 25 : 20))
         )
         .stroke('#333333')
         .text(
           row[column.key],
           10 + column_index * cell_width,
           75 +
-            count * (config.cell_height ? config.cell_height : (columns.length > 7 ? 25 : 20)) +
+            count * (config && config.cell_height ? config.cell_height : (columns.length > 7 ? 25 : 20)) +
             20 +
-            (config.margin_top ? config.margin_top : 0),
+            (config && config.margin_top ? config.margin_top : 0),
           {
             width: cell_width,
             align: 'center',

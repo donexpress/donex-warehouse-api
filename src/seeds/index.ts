@@ -164,11 +164,11 @@ const fill_client_box_number = async() => {
 }
 
 const doSeed = async () => {
-  // if (isProd) {
-  //   await ProdSeed();
-  // } else {
-  //   await Seed();
-  // }
+  if (isProd) {
+    await ProdSeed();
+  } else {
+    await Seed();
+  }
   // await dispatch_boxes();
   fill_client_box_number()
   
