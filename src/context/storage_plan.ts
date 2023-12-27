@@ -99,6 +99,7 @@ export const findStoragePlanByOrderNumber = async (order_number: string) => {
 
 export const countStoragePlan = async (current_user: any = null) => {
   const where: FindOptionsWhere<StoragePlan> = {}
+  where.state = Not('')
   if (current_user && current_user.customer_number) {
     where.user_id = current_user.id;
   }

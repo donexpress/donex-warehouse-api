@@ -33,6 +33,7 @@ import { filterStoragePlan } from './storage_plan';
 import { PackingList } from '../models/packing_list.model';
 import {
   calcDate,
+  dateFormat,
   removeNullProperties,
   splitLastOccurrence,
 } from '../helpers';
@@ -43,6 +44,7 @@ import { generateOutputPlanInventory, jsonToPDF } from '../helpers/pdf';
 import { Response } from 'express';
 import { ShelfPackages } from '../models/shelf_package.model';
 import { Shelf } from '../models/shelf.model';
+import { Warehouse } from '../models/warehouse.model';
 
 export const listOutputPlan = async (
   current_page: number,
@@ -225,6 +227,8 @@ export const countOutputPlan = async (current_user?, filter?) => {
   const where: any = getWhereFilter(filter, current_user);
   // if (current_user && current_user.customer_number) {
   //   where.user_id = current_user.id;
+  where.state = Not('');
+
   // }
   return AppDataSource.manager.count(OutputPlan, { where });
 };
@@ -803,14 +807,21 @@ export const exportOutputPlanXLSX = async (
   ids: number[],
   columns: { key: string; value: string }[]
 ) => {
-  const select: FindOptionsSelect<OutputPlan> = {};
-  columns.forEach((column) => {
-    select[column.key] = true;
-  });
   const output_plans = await AppDataSource.manager.find(OutputPlan, {
     where: { id: In(ids) },
-    select,
+    order: { id: 'DESC' },
   });
+  const warehouses = await AppDataSource.manager.find(AOSWarehouse, {where: {id: In(output_plans.map(el => el.warehouse_id))}})
+  for (let i = 0; i < output_plans.length; i++) {
+    const op = output_plans[i];
+    if(columns.filter(el => el.key === 'location').length > 0) {
+      await getLocation(op, warehouses)
+    } if(columns.filter(el => el.key === 'operation_instruction_type').length > 0) {
+      await geOIType(op)
+    } if(columns.filter(el => el.key === 'delivered_time').length > 0) {
+      op.delivered_time = dateFormat((new Date(op.delivered_time)).toISOString())
+    }
+  }
   const filepath = await jsonToExcel(
     output_plans,
     columns.map((el) => el.value)
@@ -825,15 +836,21 @@ export const exportOutputPlanPDF = async (
   columns: { key: string; value: string }[],
   res: Response
 ) => {
-  const select: FindOptionsSelect<OutputPlan> = {};
-  columns.forEach((column) => {
-    select[column.key] = true;
-  });
   const output_plans = await AppDataSource.manager.find(OutputPlan, {
     where: { id: In(ids) },
-    select,
     order: { id: 'DESC' },
   });
+  const warehouses = await AppDataSource.manager.find(AOSWarehouse, {where: {id: In(output_plans.map(el => el.warehouse_id))}})
+  for (let i = 0; i < output_plans.length; i++) {
+    const op = output_plans[i];
+    if(columns.filter(el => el.key === 'location').length > 0) {
+      await getLocation(op, warehouses)
+    } if(columns.filter(el => el.key === 'operation_instruction_type').length > 0) {
+      await geOIType(op)
+    } if(columns.filter(el => el.key === 'delivered_time').length > 0) {
+      op.delivered_time = dateFormat((new Date(op.delivered_time)).toISOString())
+    }
+  }
   await jsonToPDF(
     output_plans,
     columns,
@@ -876,17 +893,16 @@ export const InventoryOutputPlanPdf = async (id: number, res: Response) => {
     );
     const shelf = locations.find((shelf) => shelf.package_id === pack.id);
     const date = pack.dispatched_time
-          ? pack.dispatched_time
-          : new Date().toISOString();
-        const storage_date = shelf.created_at;
-        const storage_time = calcDate(date, storage_date);
+      ? pack.dispatched_time
+      : new Date().toISOString();
+    const storage_date = shelf.created_at;
+    const storage_time = calcDate(date, storage_date);
     const p = {
       box_number: pack.box_number,
       case_number: pack.case_number,
       location: `Zona: ${shelf.shelf_id}\nFila: ${shelf.layer}\nPuesto: ${location.column}\nNivel: ${location.layer}`,
       storage_time: `${storage_time.total_days} Días`,
       delivered_time: output_plan.delivered_time,
-
     };
     return p;
   });
@@ -965,3 +981,50 @@ const getWhereFilter = (
 
   return where;
 };
+
+const getLocation = async (op: OutputPlan, warehouses: AOSWarehouse[]) => {
+  const warehouse = warehouses.find(el => el.id === op.warehouse_id)
+    const packages = await AppDataSource.manager.find(PackingList, {
+      where: { case_number: In(op.case_numbers) },
+    });
+    const package_shelfs = await AppDataSource.manager.find(ShelfPackages, {
+      where: { package_id: In(packages.map((p) => p.id)) },
+    });
+    const shelfs = await AppDataSource.manager.find(Shelf, {
+      where: { id: In(package_shelfs.map((ps) => ps.shelf_id)) },
+    });
+    const locations = [];
+    packages.forEach((p) => {
+      const ps = package_shelfs.find((el) => el.package_id === p.id);
+      const shelf = shelfs.find((s) => s.id === ps.shelf_id);
+      if (ps && shelf) {
+        const tmpl = `${warehouse.code}-${String(
+          shelf.partition_table
+        ).padStart(2, '0')}-${String(
+          shelf.number_of_shelves
+        ).padStart(2, '0')}-${String(ps.layer).padStart(
+          2,
+          '0'
+        )}-${String(ps.column).padStart(2, '0')}`;
+        if (!locations.find((el) => el === tmpl)) {
+          locations.push(tmpl);
+        }
+      }
+    });
+    op['location'] = locations.join(', ')
+}
+
+const geOIType = async(op:  OutputPlan) => {
+  const operations_instructions = await AppDataSource.manager.find(OperationInstruction, {where:{output_plan_id: op.id}});
+  const types:{type: string, amount: number}[] = [];
+  operations_instructions.forEach((oi:any) => {
+    const value = oi.operation_instruction_type.instruction_type[0].es_name
+    const index = types.findIndex(el => el.type === value)
+    if(index === -1) {
+      types.push({amount: 1, type: value})
+    } else {
+      types[index].amount++
+    }
+  })
+  op['operation_instruction_type'] = types.map(el => `${el.type}: ${el.amount}`).join("\n")
+}
