@@ -356,7 +356,7 @@ const buildWhereClause = (params) => {
     return `payment_voucher = :bill_code`;
   }
 
-  if (params.mwb) {
+  if (params.waybill_id) {
     return `waybill_id = :waybill_id`;
   }
   return `created_at IS NOT NULL`;
@@ -387,8 +387,8 @@ const buildParams = (params) => {
     return { bill_code: params.bill_code };
   }
 
-  if (params.mwb) {
-    return { waybill_id: params.mwb };
+  if (params.waybill_id) {
+    return { waybill_id: params.waybill_id };
   }
 };
 
