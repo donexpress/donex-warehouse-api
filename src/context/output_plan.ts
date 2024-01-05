@@ -849,10 +849,11 @@ export const exportOutputPlanPDF = async (
     } if(columns.filter(el => el.key === 'operation_instruction_type').length > 0) {
       const oi = await geOIType(op, 'pdf')
       op['output_number'] = op['output_number'] + '\n' + oi
+      columns = columns.filter(el => el.key !== "operation_instruction_type")
     } if(columns.filter(el => el.key === 'delivered_time').length > 0) {
       op.delivered_time = dateFormat((new Date(op.delivered_time)).toISOString())
     } if(columns.filter(el => el.key === 'operation_instructions').length > 0) {
-      op['operation_instruction'] = operation_instruction.filter(el => el.output_plan_id === op.id).length
+      op['operation_instructions'] = operation_instruction.filter(el => el.output_plan_id === op.id).length
     }
   }
   await jsonToPDF(
