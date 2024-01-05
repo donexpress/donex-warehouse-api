@@ -4,11 +4,13 @@ import { OutputPlan } from '../models/output_plan.model';
 import { PackingList } from '../models/packing_list.model';
 import { ShelfPackages } from '../models/shelf_package.model';
 
+
 export const jsonToPDF = (
   output_plans: any[],
   columns: { key: string; value: string }[],
   title: string,
-  res: Response
+  res: Response,
+  config: Config | null = null
 ) => {
   const myDoc = new PDFDocument({ bufferPages: true, layout: 'landscape' });
   let buffers = [];
@@ -27,7 +29,7 @@ export const jsonToPDF = (
   header(myDoc, rect_width, title);
   //   table(myDoc, rect_width, rect_height);
   table_header(myDoc, rect_width, columns);
-  table_body(myDoc, rect_width, columns, output_plans);
+  table_body(myDoc, rect_width, columns, output_plans, config);
   myDoc.end();
 };
 

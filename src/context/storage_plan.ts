@@ -698,7 +698,6 @@ export const exportStoragePlanPDF = async (
   });
   const storage_plans = await AppDataSource.manager.find(StoragePlan, {
     where: { id: In(ids) },
-    select,
     order: { id: 'DESC' },
   });
   await jsonToPDF(

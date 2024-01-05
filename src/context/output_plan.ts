@@ -812,18 +812,28 @@ export const exportOutputPlanXLSX = async (
     order: { id: 'DESC' },
   });
   const warehouses = await AppDataSource.manager.find(AOSWarehouse, {where: {id: In(output_plans.map(el => el.warehouse_id))}})
+  const operation_instruction = await AppDataSource.manager.find(OperationInstruction, {where: {output_plan_id : In(ids)}})
   for (let i = 0; i < output_plans.length; i++) {
     const op = output_plans[i];
     if(columns.filter(el => el.key === 'location').length > 0) {
       await getLocation(op, warehouses)
     } if(columns.filter(el => el.key === 'operation_instruction_type').length > 0) {
-      await geOIType(op)
+      await geOIType(op, 'xlsx')
     } if(columns.filter(el => el.key === 'delivered_time').length > 0) {
       op.delivered_time = dateFormat((new Date(op.delivered_time)).toISOString())
+    }if(columns.filter(el => el.key === 'operation_instructions').length > 0) {
+      op['operation_instructions'] = operation_instruction.filter(el => el.output_plan_id === op.id).length
     }
   }
+  const rows = output_plans.map(el =>{
+    const op = {}
+    columns.forEach(col => {
+      op[col.key] = el[col.key]
+    })
+    return op
+  })
   const filepath = await jsonToExcel(
-    output_plans,
+    rows,
     columns.map((el) => el.value)
   );
   const url = await uploadFileToStore(filepath, 'xlsx');
@@ -841,21 +851,31 @@ export const exportOutputPlanPDF = async (
     order: { id: 'DESC' },
   });
   const warehouses = await AppDataSource.manager.find(AOSWarehouse, {where: {id: In(output_plans.map(el => el.warehouse_id))}})
+  const operation_instruction = await AppDataSource.manager.find(OperationInstruction, {where: {output_plan_id : In(ids)}})
+  let amm = 0
   for (let i = 0; i < output_plans.length; i++) {
     const op = output_plans[i];
     if(columns.filter(el => el.key === 'location').length > 0) {
       await getLocation(op, warehouses)
     } if(columns.filter(el => el.key === 'operation_instruction_type').length > 0) {
-      await geOIType(op)
+      const oi = await geOIType(op, 'pdf')
+      op['output_number'] = op['output_number'] + '\n' + oi
+      if(operation_instruction.filter(el => el.output_plan_id === op.id).length > amm) {
+        amm = operation_instruction.filter(el => el.output_plan_id === op.id).length
+      }
     } if(columns.filter(el => el.key === 'delivered_time').length > 0) {
       op.delivered_time = dateFormat((new Date(op.delivered_time)).toISOString())
+    } if(columns.filter(el => el.key === 'operation_instructions').length > 0) {
+      op['operation_instructions'] = operation_instruction.filter(el => el.output_plan_id === op.id).length
     }
   }
+  columns = columns.filter(el => el.key !== "operation_instruction_type")
   await jsonToPDF(
     output_plans,
     columns,
     'Información de planes de salida',
-    res
+    res,
+    {cell_height: 10 + 10 * amm}
   );
 };
 
@@ -1014,7 +1034,7 @@ const getLocation = async (op: OutputPlan, warehouses: AOSWarehouse[]) => {
     op['location'] = locations.join(', ')
 }
 
-const geOIType = async(op:  OutputPlan) => {
+const geOIType = async(op:  OutputPlan, type: "pdf" | "xlsx") => {
   const operations_instructions = await AppDataSource.manager.find(OperationInstruction, {where:{output_plan_id: op.id}});
   const types:{type: string, amount: number}[] = [];
   operations_instructions.forEach((oi:any) => {
@@ -1026,5 +1046,8 @@ const geOIType = async(op:  OutputPlan) => {
       types[index].amount++
     }
   })
+  if(type === 'pdf') {
+    return types.map(el => `${el.type}: ${el.amount}`).join("\n")
+  }
   op['operation_instruction_type'] = types.map(el => `${el.type}: ${el.amount}`).join("\n")
 }
