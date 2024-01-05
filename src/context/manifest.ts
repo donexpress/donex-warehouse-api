@@ -306,8 +306,12 @@ export const getWhere = (params) => {
     where.paid = params.paid;
   }
 
+  if (params.manifest_name) {
+    where.manifest_name = params.manifest_name;
+  }
+
   if (params.client_reference) {
-    where.manifest_name = params.client_reference;
+    where.client_reference = params.client_reference;
   }
 
   if (params.bill_code) {
