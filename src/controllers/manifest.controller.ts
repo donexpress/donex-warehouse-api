@@ -26,6 +26,7 @@ import {
   paidManifestClient,
   createBill,
   summaryByWaybill,
+  selectByManifestName,
 } from '../context/manifest';
 import carriers_type from '../config/carriers';
 import { Manifest } from '../models/manifest.model';
@@ -295,7 +296,12 @@ export const byWaybill = async (req: Request, res: Response) => {
   res.json(waybill);
 };
 
-export const supplier_invoice = async (req: Request, res: Response) => {
+export const byManifestName = async (req: Request, res: Response) => {
+  const manifest_name = await selectByManifestName();
+  res.json(manifest_name);
+};
+
+export const supplierInvoice = async (req: Request, res: Response) => {
   const bill_code = String(req.query.bill_code);
   const waybills = await listManifests(String(bill_code));
   if (waybills.length > 0) {

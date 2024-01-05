@@ -164,6 +164,13 @@ export const selectByWaybill = async () => {
     .getRawMany();
 };
 
+export const selectByManifestName = async () => {
+  return await AppDataSource.createQueryBuilder(Manifest, 'manifests')
+    .select('DISTINCT manifests.manifest_name')
+    .orderBy('manifests.manifest_name')
+    .getRawMany();
+};
+
 export const summaryByWaybill = async (params) => {
   const waybills = await runQuery(params);
   let summary = [];

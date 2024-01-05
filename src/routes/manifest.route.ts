@@ -98,7 +98,7 @@ router.get(
   '/api/v1/supplier_invoice',
   verifyTokenPresent,
   //guardianMw(['ADMIN', 'FINANCE']),
-  ManifestController.supplier_invoice
+  ManifestController.supplierInvoice
 );
 
 router.patch(
@@ -106,6 +106,13 @@ router.patch(
   verifyTokenPresent,
   //guardianMw(['ADMIN', 'FINANCE']),
   ManifestController.paidUpdate
+);
+
+router.get(
+  '/api/v1/byManifestCustomer',
+  verifyTokenPresent,
+  //guardianMw(['ADMIN', 'FINANCE']),
+  ManifestController.byManifestName
 );
 
 export default router;
