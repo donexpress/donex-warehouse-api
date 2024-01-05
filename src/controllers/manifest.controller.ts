@@ -30,6 +30,7 @@ import {
 import carriers_type from '../config/carriers';
 import { Manifest } from '../models/manifest.model';
 import fs from 'fs';
+import { getCurrentUser } from '../middlewares';
 
 export const create = async (req: Request, res: Response) => {
   return await create_do(req, res, 'create');
@@ -243,6 +244,8 @@ export const create_do = async (
 };
 
 export const find = async (req: Request, res: Response) => {
+  const user = await getCurrentUser(req);
+  console.log(user);
   const params = req.query;
   const current_page = req.query.current_page
     ? Number(req.query.current_page)
