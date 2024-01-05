@@ -245,7 +245,6 @@ export const create_do = async (
 
 export const find = async (req: Request, res: Response) => {
   const user = await getCurrentUser(req);
-  console.log(user);
   const params = req.query;
   const current_page = req.query.current_page
     ? Number(req.query.current_page)
