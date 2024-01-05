@@ -842,6 +842,7 @@ export const exportOutputPlanPDF = async (
   });
   const warehouses = await AppDataSource.manager.find(AOSWarehouse, {where: {id: In(output_plans.map(el => el.warehouse_id))}})
   const operation_instruction = await AppDataSource.manager.find(OperationInstruction, {where: {output_plan_id : In(ids)}})
+  let amm = 0
   for (let i = 0; i < output_plans.length; i++) {
     const op = output_plans[i];
     if(columns.filter(el => el.key === 'location').length > 0) {
@@ -849,6 +850,9 @@ export const exportOutputPlanPDF = async (
     } if(columns.filter(el => el.key === 'operation_instruction_type').length > 0) {
       const oi = await geOIType(op, 'pdf')
       op['output_number'] = op['output_number'] + '\n' + oi
+      if(operation_instruction.filter(el => el.output_plan_id === op.id).length > amm) {
+        amm = operation_instruction.filter(el => el.output_plan_id === op.id).length
+      }
     } if(columns.filter(el => el.key === 'delivered_time').length > 0) {
       op.delivered_time = dateFormat((new Date(op.delivered_time)).toISOString())
     } if(columns.filter(el => el.key === 'operation_instructions').length > 0) {
@@ -860,7 +864,8 @@ export const exportOutputPlanPDF = async (
     output_plans,
     columns,
     'Información de planes de salida',
-    res
+    res,
+    {cell_height: 40 + 40 * amm}
   );
 };
 
