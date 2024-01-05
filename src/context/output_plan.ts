@@ -812,6 +812,7 @@ export const exportOutputPlanXLSX = async (
     order: { id: 'DESC' },
   });
   const warehouses = await AppDataSource.manager.find(AOSWarehouse, {where: {id: In(output_plans.map(el => el.warehouse_id))}})
+  const operation_instruction = await AppDataSource.manager.find(OperationInstruction, {where: {output_plan_id : In(ids)}})
   for (let i = 0; i < output_plans.length; i++) {
     const op = output_plans[i];
     if(columns.filter(el => el.key === 'location').length > 0) {
@@ -820,6 +821,8 @@ export const exportOutputPlanXLSX = async (
       await geOIType(op, 'xlsx')
     } if(columns.filter(el => el.key === 'delivered_time').length > 0) {
       op.delivered_time = dateFormat((new Date(op.delivered_time)).toISOString())
+    }if(columns.filter(el => el.key === 'operation_instructions').length > 0) {
+      op['operation_instructions'] = operation_instruction.filter(el => el.output_plan_id === op.id).length
     }
   }
   const rows = output_plans.map(el =>{
