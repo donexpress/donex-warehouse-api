@@ -822,8 +822,15 @@ export const exportOutputPlanXLSX = async (
       op.delivered_time = dateFormat((new Date(op.delivered_time)).toISOString())
     }
   }
+  const rows = output_plans.map(el =>{
+    const op = {}
+    columns.forEach(col => {
+      op[col.key] = el[col.key]
+    })
+    return op
+  })
   const filepath = await jsonToExcel(
-    output_plans,
+    rows,
     columns.map((el) => el.value)
   );
   const url = await uploadFileToStore(filepath, 'xlsx');
