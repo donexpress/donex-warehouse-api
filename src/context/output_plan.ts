@@ -865,7 +865,7 @@ export const exportOutputPlanPDF = async (
     columns,
     'Información de planes de salida',
     res,
-    {cell_height: 40 + 40 * amm}
+    {cell_height: 10 + 10 * amm}
   );
 };
 
