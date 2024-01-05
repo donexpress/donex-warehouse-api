@@ -344,9 +344,6 @@ const buildSelectClause = (params) => {
 };
 
 const buildWhereClause = (params) => {
-  if (params.bill_code) {
-    return `payment_voucher = :bill_code`;
-  }
   if (params.bill_code && params.start_date) {
     return `payment_voucher = :bill_code and created_at >= :start_date and created_at <= :end_date`;
   }
@@ -354,13 +351,18 @@ const buildWhereClause = (params) => {
   if (params.start_date) {
     return `created_at >= :start_date and created_at <= :end_date`;
   }
+
+  if (params.bill_code) {
+    return `payment_voucher = :bill_code`;
+  }
+
+  if (params.waybill_id) {
+    return `waybill_id = :waybill_id`;
+  }
   return `created_at IS NOT NULL`;
 };
 
 const buildParams = (params) => {
-  if (params.bill_code) {
-    return { bill_code: params.bill_code };
-  }
 
   if (params.bill_code && params.start_date) {
     let final_date = new Date(params.end_date);
@@ -379,6 +381,14 @@ const buildParams = (params) => {
       start_date: params.start_date,
       end_date: final_date.toISOString(),
     };
+  }
+
+  if (params.bill_code) {
+    return { bill_code: params.bill_code };
+  }
+
+  if (params.waybill_id) {
+    return { waybill_id: params.waybill_id };
   }
 };
 
